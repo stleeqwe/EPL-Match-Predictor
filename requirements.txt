@@ -1,0 +1,32 @@
+# 데이터 수집
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+selenium>=4.15.0
+lxml>=4.9.3
+
+# 데이터 처리
+pandas>=2.1.0
+numpy>=1.24.0
+
+# 머신러닝
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+catboost>=1.2.0
+scipy>=1.11.0
+statsmodels>=0.14.0
+
+# 데이터베이스 (나중에 PostgreSQL 설치 후 활성화)
+# psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.0
+
+# API
+flask>=3.0.0
+flask-cors>=4.0.0
+flask-caching>=2.1.0
+
+# 스케줄러
+apscheduler>=3.10.4
+
+# 유틸리티
+python-dotenv>=1.0.0
+schedule>=1.2.0
