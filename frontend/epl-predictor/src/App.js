@@ -43,9 +43,22 @@ function App() {
 
   const fetchFixtures = async () => {
     try {
+      console.log('Fetching fixtures from API...');
       const data = await fixturesAPI.getAll();
+
+      console.log('Fixtures received (type):', typeof data);
+      console.log('Is array?', Array.isArray(data));
+      console.log('Total fixtures:', data?.length);
+      console.log('Sample fixture:', data?.[0]);
+
+      // 배열인지 확인
+      if (!Array.isArray(data)) {
+        console.error('Data is not an array:', typeof data, data);
+        throw new Error('Invalid data format');
+      }
+
       setFixtures(data);
-      info('경기 일정을 불러왔습니다');
+      info(`${data.length}개 경기 일정을 불러왔습니다`);
     } catch (error) {
       console.error('Error fetching fixtures:', error);
       showError('경기 일정을 불러올 수 없습니다.');

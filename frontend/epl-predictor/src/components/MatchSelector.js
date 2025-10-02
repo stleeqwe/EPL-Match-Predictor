@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Search, Filter, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, Filter, X, ChevronDown } from 'lucide-react';
 
 const MatchSelector = ({
   fixtures,
@@ -11,12 +11,22 @@ const MatchSelector = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [filterGameweek, setFilterGameweek] = useState('all');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'carousel'
 
   const cardBg = darkMode ? 'bg-gray-800' : 'bg-white';
   const borderColor = darkMode ? 'border-gray-700' : 'border-gray-200';
 
   // 안전한 fixtures 배열 체크
   const safeFixtures = Array.isArray(fixtures) ? fixtures : [];
+
+  // 디버깅
+  console.log('MatchSelector Debug:', {
+    totalFixtures: safeFixtures.length,
+    filterGameweek,
+    searchTerm,
+    sampleFixture: safeFixtures[0]
+  });
 
   // 필터링된 경기 목록
   const filteredFixtures = safeFixtures.filter(fixture => {
@@ -32,8 +42,20 @@ const MatchSelector = ({
     return matchesSearch && matchesGameweek;
   });
 
+  console.log('Filtered fixtures:', filteredFixtures.length);
+
   // 고유한 게임위크 목록
   const gameweeks = [...new Set(safeFixtures.map(f => f.gameweek).filter(gw => gw != null))].sort((a, b) => a - b);
+  console.log('Available gameweeks:', gameweeks);
+
+  // 현재 주차 자동 선택 제거 - 기본값을 'all'로 유지
+  // useEffect(() => {
+  //   if (gameweeks.length > 0 && filterGameweek === 'all') {
+  //     // 가장 최근 게임위크를 기본값으로
+  //     const currentGW = gameweeks[0];
+  //     setFilterGameweek(currentGW.toString());
+  //   }
+  // }, [gameweeks, filterGameweek]);
 
   const selectedFixture = filteredFixtures[selectedFixtureIndex] || fixtures[0] || {};
   const homeTeam = selectedFixture.home_team || 'Manchester City';
@@ -73,6 +95,14 @@ const MatchSelector = ({
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl md:text-2xl font-bold">경기 선택</h2>
         <div className="flex items-center gap-2">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setViewMode(viewMode === 'list' ? 'carousel' : 'list')}
+            className={`px-3 py-2 rounded-lg border ${darkMode ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'} hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors text-sm`}
+          >
+            {viewMode === 'list' ? '캐러셀' : '목록'} 보기
+          </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -124,7 +154,70 @@ const MatchSelector = ({
         )}
       </AnimatePresence>
 
-      <div className="flex items-center gap-4">
+      {viewMode === 'list' ? (
+        // 리스트 뷰 - 모든 경기를 그리드로 표시
+        <div className="space-y-3">
+          {filteredFixtures.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              선택 가능한 경기가 없습니다.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-2">
+              {filteredFixtures.map((fixture, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setSelectedFixtureIndex(index)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    index === selectedFixtureIndex
+                      ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/50 dark:to-purple-900/50 shadow-lg'
+                      : `border-gray-300 dark:border-gray-600 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'}`
+                  }`}
+                >
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-xs px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                        GW {fixture.gameweek}
+                      </span>
+                      {fixture.date && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {fixture.date}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="text-sm font-semibold text-center flex-1">
+                        {fixture.home_team}
+                      </div>
+                      <div className="text-xs font-bold text-gray-400">vs</div>
+                      <div className="text-sm font-semibold text-center flex-1">
+                        {fixture.away_team}
+                      </div>
+                    </div>
+                    {fixture.Time && (
+                      <div className="text-xs text-center text-gray-500 dark:text-gray-400">
+                        {fixture.Time}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+          <div className="text-center mt-4 text-sm text-gray-600 dark:text-gray-400">
+            총 {filteredFixtures.length}개 경기
+            {(searchTerm || filterGameweek !== 'all') && (
+              <span className="ml-2 text-blue-500 dark:text-blue-400">
+                (필터링됨)
+              </span>
+            )}
+          </div>
+        </div>
+      ) : (
+        // 캐러셀 뷰 - 기존 방식
+        <div>
+          <div className="flex items-center gap-4">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -173,15 +266,17 @@ const MatchSelector = ({
         </motion.button>
       </div>
 
-      {/* 경기 카운터 */}
-      <div className="text-center mt-4 text-sm text-gray-600 dark:text-gray-400">
-        {filteredFixtures.length > 0 ? selectedFixtureIndex + 1 : 0} / {filteredFixtures.length}
-        {(searchTerm || filterGameweek !== 'all') && (
-          <span className="ml-2 text-blue-500 dark:text-blue-400">
-            (필터링됨)
-          </span>
-        )}
-      </div>
+          {/* 경기 카운터 */}
+          <div className="text-center mt-4 text-sm text-gray-600 dark:text-gray-400">
+            {filteredFixtures.length > 0 ? selectedFixtureIndex + 1 : 0} / {filteredFixtures.length}
+            {(searchTerm || filterGameweek !== 'all') && (
+              <span className="ml-2 text-blue-500 dark:text-blue-400">
+                (필터링됨)
+              </span>
+            )}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };

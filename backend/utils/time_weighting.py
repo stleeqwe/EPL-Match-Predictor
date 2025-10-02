@@ -37,7 +37,11 @@ def calculate_exponential_decay_weights(match_dates, xi=0.005, reference_date=No
         reference_date = pd.to_datetime(reference_date)
 
     # 경과 일수 계산 (TimedeltaIndex를 numpy 배열로 변환)
-    days_ago = np.array((reference_date - dates).days)
+    timedelta_series = (reference_date - dates)
+    if hasattr(timedelta_series, 'dt'):
+        days_ago = timedelta_series.dt.days.values
+    else:
+        days_ago = timedelta_series.days
 
     # 지수 감쇠 가중치 계산
     weights = np.exp(-xi * days_ago)

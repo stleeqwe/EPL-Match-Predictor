@@ -185,6 +185,41 @@ export const healthAPI = {
  */
 export const advancedAPI = {
   /**
+   * Bayesian Dixon-Coles 예측 (불확실성 정량화 포함)
+   * @param {Object} data - { home_team, away_team, n_sims, credible_interval, use_cached }
+   * @returns {Promise<Object>} Bayesian 예측 결과 + 신뢰구간
+   */
+  bayesian: async (data) => {
+    const response = await api.post('/predict/bayesian', {
+      home_team: data.home_team,
+      away_team: data.away_team,
+      n_sims: data.n_sims || 3000,
+      credible_interval: data.credible_interval || 0.95,
+      use_cached: data.use_cached !== undefined ? data.use_cached : true,
+    });
+    return response.data;
+  },
+
+  /**
+   * Bayesian 모델의 팀별 능력치 조회
+   * @returns {Promise<Object>} 팀별 공격력/수비력 posterior 분포
+   */
+  bayesianTeamRatings: async () => {
+    const response = await api.get('/bayesian/team-ratings');
+    return response.data;
+  },
+
+  /**
+   * Bayesian 모델 재학습
+   * @param {Object} data - { n_samples, burnin, thin, verbose }
+   * @returns {Promise<Object>} 학습 결과
+   */
+  bayesianRetrain: async (data) => {
+    const response = await api.post('/bayesian/retrain', data);
+    return response.data;
+  },
+
+  /**
    * CatBoost 모델 예측
    * @param {Object} data - { home_team, away_team, season }
    * @returns {Promise<Object>} CatBoost 예측 결과

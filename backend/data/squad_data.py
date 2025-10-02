@@ -835,7 +835,7 @@ SQUAD_DATA = {
         },
         {
             'id': 209,
-            'name': 'Matt O'Riley',
+            'name': 'Matt O\'Riley',
             'position': 'MF',
             'number': 15,
             'age': 0,

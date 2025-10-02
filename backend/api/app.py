@@ -7,6 +7,7 @@ from flask_cors import CORS
 from flask_caching import Cache
 import sys
 import os
+import logging
 
 # 부모 디렉토리를 path에 추가
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -15,10 +16,21 @@ from models import DixonColesModel, EnsemblePredictor, FeatureEngineer
 from models.hybrid_predictor import HybridPredictor
 from models.personal_predictor import PersonalPredictor
 from data_collection import FBrefScraper, UnderstatScraper
+from database.schema import Match, init_db, get_session
 import pandas as pd
 
 app = Flask(__name__)
 CORS(app)  # React에서 접근 가능하도록
+
+# 로깅 설정 - stdout으로 모든 로그 출력
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Flask-Caching 설정
 cache = Cache(app, config={
@@ -36,49 +48,68 @@ understat_scraper = UnderstatScraper()
 hybrid_predictor = None
 personal_predictor = PersonalPredictor()
 
+# 베이지안 모델 캐시 (메모리에 학습된 모델 보관)
+bayesian_model_cache = None
+dixon_coles_model = None
+
 # 허용 시즌 설정 (최근 5경기 + 이번시즌 + 지난시즌)
-ALLOWED_SEASONS = ['2024-2025', '2025-2026']
+ALLOWED_SEASONS = ['2023-2024', '2024-2025']
 
 # 실제 데이터 로드 및 모델 초기화
-print("Loading historical match data...")
-print(f"Allowed seasons: {ALLOWED_SEASONS}")
+print("=" * 60)
+print("Initializing API with REAL trained models")
+print("=" * 60)
+
 try:
-    # DB에서 과거 시즌 데이터 로드
-    from database.schema import init_db, get_session, Match
-    db_path = os.path.join(os.path.dirname(__file__), '..', 'soccer_predictor.db')
-    db_url = f'sqlite:///{os.path.abspath(db_path)}'
-    engine = init_db(db_url)
-    session = get_session(engine)
+    import pickle
+    from models.bayesian_dixon_coles_simplified import SimplifiedBayesianDixonColes
 
-    # 허용된 시즌의 경기만 로드
-    matches = session.query(Match).filter(Match.season.in_(ALLOWED_SEASONS)).all()
+    # Load pre-trained models from cache
+    model_dir = os.path.join(os.path.dirname(__file__), '..', 'model_cache')
 
-    # DataFrame으로 변환 (세션 닫기 전에 데이터 추출)
-    historical_matches = pd.DataFrame([{
-        'date': m.match_date,
-        'season': m.season,
-        'home_team': m.home_team.name,
-        'away_team': m.away_team.name,
-        'home_score': m.home_score,
-        'away_score': m.away_score,
-        'home_xg': m.home_xg,
-        'away_xg': m.away_xg
-    } for m in matches])
+    print("\nLoading pre-trained models from cache...")
 
-    session.close()
+    # Load Bayesian model
+    bayesian_path = os.path.join(model_dir, 'bayesian_model_real.pkl')
+    with open(bayesian_path, 'rb') as f:
+        bayesian_model_cache = pickle.load(f)
+    print(f"✓ Bayesian Dixon-Coles loaded: {bayesian_path}")
 
-    print(f"✓ Loaded {len(historical_matches)} matches from seasons: {ALLOWED_SEASONS}")
+    # Load Dixon-Coles model
+    dixon_path = os.path.join(model_dir, 'dixon_coles_real.pkl')
+    with open(dixon_path, 'rb') as f:
+        dixon_coles_model = pickle.load(f)
+    print(f"✓ Dixon-Coles (MLE) loaded: {dixon_path}")
 
-    # 모델 초기화 (시즌 필터 적용)
-    ensemble.dixon_coles.fit(historical_matches, allowed_seasons=ALLOWED_SEASONS)
-    feature_engineer.calculate_pi_ratings(historical_matches, allowed_seasons=ALLOWED_SEASONS)
+    # Update ensemble with trained model
+    ensemble.dixon_coles = dixon_coles_model
 
-    # 하이브리드 예측기 초기화
-    hybrid_predictor = HybridPredictor(ensemble.dixon_coles, ensemble.xgboost)
+    # Load historical data from CSV for features
+    csv_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'epl_real_understat.csv')
+    historical_matches = pd.read_csv(csv_path)
+    historical_matches['date'] = pd.to_datetime(historical_matches['date'])
 
-    print(f"✓ Model initialized with {len(historical_matches)} historical matches")
+    print(f"\n✓ Loaded {len(historical_matches)} historical matches")
+    print(f"  Date range: {historical_matches['date'].min().date()} to {historical_matches['date'].max().date()}")
+    print(f"  Teams: {historical_matches['home_team'].nunique()}")
+
+    # Calculate features
+    feature_engineer.calculate_pi_ratings(historical_matches)
+
+    # Initialize hybrid predictor (xgboost optional)
+    try:
+        xgboost_model = ensemble.xgboost if hasattr(ensemble, 'xgboost') else None
+        hybrid_predictor = HybridPredictor(dixon_coles_model, xgboost_model)
+    except Exception as e:
+        print(f"Warning: HybridPredictor initialization failed: {e}")
+        hybrid_predictor = None
+
+    print("\n" + "=" * 60)
+    print("✅ API READY with REAL trained models!")
+    print("=" * 60)
+
 except Exception as e:
-    print(f"Warning: Could not initialize models with real data: {e}")
+    print(f"\n❌ Error loading real models: {e}")
     print("Using fallback initialization...")
     DUMMY_MATCHES = pd.DataFrame({
         'date': pd.date_range(start='2024-08-01', periods=30, freq='D'),
@@ -91,8 +122,14 @@ except Exception as e:
     })
     ensemble.dixon_coles.fit(DUMMY_MATCHES)
     feature_engineer.calculate_pi_ratings(DUMMY_MATCHES)
-    hybrid_predictor = HybridPredictor(ensemble.dixon_coles, ensemble.xgboost)
+    try:
+        xgboost_model = ensemble.xgboost if hasattr(ensemble, 'xgboost') else None
+        hybrid_predictor = HybridPredictor(ensemble.dixon_coles, xgboost_model)
+    except:
+        hybrid_predictor = None
     historical_matches = DUMMY_MATCHES
+    import traceback
+    traceback.print_exc()
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -104,8 +141,17 @@ def health_check():
 def get_fixtures():
     """경기 일정 가져오기"""
     try:
+        import numpy as np
         fixtures = fbref_scraper.get_epl_fixtures()
-        return jsonify(fixtures.to_dict(orient='records'))
+
+        # NaN을 None으로 변환 (JSON에서 null로 변환됨)
+        fixtures_dict = fixtures.to_dict(orient='records')
+        for fixture in fixtures_dict:
+            for key, value in fixture.items():
+                if isinstance(value, float) and np.isnan(value):
+                    fixture[key] = None
+
+        return jsonify(fixtures_dict)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -126,7 +172,13 @@ def predict_match():
     }
     """
     try:
+        logger.info("\n" + "="*80)
+        logger.info("🔍 DEBUG: /api/predict endpoint called")
+        logger.info("="*80)
+
         data = request.json
+        logger.info(f"📥 Incoming request data: {data}")
+
         home_team = data.get('home_team')
         away_team = data.get('away_team')
         model_type = data.get('model_type', 'hybrid')
@@ -137,72 +189,57 @@ def predict_match():
         last_season_weight = data.get('last_season_weight', 15) / 100
         save_prediction = data.get('save_prediction', False)
 
+        logger.info(f"🏠 Home team: {home_team}")
+        logger.info(f"✈️  Away team: {away_team}")
+        logger.info(f"🤖 Model type: {model_type}")
+        logger.info(f"⚖️  Weights - Stats: {stats_weight}, Personal: {personal_weight}")
+        logger.info(f"⏰ Temporal - Recent5: {recent5_weight}, Current: {current_season_weight}, Last: {last_season_weight}")
+
         # 특징 생성 (시즌 필터 적용)
-        features = feature_engineer.create_match_features(
-            home_team, away_team, historical_matches,
-            allowed_seasons=ALLOWED_SEASONS
-        )
+        logger.info(f"🔧 Creating match features...")
+        try:
+            features = feature_engineer.create_match_features(
+                home_team, away_team, historical_matches,
+                allowed_seasons=ALLOWED_SEASONS
+            )
+            logger.info(f"✅ Features created successfully")
+        except Exception as feat_error:
+            logger.error(f"❌ ERROR in feature creation: {feat_error}")
+            import traceback
+            logger.error(traceback.format_exc())
+            raise
+
+        logger.info(f"🎯 Starting prediction with model_type: {model_type}")
 
         if model_type == 'statistical':
-            # Dixon-Coles with temporal weighting
-            # 각 시간 기간별 데이터로 별도 예측 생성
+            logger.info(f"📊 Using statistical (Dixon-Coles) model")
+            logger.info(f"🔍 dixon_coles_model object: {dixon_coles_model}")
+            logger.info(f"🔍 Has predict_match method: {hasattr(dixon_coles_model, 'predict_match')}")
 
-            # 1. 최근 5경기 예측
-            recent_matches = historical_matches.sort_values('date', ascending=False).head(30)  # 최근 30경기에서 각 팀 5경기
-            dc_recent = DixonColesModel()
-            dc_recent.xi = 0.03  # 최근 경기 강조
-            dc_recent.fit(recent_matches, allowed_seasons=ALLOWED_SEASONS)
-            pred_recent = dc_recent.predict_match(home_team, away_team)
+            # Use pre-trained Dixon-Coles model (FAST)
+            try:
+                prediction = dixon_coles_model.predict_match(home_team, away_team)
+                logger.info(f"✅ Dixon-Coles prediction successful: {prediction}")
+            except Exception as pred_error:
+                logger.error(f"❌ ERROR in Dixon-Coles prediction: {pred_error}")
+                import traceback
+                logger.error(traceback.format_exc())
+                raise
 
-            # 2. 현재 시즌 예측 (2025-26)
-            current_season_matches = historical_matches[historical_matches['season'] == '2025-2026']
-            if len(current_season_matches) > 0:
-                dc_current = DixonColesModel()
-                dc_current.fit(current_season_matches, allowed_seasons=['2025-2026'])
-                pred_current = dc_current.predict_match(home_team, away_team)
-            else:
-                pred_current = pred_recent  # Fallback
-
-            # 3. 지난 시즌 예측 (2024-25)
-            last_season_matches = historical_matches[historical_matches['season'] == '2024-2025']
-            dc_last = DixonColesModel()
-            dc_last.fit(last_season_matches, allowed_seasons=['2024-2025'])
-            pred_last = dc_last.predict_match(home_team, away_team)
-
-            # 가중 평균 계산
-            prediction = {
-                'home_win': (pred_recent['home_win'] * recent5_weight +
-                            pred_current['home_win'] * current_season_weight +
-                            pred_last['home_win'] * last_season_weight),
-                'draw': (pred_recent['draw'] * recent5_weight +
-                        pred_current['draw'] * current_season_weight +
-                        pred_last['draw'] * last_season_weight),
-                'away_win': (pred_recent['away_win'] * recent5_weight +
-                            pred_current['away_win'] * current_season_weight +
-                            pred_last['away_win'] * last_season_weight),
-                'expected_home_goals': (pred_recent['expected_home_goals'] * recent5_weight +
-                                       pred_current['expected_home_goals'] * current_season_weight +
-                                       pred_last['expected_home_goals'] * last_season_weight),
-                'expected_away_goals': (pred_recent['expected_away_goals'] * recent5_weight +
-                                       pred_current['expected_away_goals'] * current_season_weight +
-                                       pred_last['expected_away_goals'] * last_season_weight),
-                'top_scores': pred_recent['top_scores'],  # 최근 경기 기준 스코어 확률
-                'weights_used': {
-                    'recent5': recent5_weight * 100,
-                    'current_season': current_season_weight * 100,
-                    'last_season': last_season_weight * 100
-                },
-                'breakdown': {
-                    'recent5': {'home_win': pred_recent['home_win'], 'draw': pred_recent['draw'], 'away_win': pred_recent['away_win']},
-                    'current_season': {'home_win': pred_current['home_win'], 'draw': pred_current['draw'], 'away_win': pred_current['away_win']},
-                    'last_season': {'home_win': pred_last['home_win'], 'draw': pred_last['draw'], 'away_win': pred_last['away_win']}
-                }
+            # Add metadata
+            prediction['weights_used'] = {
+                'recent5': recent5_weight * 100,
+                'current_season': current_season_weight * 100,
+                'last_season': last_season_weight * 100
             }
         elif model_type == 'personal':
+            logger.info(f"👤 Using personal (player ratings) model")
             # 개인 분석 - 선수 능력치 기반
             # 프론트엔드에서 player_ratings 전달 받음
             home_player_ratings = data.get('home_player_ratings', [])
             away_player_ratings = data.get('away_player_ratings', [])
+            logger.info(f"🔍 Home player ratings count: {len(home_player_ratings)}")
+            logger.info(f"🔍 Away player ratings count: {len(away_player_ratings)}")
 
             # 선수 평가 데이터가 없으면 더미 데이터 사용
             if not home_player_ratings or not away_player_ratings:
@@ -217,19 +254,35 @@ def predict_match():
                 ]
                 away_player_ratings = home_player_ratings.copy()
 
-            prediction = personal_predictor.predict_match(
-                home_player_ratings,
-                away_player_ratings,
-                home_advantage=1.3
-            )
+            try:
+                prediction = personal_predictor.predict_match(
+                    home_player_ratings,
+                    away_player_ratings,
+                    home_advantage=1.3
+                )
+                logger.info(f"✅ Personal prediction successful: {prediction}")
+            except Exception as pred_error:
+                logger.error(f"❌ ERROR in personal prediction: {pred_error}")
+                import traceback
+                logger.error(traceback.format_exc())
+                raise
         else:
+            logger.info(f"🔀 Using hybrid model")
+            logger.info(f"🔍 hybrid_predictor object: {hybrid_predictor}")
             # 하이브리드 - 새로운 HybridPredictor 사용
-            prediction = hybrid_predictor.predict(
-                home_team, away_team,
-                stats_weight=stats_weight,
-                ml_weight=personal_weight,
-                features=features
-            )
+            try:
+                prediction = hybrid_predictor.predict(
+                    home_team, away_team,
+                    stats_weight=stats_weight,
+                    ml_weight=personal_weight,
+                    features=features
+                )
+                logger.info(f"✅ Hybrid prediction successful: {prediction}")
+            except Exception as pred_error:
+                logger.error(f"❌ ERROR in hybrid prediction: {pred_error}")
+                import traceback
+                logger.error(traceback.format_exc())
+                raise
 
             # 시간 가중치 메타데이터 추가
             prediction['temporal_weights'] = {
@@ -281,9 +334,23 @@ def predict_match():
             )
             db.close()
 
+        logger.info(f"📤 Final prediction to return: {prediction}")
+        logger.info(f"✅ Prediction completed successfully!")
+        logger.info("="*80 + "\n")
+
         return jsonify(prediction)
 
     except Exception as e:
+        logger.error(f"\n{'='*80}")
+        logger.error(f"❌❌❌ CRITICAL ERROR in /api/predict ❌❌❌")
+        logger.error(f"{'='*80}")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error message: {str(e)}")
+        logger.error(f"\nFull traceback:")
+        import traceback
+        logger.error(traceback.format_exc())
+        logger.error(f"{'='*80}\n")
+
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/predictions/history', methods=['GET'])
@@ -549,6 +616,187 @@ def predict_ensemble():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/predict/bayesian', methods=['POST'])
+def predict_bayesian():
+    """
+    베이지안 Dixon-Coles 예측
+
+    Body: {
+        "home_team": "Manchester City",
+        "away_team": "Liverpool",
+        "n_sims": 3000,  // 시뮬레이션 횟수 (default: 3000)
+        "credible_interval": 0.95,  // 신뢰구간 수준 (default: 0.95)
+        "use_cached": true  // 캐시된 모델 사용 (default: true)
+    }
+
+    Returns:
+    {
+        "home_win": float,  // 승률 (%)
+        "draw": float,
+        "away_win": float,
+        "expected_home_goals": float,  // 예상 득점
+        "expected_away_goals": float,
+        "credible_intervals": {  // 95% 신뢰구간
+            "home_goals": [lower, upper],
+            "away_goals": [lower, upper],
+            "goal_difference": [lower, upper]
+        },
+        "top_scores": [{"score": "2-1", "probability": 7.5}, ...],
+        "risk_metrics": {
+            "var_95": float,  // Value at Risk (5%)
+            "cvar_95": float,  // Conditional VaR
+            "prediction_entropy": float  // 예측 불확실성 (낮을수록 확신)
+        }
+    }
+    """
+    global bayesian_model_cache
+
+    try:
+        from models.bayesian_dixon_coles_simplified import SimplifiedBayesianDixonColes
+
+        data = request.json
+        home_team = data.get('home_team')
+        away_team = data.get('away_team')
+        n_sims = data.get('n_sims', 3000)
+        credible_interval = data.get('credible_interval', 0.95)
+        use_cached = data.get('use_cached', True)
+
+        # 캐시 확인 (학습된 모델 재사용)
+        if use_cached and 'bayesian_model_cache' in globals() and bayesian_model_cache is not None:
+            model = bayesian_model_cache
+            print("Using cached Bayesian model")
+        else:
+            # 새로 학습
+            print("Training new Bayesian Dixon-Coles model...")
+            model = SimplifiedBayesianDixonColes(
+                n_samples=2000,  # MCMC 샘플 수
+                burnin=1000,     # Burn-in
+                thin=2           # Thinning
+            )
+
+            # 허용된 시즌 데이터로 학습
+            model.fit(historical_matches, verbose=False)
+
+            # 캐시 저장 (다음 요청에서 재사용)
+            bayesian_model_cache = model
+            print("Bayesian model trained and cached")
+
+        # 예측
+        prediction = model.predict_match(
+            home_team,
+            away_team,
+            n_sims=n_sims,
+            credible_interval=credible_interval
+        )
+
+        # 메타데이터 추가
+        prediction['model_info'] = {
+            'type': 'Bayesian Dixon-Coles (Metropolis-Hastings MCMC)',
+            'n_simulations': n_sims,
+            'credible_interval': credible_interval * 100,
+            'acceptance_rate': model.acceptance_rate * 100,
+            'effective_samples': len(model.samples)
+        }
+
+        return jsonify(prediction)
+
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
+
+@app.route('/api/bayesian/team-ratings', methods=['GET'])
+def get_bayesian_team_ratings():
+    """
+    베이지안 모델의 팀 레이팅 조회 (신뢰구간 포함)
+
+    Returns:
+    [
+        {
+            "team": "Man City",
+            "attack_mean": 0.45,
+            "attack_ci_low": 0.32,
+            "attack_ci_high": 0.58,
+            "defense_mean": -0.12,
+            "defense_ci_low": -0.28,
+            "defense_ci_high": 0.04
+        },
+        ...
+    ]
+    """
+    global bayesian_model_cache
+
+    try:
+        # 모델 캐시 확인
+        if 'bayesian_model_cache' not in globals() or bayesian_model_cache is None:
+            # 모델 학습
+            from models.bayesian_dixon_coles_simplified import SimplifiedBayesianDixonColes
+            model = SimplifiedBayesianDixonColes(n_samples=2000, burnin=1000, thin=2)
+            model.fit(historical_matches, verbose=False)
+            bayesian_model_cache = model
+        else:
+            model = bayesian_model_cache
+
+        # 레이팅 가져오기
+        ratings_df = model.get_team_ratings(credible_interval=0.95)
+
+        return jsonify(ratings_df.to_dict(orient='records'))
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/bayesian/retrain', methods=['POST'])
+def retrain_bayesian_model():
+    """
+    베이지안 모델 재학습 (데이터 업데이트 후 호출)
+
+    Body: {
+        "n_samples": 2000,  // optional
+        "burnin": 1000,     // optional
+        "thin": 2           // optional
+    }
+    """
+    global bayesian_model_cache
+
+    try:
+        from models.bayesian_dixon_coles_simplified import SimplifiedBayesianDixonColes
+
+        data = request.json or {}
+        n_samples = data.get('n_samples', 2000)
+        burnin = data.get('burnin', 1000)
+        thin = data.get('thin', 2)
+
+        print(f"Retraining Bayesian model (samples={n_samples}, burnin={burnin})...")
+
+        model = SimplifiedBayesianDixonColes(
+            n_samples=n_samples,
+            burnin=burnin,
+            thin=thin
+        )
+        model.fit(historical_matches, verbose=True)
+
+        # 캐시 업데이트
+        bayesian_model_cache = model
+
+        return jsonify({
+            'success': True,
+            'message': 'Bayesian model retrained successfully',
+            'model_info': {
+                'acceptance_rate': model.acceptance_rate * 100,
+                'effective_samples': len(model.samples),
+                'n_teams': len(model.teams)
+            }
+        })
+
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'error': str(e),
+            'traceback': traceback.format_exc()
+        }), 500
+
 if __name__ == '__main__':
     print("Starting Flask API server...")
     print("Available endpoints:")
@@ -563,6 +811,9 @@ if __name__ == '__main__':
     print("  POST /api/expected-threat")
     print("  POST /api/evaluate")
     print("  POST /api/predict/ensemble")
+    print("  POST /api/predict/bayesian          🆕 Bayesian prediction with uncertainty")
+    print("  GET  /api/bayesian/team-ratings     🆕 Team ratings with credible intervals")
+    print("  POST /api/bayesian/retrain          🆕 Retrain Bayesian model")
 
     # 스케줄러 시작
     try:
