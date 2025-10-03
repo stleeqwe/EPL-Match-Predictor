@@ -8,12 +8,14 @@ from flask_caching import Cache
 import sys
 import os
 import logging
+from datetime import datetime
 
 # 부모 디렉토리를 path에 추가
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from data_collection import FBrefScraper
 from data.squad_data import SQUAD_DATA
+from database.player_schema import get_player_session, Player, PlayerRating, Team, PositionAttribute
 import pandas as pd
 
 app = Flask(__name__)
@@ -287,6 +289,203 @@ def get_rating_scale():
     }
 
     return jsonify(rating_scale)
+
+
+@app.route('/api/ratings/<int:player_id>', methods=['GET'])
+def get_player_ratings(player_id):
+    """
+    특정 선수의 능력치 조회
+    """
+    try:
+        user_id = request.args.get('user_id', 'default')
+        session = get_player_session()
+
+        # 선수 정보 조회
+        player = session.query(Player).filter_by(id=player_id).first()
+        if not player:
+            session.close()
+            raise NotFoundError(f"Player with ID {player_id} not found")
+
+        # 능력치 조회
+        ratings = session.query(PlayerRating).filter_by(
+            player_id=player_id,
+            user_id=user_id
+        ).all()
+
+        ratings_dict = {}
+        for rating in ratings:
+            ratings_dict[rating.attribute_name] = {
+                'rating': rating.rating,
+                'notes': rating.notes,
+                'updated_at': rating.updated_at.isoformat() if rating.updated_at else None
+            }
+
+        session.close()
+
+        return jsonify({
+            'player_id': player_id,
+            'player_name': player.name,
+            'position': player.position,
+            'ratings': ratings_dict
+        })
+
+    except NotFoundError:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching ratings: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch ratings: {str(e)}", status_code=500)
+
+
+@app.route('/api/ratings', methods=['POST'])
+def save_player_ratings():
+    """
+    선수 능력치 저장 또는 업데이트
+
+    Body: {
+        "player_id": 123,
+        "user_id": "default",
+        "ratings": {
+            "tackling": 4.5,
+            "passing": 3.75,
+            ...
+        }
+    }
+    """
+    try:
+        data = request.json or {}
+        player_id = data.get('player_id')
+        user_id = data.get('user_id', 'default')
+        ratings = data.get('ratings', {})
+
+        if not player_id:
+            raise ValidationError("Missing required parameter: player_id")
+
+        if not ratings:
+            raise ValidationError("Missing ratings data")
+
+        session = get_player_session()
+
+        # 선수 존재 확인
+        player = session.query(Player).filter_by(id=player_id).first()
+        if not player:
+            session.close()
+            raise NotFoundError(f"Player with ID {player_id} not found")
+
+        # 각 능력치 저장/업데이트
+        saved_count = 0
+        for attribute_name, rating_value in ratings.items():
+            # 값 검증 (0.0 ~ 5.0, 0.25 단위)
+            if not isinstance(rating_value, (int, float)):
+                continue
+            if rating_value < 0.0 or rating_value > 5.0:
+                continue
+            # 0.25 단위 체크
+            if round(rating_value * 4) != rating_value * 4:
+                continue
+
+            # 기존 레코드 확인
+            existing = session.query(PlayerRating).filter_by(
+                player_id=player_id,
+                user_id=user_id,
+                attribute_name=attribute_name
+            ).first()
+
+            if existing:
+                # 업데이트
+                existing.rating = rating_value
+                existing.updated_at = datetime.now()
+            else:
+                # 신규 생성
+                new_rating = PlayerRating(
+                    player_id=player_id,
+                    user_id=user_id,
+                    attribute_name=attribute_name,
+                    rating=rating_value
+                )
+                session.add(new_rating)
+
+            saved_count += 1
+
+        session.commit()
+        session.close()
+
+        logger.info(f"✅ Saved {saved_count} ratings for player {player_id}")
+
+        return jsonify({
+            'success': True,
+            'player_id': player_id,
+            'saved_count': saved_count
+        })
+
+    except (ValidationError, NotFoundError):
+        raise
+    except Exception as e:
+        logger.error(f"Error saving ratings: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to save ratings: {str(e)}", status_code=500)
+
+
+@app.route('/api/ratings/<int:player_id>/<attribute_name>', methods=['PUT'])
+def update_single_rating(player_id, attribute_name):
+    """
+    단일 능력치 업데이트
+
+    Body: {
+        "rating": 4.5,
+        "notes": "Optional notes",
+        "user_id": "default"
+    }
+    """
+    try:
+        data = request.json or {}
+        rating_value = data.get('rating')
+        notes = data.get('notes', '')
+        user_id = data.get('user_id', 'default')
+
+        if rating_value is None:
+            raise ValidationError("Missing required parameter: rating")
+
+        # 값 검증
+        if rating_value < 0.0 or rating_value > 5.0:
+            raise ValidationError("Rating must be between 0.0 and 5.0")
+
+        session = get_player_session()
+
+        # 기존 레코드 확인
+        existing = session.query(PlayerRating).filter_by(
+            player_id=player_id,
+            user_id=user_id,
+            attribute_name=attribute_name
+        ).first()
+
+        if existing:
+            existing.rating = rating_value
+            existing.notes = notes
+            existing.updated_at = datetime.now()
+        else:
+            new_rating = PlayerRating(
+                player_id=player_id,
+                user_id=user_id,
+                attribute_name=attribute_name,
+                rating=rating_value,
+                notes=notes
+            )
+            session.add(new_rating)
+
+        session.commit()
+        session.close()
+
+        return jsonify({
+            'success': True,
+            'player_id': player_id,
+            'attribute': attribute_name,
+            'rating': rating_value
+        })
+
+    except (ValidationError, NotFoundError):
+        raise
+    except Exception as e:
+        logger.error(f"Error updating rating: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to update rating: {str(e)}", status_code=500)
 
 
 if __name__ == '__main__':
