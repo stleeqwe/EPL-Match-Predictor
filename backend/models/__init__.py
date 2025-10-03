@@ -1,6 +1,3 @@
-from .dixon_coles import DixonColesModel
-from .xgboost_model import XGBoostPredictor
-from .ensemble import EnsemblePredictor
-from .feature_engineering import FeatureEngineer
+# Models module - cleaned up for player analysis platform
 
-__all__ = ['DixonColesModel', 'XGBoostPredictor', 'EnsemblePredictor', 'FeatureEngineer']
+__all__ = []
