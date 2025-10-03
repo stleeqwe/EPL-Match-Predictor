@@ -32,6 +32,85 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
+# ==================== Error Handlers ====================
+
+class APIError(Exception):
+    """Base API Error"""
+    status_code = 500
+
+    def __init__(self, message, status_code=None, payload=None):
+        super().__init__()
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+    def to_dict(self):
+        rv = dict(self.payload or ())
+        rv['error'] = {
+            'code': self.__class__.__name__,
+            'message': self.message,
+            'status': self.status_code
+        }
+        return rv
+
+
+class ValidationError(APIError):
+    """Validation Error - 400"""
+    status_code = 400
+
+
+class NotFoundError(APIError):
+    """Resource Not Found - 404"""
+    status_code = 404
+
+
+@app.errorhandler(APIError)
+def handle_api_error(error):
+    """Handle custom API errors"""
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
+
+
+@app.errorhandler(404)
+def handle_404(error):
+    """Handle 404 errors"""
+    return jsonify({
+        'error': {
+            'code': 'NOT_FOUND',
+            'message': 'The requested resource was not found',
+            'status': 404
+        }
+    }), 404
+
+
+@app.errorhandler(500)
+def handle_500(error):
+    """Handle 500 errors"""
+    logger.error(f"Internal server error: {str(error)}", exc_info=True)
+    return jsonify({
+        'error': {
+            'code': 'INTERNAL_SERVER_ERROR',
+            'message': 'An internal server error occurred',
+            'status': 500
+        }
+    }), 500
+
+
+@app.errorhandler(Exception)
+def handle_exception(error):
+    """Handle all uncaught exceptions"""
+    logger.error(f"Unhandled exception: {str(error)}", exc_info=True)
+    return jsonify({
+        'error': {
+            'code': 'UNHANDLED_EXCEPTION',
+            'message': str(error),
+            'status': 500
+        }
+    }), 500
+
 # Flask-Caching 설정
 cache = Cache(app, config={
     'CACHE_TYPE': 'simple',  # 메모리 기반 캐시
@@ -153,7 +232,8 @@ def get_fixtures():
 
         return jsonify(fixtures_dict)
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error fetching fixtures: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch fixtures: {str(e)}", status_code=500)
 
 @app.route('/api/predict', methods=['POST'])
 def predict_match():
@@ -176,11 +256,18 @@ def predict_match():
         logger.info("🔍 DEBUG: /api/predict endpoint called")
         logger.info("="*80)
 
-        data = request.json
+        data = request.json or {}
         logger.info(f"📥 Incoming request data: {data}")
 
+        # Validate required parameters
         home_team = data.get('home_team')
         away_team = data.get('away_team')
+
+        if not home_team:
+            raise ValidationError("Missing required parameter: home_team")
+        if not away_team:
+            raise ValidationError("Missing required parameter: away_team")
+
         model_type = data.get('model_type', 'hybrid')
         stats_weight = data.get('stats_weight', 75) / 100
         personal_weight = data.get('personal_weight', 25) / 100
@@ -340,6 +427,9 @@ def predict_match():
 
         return jsonify(prediction)
 
+    except (ValidationError, NotFoundError, APIError):
+        # Re-raise custom API errors to be handled by error handlers
+        raise
     except Exception as e:
         logger.error(f"\n{'='*80}")
         logger.error(f"❌❌❌ CRITICAL ERROR in /api/predict ❌❌❌")
@@ -351,7 +441,8 @@ def predict_match():
         logger.error(traceback.format_exc())
         logger.error(f"{'='*80}\n")
 
-        return jsonify({'error': str(e)}), 500
+        # Raise as APIError for consistent error handling
+        raise APIError(f"Prediction failed: {str(e)}", status_code=500)
 
 @app.route('/api/predictions/history', methods=['GET'])
 def get_predictions_history():
