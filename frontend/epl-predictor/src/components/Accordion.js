@@ -8,7 +8,7 @@ export const AccordionItem = ({ title, icon, children, defaultOpen = false, dark
   return (
     <div className={`
       ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}
-      border rounded-xl overflow-hidden
+      border rounded-sm overflow-hidden
     `}>
       <button
         onClick={() => setIsOpen(!isOpen)}

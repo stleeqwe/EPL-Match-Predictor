@@ -28,7 +28,10 @@ import json
 from odds_collection import OddsAPIClient, OddsAggregator
 from value_betting import ValueDetector
 
-app = Flask(__name__)
+# React 빌드 폴더 경로
+REACT_BUILD_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'epl-predictor', 'build')
+
+app = Flask(__name__, static_folder=REACT_BUILD_PATH, static_url_path='')
 CORS(app)  # React에서 접근 가능하도록
 
 # 데이터베이스 경로
@@ -361,22 +364,65 @@ def get_player_stats_from_fantasy(player_name, team_name, fantasy_data):
         return None
 
 
-def is_starter(player_name, team_name, fantasy_data):
+def map_fpl_player_to_squad(fpl_player, team_name):
     """
-    Fantasy API 데이터를 기반으로 주전 여부 판단
+    FPL 선수를 SQUAD_DATA 선수와 매핑
+    데이터 정합성을 위해 SQUAD_DATA의 ID와 이름을 사용
+    """
+    if team_name not in SQUAD_DATA:
+        return None
 
-    주전 기준 (비율 기반):
-    - 선발 출전 비율: starts / total_matches >= 0.5 (50% 이상 선발)
-    - 출전 시간 비율: minutes / (total_matches * 90) >= 0.4 (40% 이상 출전)
+    squad_players = SQUAD_DATA[team_name]
+    fpl_id = fpl_player['id']
+    fpl_name = f"{fpl_player['first_name']} {fpl_player['second_name']}"
+    fpl_web_name = fpl_player.get('web_name', '')
+
+    # 1. ID 매칭 (가장 정확)
+    for sp in squad_players:
+        if sp['id'] == fpl_id:
+            logger.debug(f"✅ ID 매칭: {sp['name']} (ID: {sp['id']})")
+            return sp
+
+    # 2. 정확한 이름 매칭
+    for sp in squad_players:
+        if sp['name'] == fpl_name or sp['name'] == fpl_web_name:
+            logger.debug(f"✅ 이름 매칭: {sp['name']} (ID: {sp['id']})")
+            return sp
+
+    # 3. 부분 이름 매칭 (성이 같거나 포함)
+    fpl_last_name = fpl_player['second_name'].lower()
+    for sp in squad_players:
+        sp_name_lower = sp['name'].lower()
+        if fpl_last_name in sp_name_lower or fpl_web_name.lower() in sp_name_lower:
+            logger.debug(f"✅ 부분 이름 매칭: {sp['name']} (ID: {sp['id']}) <- FPL: {fpl_name}")
+            return sp
+
+    # 매칭 실패
+    logger.warning(f"❌ 매칭 실패: FPL {fpl_name} (ID: {fpl_id}) in {team_name}")
+    return None
+
+
+def get_player_role_by_ict(team_name, fantasy_data):
+    """
+    팀 내 ICT Index 기반으로 선수 역할 결정
+
+    역할 구분:
+    - starter: 팀 내 ICT Index 상위 15명 (주전)
+    - substitute: 팀 내 ICT Index 16-25위 (후보)
+    - other: 나머지 (기타)
+
+    Returns:
+        dict: {squad_data_player_id: {'role': str, 'ict_index': float, 'rank': int}}
+        ⚠️ SQUAD_DATA 선수 ID를 키로 사용 (FPL ID가 아님!)
     """
     if not fantasy_data:
-        return False
+        return {}
 
     try:
         elements = fantasy_data.get('elements', [])
         teams = fantasy_data.get('teams', [])
 
-        # 팀 이름 매핑 (Fantasy API 팀 이름 → 우리 데이터 팀 이름)
+        # 팀 이름 매핑
         team_name_mapping = {
             'Arsenal': 'Arsenal',
             'Aston Villa': 'Aston Villa',
@@ -400,7 +446,7 @@ def is_starter(player_name, team_name, fantasy_data):
             'Wolves': 'Wolverhampton Wanderers'
         }
 
-        # 역매핑: 우리 팀 이름 → Fantasy 팀 이름
+        # 역매핑
         reverse_mapping = {v: k for k, v in team_name_mapping.items()}
         fantasy_team_name = reverse_mapping.get(team_name, team_name)
 
@@ -412,54 +458,136 @@ def is_starter(player_name, team_name, fantasy_data):
                 break
 
         if not team_id:
-            logger.warning(f"⚠️ Team not found in Fantasy API: {team_name} (tried: {fantasy_team_name})")
-            return False
+            logger.warning(f"⚠️ Team not found in Fantasy API: {team_name}")
+            return {}
 
-        # 전체 경기 수
-        total_matches = get_team_matches_played(fantasy_data)
-        max_possible_minutes = total_matches * 90
-
-        # 선수 이름 정규화
-        normalized_player_name = normalize_name(player_name)
-
-        # 해당 팀 선수 찾기
+        # 해당 팀 선수들 필터링 및 ICT Index 기준 정렬
+        team_players = []
         for player in elements:
-            if player['team'] != team_id:
-                continue
+            if player['team'] == team_id:
+                ict_index = float(player.get('ict_index', '0.0'))
 
-            # Fantasy API의 선수 이름
-            fantasy_name = f"{player['first_name']} {player['second_name']}"
-            normalized_fantasy_name = normalize_name(fantasy_name)
+                # FPL 선수를 SQUAD_DATA 선수와 매핑
+                squad_player = map_fpl_player_to_squad(player, team_name)
 
-            # 이름 매칭 (부분 매칭 허용)
-            if normalized_player_name in normalized_fantasy_name or normalized_fantasy_name in normalized_player_name:
-                starts = player.get('starts', 0)
-                minutes = player.get('minutes', 0)
+                if squad_player:
+                    team_players.append({
+                        'squad_id': squad_player['id'],  # SQUAD_DATA ID 사용
+                        'fpl_id': player['id'],
+                        'name': squad_player['name'],  # SQUAD_DATA 이름 사용
+                        'ict_index': ict_index
+                    })
 
-                # 비율 계산
-                start_ratio = starts / total_matches if total_matches > 0 else 0
-                minutes_ratio = minutes / max_possible_minutes if max_possible_minutes > 0 else 0
+        # ICT Index 내림차순 정렬
+        team_players.sort(key=lambda x: x['ict_index'], reverse=True)
 
-                # 주전 기준 판단 (기준 완화: 50%, 40%)
-                is_regular_starter = start_ratio >= 0.5 and minutes_ratio >= 0.4
+        # 역할 할당 (SQUAD_DATA ID를 키로 사용)
+        player_roles = {}
+        for rank, player in enumerate(team_players, start=1):
+            if rank <= 15:
+                role = 'starter'
+            elif rank <= 25:
+                role = 'substitute'
+            else:
+                role = 'other'
 
-                logger.info(
-                    f"✅ Matched: {player_name} → {fantasy_name} | "
-                    f"Starts: {starts}/{total_matches} ({start_ratio:.1%}) | "
-                    f"Minutes: {minutes}/{max_possible_minutes} ({minutes_ratio:.1%}) | "
-                    f"Starter: {is_regular_starter}"
-                )
+            player_roles[player['squad_id']] = {  # SQUAD_DATA ID를 키로 사용
+                'role': role,
+                'ict_index': player['ict_index'],
+                'rank': rank
+            }
 
-                return is_regular_starter
+        logger.info(
+            f"📊 {team_name} ICT Index 역할 할당: "
+            f"주전 {sum(1 for p in player_roles.values() if p['role'] == 'starter')}명, "
+            f"후보 {sum(1 for p in player_roles.values() if p['role'] == 'substitute')}명, "
+            f"기타 {sum(1 for p in player_roles.values() if p['role'] == 'other')}명 "
+            f"(매핑된 선수 {len(team_players)}명)"
+        )
 
-        logger.warning(f"⚠️ Player not matched in Fantasy API: {player_name} (team: {team_name})")
-        return False
+        return player_roles
+
     except Exception as e:
-        logger.error(f"Error determining starter status for {player_name}: {str(e)}")
+        logger.error(f"Error calculating player roles for {team_name}: {str(e)}")
+        return {}
+
+
+def is_starter(player_name, team_name, fantasy_data):
+    """
+    ICT Index 기반 주전 여부 판단 (하위 호환성 유지)
+
+    주전 기준:
+    - 팀 내 ICT Index 상위 15명
+    """
+    player_roles = get_player_role_by_ict(team_name, fantasy_data)
+
+    if not player_roles:
         return False
+
+    # 선수 매칭
+    elements = fantasy_data.get('elements', [])
+    normalized_player_name = normalize_name(player_name)
+
+    for player in elements:
+        fantasy_name = f"{player['first_name']} {player['second_name']}"
+        normalized_fantasy_name = normalize_name(fantasy_name)
+
+        if normalized_player_name in normalized_fantasy_name or normalized_fantasy_name in normalized_player_name:
+            player_id = player['id']
+            role_info = player_roles.get(player_id, {})
+            is_regular_starter = role_info.get('role') == 'starter'
+
+            logger.info(
+                f"✅ ICT Matched: {player_name} → {fantasy_name} | "
+                f"ICT Index: {role_info.get('ict_index', 0):.1f} | "
+                f"Rank: {role_info.get('rank', 'N/A')} | "
+                f"Role: {role_info.get('role', 'unknown')} | "
+                f"Starter: {is_regular_starter}"
+            )
+
+            return is_regular_starter
+
+    logger.warning(f"⚠️ Player not matched in Fantasy API: {player_name} (team: {team_name})")
+    return False
 
 
 # ==================== API Endpoints ====================
+
+@app.route('/api', methods=['GET'])
+def api_root():
+    """API 루트 - 서비스 정보 및 사용 가능한 엔드포인트 안내"""
+    return jsonify({
+        'service': 'EPL Player Analysis API',
+        'version': '2.0.0',
+        'status': 'running',
+        'description': 'Premier League player analysis and match prediction system',
+        'endpoints': {
+            'health': '/api/health',
+            'teams': '/api/teams',
+            'squad': '/api/squad/<team_name>',
+            'player': '/api/player/<player_id>',
+            'positions': '/api/positions',
+            'ratings': {
+                'get': '/api/ratings/<player_id>',
+                'save': '/api/ratings (POST)',
+                'update': '/api/ratings/<player_id>/<attribute_name> (PUT)'
+            },
+            'epl_data': {
+                'standings': '/api/epl/standings',
+                'fixtures': '/api/epl/fixtures',
+                'leaderboard': '/api/epl/leaderboard'
+            },
+            'predictions': {
+                'match_predictions': '/api/match-predictions',
+                'live_odds': '/api/odds/live',
+                'value_bets': '/api/value-bets',
+                'dashboard': '/api/dashboard'
+            }
+        },
+        'v3_features': v3_routes_registered if v3_routes_registered else 'Not activated',
+        'documentation': 'Visit /api/health for server health check'
+    })
+
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
@@ -536,65 +664,71 @@ def get_teams():
 @cache.cached(timeout=1800, query_string=True)
 def get_squad(team_name):
     """
-    특정 팀의 선수 명단 가져오기 (주전 정보 포함)
+    특정 팀의 선수 명단 가져오기 (ICT Index 기반 주전/후보/기타 정보 포함)
     """
     try:
         if team_name not in SQUAD_DATA:
             raise NotFoundError(f"Team '{team_name}' not found")
 
         players = SQUAD_DATA[team_name]
-        logger.info(f"🔍 [DEBUG] Fetching squad for team: {team_name}")
-        logger.info(f"🔍 [DEBUG] Number of players: {len(players)}")
+        logger.info(f"🔍 Fetching squad for team: {team_name}")
+        logger.info(f"📋 Retrieved {len(players)} players")
 
-        # Fantasy API 데이터 가져오기
+        # FPL API에서 ICT Index 기반 역할 정보 가져오기
         fantasy_data = fetch_fantasy_data()
+        player_roles = get_player_role_by_ict(team_name, fantasy_data) if fantasy_data else {}
 
-        # 각 선수에 통계 정보 추가
-        enriched_players = []
+        # squad_data.py의 데이터를 그대로 사용 (Premier League 공식 API 기반)
+        squad_players = []
         for player in players:
             player_copy = player.copy()
 
-            # 등번호 정보 추가
-            shirt_number = get_player_shirt_number(player['name'], team_name)
-            if shirt_number:
-                player_copy['number'] = shirt_number
+            # stats 데이터가 없으면 기본값 설정
+            if 'stats' not in player_copy:
+                player_copy['stats'] = {
+                    'appearances': 0,
+                    'starts': 0,
+                    'minutes': 0,
+                    'goals': 0,
+                    'assists': 0,
+                    'clean_sheets': 0
+                }
 
-            # Fantasy API에서 통계 정보 가져오기
-            stats = get_player_stats_from_fantasy(player['name'], team_name, fantasy_data)
+            # 편의를 위해 루트 레벨에도 통계 정보 추가
+            player_copy['goals'] = player_copy['stats'].get('goals', 0)
+            player_copy['assists'] = player_copy['stats'].get('assists', 0)
+            player_copy['minutes'] = player_copy['stats'].get('minutes', 0)
+            player_copy['starts'] = player_copy['stats'].get('starts', 0)
+            player_copy['appearances'] = player_copy['stats'].get('appearances', 0)
 
-            if stats:
-                # 통계 정보 업데이트
-                player_copy['age'] = stats['age']
-                player_copy['goals'] = stats['goals']
-                player_copy['assists'] = stats['assists']
-                player_copy['minutes'] = stats['minutes']
-                player_copy['starts'] = stats['starts']
-                player_copy['appearances'] = stats['appearances']
-                player_copy['is_starter'] = stats['is_starter']
+            # ICT Index 기반 역할 정보 추가
+            player_id = player.get('id')
+            role_info = player_roles.get(player_id, {})
+            player_copy['role'] = role_info.get('role', 'other')  # starter/substitute/other
+            player_copy['ict_index'] = role_info.get('ict_index', 0.0)
+            player_copy['ict_rank'] = role_info.get('rank', 999)
 
-                logger.info(
-                    f"✅ Enriched: {player['name']} #{player_copy.get('number', 0)} | "
-                    f"Age: {stats['age']} | "
-                    f"Apps: {stats['appearances']} | "
-                    f"G/A: {stats['goals']}/{stats['assists']} | "
-                    f"Starter: {stats['is_starter']}"
-                )
-            else:
-                # 매칭 실패한 경우 기본값 유지
-                player_copy['is_starter'] = False
-                logger.warning(f"⚠️ No stats found for: {player['name']}")
+            # is_starter 필드도 업데이트 (하위 호환성)
+            player_copy['is_starter'] = (player_copy['role'] == 'starter')
 
-            enriched_players.append(player_copy)
+            squad_players.append(player_copy)
 
-        # 주전 선수를 먼저, 나머지 선수를 나중에 정렬
-        enriched_players.sort(key=lambda p: (not p.get('is_starter', False), p.get('number', 999)))
+        # ICT Index 순위로 정렬 (주전 → 후보 → 기타 순)
+        role_order = {'starter': 0, 'substitute': 1, 'other': 2}
+        squad_players.sort(key=lambda p: (
+            role_order.get(p.get('role', 'other'), 3),
+            p.get('ict_rank', 999)
+        ))
 
-        response_data = {'squad': enriched_players}
-        logger.info(f"🔍 [DEBUG] Response squad count: {len(response_data['squad'])}")
-        logger.info(f"📋 Retrieved {len(enriched_players)} players for {team_name}")
-
-        starters_count = sum(1 for p in enriched_players if p['is_starter'])
-        logger.info(f"⭐ Starters: {starters_count}, Bench: {len(enriched_players) - starters_count}")
+        response_data = {'squad': squad_players}
+        starters_count = sum(1 for p in squad_players if p.get('role') == 'starter')
+        substitute_count = sum(1 for p in squad_players if p.get('role') == 'substitute')
+        other_count = sum(1 for p in squad_players if p.get('role') == 'other')
+        logger.info(
+            f"📊 {team_name} Squad: "
+            f"주전 {starters_count}명, 후보 {substitute_count}명, 기타 {other_count}명 "
+            f"(총 {len(squad_players)}명)"
+        )
 
         return jsonify(response_data)
     except NotFoundError:
@@ -646,6 +780,51 @@ def get_fixtures():
     except Exception as e:
         logger.error(f"Error fetching fixtures: {str(e)}", exc_info=True)
         raise APIError(f"Failed to fetch fixtures: {str(e)}", status_code=500)
+
+
+@app.route('/api/player-photo/<photo_code>', methods=['GET'])
+@cache.cached(timeout=86400, query_string=True)  # 24시간 캐시
+def get_player_photo(photo_code):
+    """
+    선수 사진 프록시 (CORS 우회)
+    Premier League CDN에서 이미지를 가져와서 반환
+    """
+    try:
+        from flask import send_file, Response
+        import io
+
+        # 사이즈 파라미터 (기본값: 250x250)
+        size = request.args.get('size', '250x250')
+
+        # Premier League CDN URL
+        photo_url = f'https://resources.premierleague.com/premierleague/photos/players/{size}/p{photo_code}.png'
+
+        # 이미지 가져오기
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+            'Referer': 'https://www.premierleague.com/'
+        }
+
+        response = requests.get(photo_url, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        # 이미지 반환
+        return Response(
+            response.content,
+            mimetype='image/png',
+            headers={
+                'Cache-Control': 'public, max-age=86400',  # 24시간 캐시
+                'Access-Control-Allow-Origin': '*'  # CORS 허용
+            }
+        )
+
+    except requests.RequestException as e:
+        logger.error(f"Failed to fetch player photo {photo_code}: {str(e)}")
+        # 404 이미지 또는 에러 반환
+        return jsonify({'error': 'Photo not found'}), 404
+    except Exception as e:
+        logger.error(f"Error fetching player photo: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch player photo: {str(e)}", status_code=500)
 
 
 @app.route('/api/positions', methods=['GET'])
@@ -830,6 +1009,158 @@ def get_rating_scale():
     }
 
     return jsonify(rating_scale)
+
+
+# ==================== Team Overall Score API ====================
+
+# 종합 점수 저장 경로
+OVERALL_SCORES_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'overall_scores')
+
+def ensure_overall_scores_dir():
+    """종합 점수 저장 디렉토리 생성"""
+    os.makedirs(OVERALL_SCORES_DIR, exist_ok=True)
+
+@app.route('/api/teams/<team_name>/overall_score', methods=['POST'])
+def save_team_overall_score(team_name):
+    """
+    팀 종합 점수 저장
+
+    Body: {
+        "overallScore": 85.5,
+        "playerScore": 90.0,
+        "strengthScore": 80.0,
+        "playerWeight": 60,
+        "strengthWeight": 40
+    }
+    """
+    try:
+        data = request.json or {}
+
+        # 필수 필드 검증
+        required_fields = ['overallScore', 'playerScore', 'strengthScore', 'playerWeight', 'strengthWeight']
+        for field in required_fields:
+            if field not in data:
+                raise ValidationError(f"Missing required field: {field}")
+
+        # 데이터 검증
+        if not (0 <= data['overallScore'] <= 100):
+            raise ValidationError("overallScore must be between 0 and 100")
+        if not (0 <= data['playerScore'] <= 100):
+            raise ValidationError("playerScore must be between 0 and 100")
+        if not (0 <= data['strengthScore'] <= 100):
+            raise ValidationError("strengthScore must be between 0 and 100")
+        if not (0 <= data['playerWeight'] <= 100):
+            raise ValidationError("playerWeight must be between 0 and 100")
+        if not (0 <= data['strengthWeight'] <= 100):
+            raise ValidationError("strengthWeight must be between 0 and 100")
+
+        # 가중치 합계 검증
+        if data['playerWeight'] + data['strengthWeight'] != 100:
+            raise ValidationError("playerWeight + strengthWeight must equal 100")
+
+        # 저장할 데이터
+        score_data = {
+            'team_name': team_name,
+            'overallScore': data['overallScore'],
+            'playerScore': data['playerScore'],
+            'strengthScore': data['strengthScore'],
+            'playerWeight': data['playerWeight'],
+            'strengthWeight': data['strengthWeight'],
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # JSON 파일로 저장
+        ensure_overall_scores_dir()
+        file_path = os.path.join(OVERALL_SCORES_DIR, f"{team_name}.json")
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(score_data, f, indent=2, ensure_ascii=False)
+
+        logger.info(f"✅ Saved overall score for {team_name}: {data['overallScore']:.1f}/100")
+
+        return jsonify({
+            'success': True,
+            'team': team_name,
+            'data': score_data
+        })
+
+    except (ValidationError, NotFoundError):
+        raise
+    except Exception as e:
+        logger.error(f"Error saving overall score: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to save overall score: {str(e)}", status_code=500)
+
+
+@app.route('/api/teams/<team_name>/overall_score', methods=['GET'])
+def get_team_overall_score(team_name):
+    """
+    팀 종합 점수 조회
+
+    Returns: {
+        "team_name": "Liverpool",
+        "overallScore": 85.5,
+        "playerScore": 90.0,
+        "strengthScore": 80.0,
+        "playerWeight": 60,
+        "strengthWeight": 40,
+        "timestamp": "2025-01-10T12:00:00"
+    }
+    """
+    try:
+        file_path = os.path.join(OVERALL_SCORES_DIR, f"{team_name}.json")
+
+        if not os.path.exists(file_path):
+            return jsonify({
+                'success': False,
+                'message': f"No overall score found for {team_name}"
+            }), 404
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            score_data = json.load(f)
+
+        return jsonify({
+            'success': True,
+            'data': score_data
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching overall score: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch overall score: {str(e)}", status_code=500)
+
+
+@app.route('/api/teams/overall_scores', methods=['GET'])
+def get_all_overall_scores():
+    """
+    모든 팀의 종합 점수 조회
+
+    Returns: {
+        "Liverpool": {...},
+        "Man City": {...},
+        ...
+    }
+    """
+    try:
+        ensure_overall_scores_dir()
+        all_scores = {}
+
+        for filename in os.listdir(OVERALL_SCORES_DIR):
+            if filename.endswith('.json'):
+                team_name = filename[:-5]  # .json 제거
+                file_path = os.path.join(OVERALL_SCORES_DIR, filename)
+
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    score_data = json.load(f)
+                    all_scores[team_name] = score_data
+
+        return jsonify({
+            'success': True,
+            'count': len(all_scores),
+            'scores': all_scores
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching all overall scores: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch overall scores: {str(e)}", status_code=500)
 
 
 @app.route('/api/ratings/<int:player_id>', methods=['GET'])
@@ -1217,6 +1548,7 @@ def get_epl_fixtures():
 def get_epl_leaderboard():
     """
     EPL 리더보드 (득점왕, 도움왕, 클린시트 등)
+    SQUAD_DATA와 매핑하여 데이터 정합성 보장
     """
     try:
         # 강등팀 필터링 (2024-25 시즌 강등 → 2025-26 시즌 Championship)
@@ -1226,8 +1558,11 @@ def get_epl_leaderboard():
         players = fantasy_data.get('elements', [])
         teams_dict = {team['id']: team for team in fantasy_data.get('teams', [])}
 
-        # 선수 데이터 가공 (EPL 팀만)
+        # 선수 데이터 가공 (EPL 팀만 + SQUAD_DATA 매핑)
         enriched_players = []
+        mapped_count = 0
+        unmapped_count = 0
+
         for player in players:
             team = teams_dict.get(player['team'], {})
             team_name = team.get('name', 'Unknown')
@@ -1236,23 +1571,46 @@ def get_epl_leaderboard():
             if team_name in RELEGATED_TEAMS:
                 continue
 
-            player_full_name = f"{player['first_name']} {player['second_name']}"
+            # SQUAD_DATA와 매핑
+            squad_player = map_fpl_player_to_squad(player, team_name)
 
-            enriched_players.append({
-                'id': player['id'],
-                'code': player.get('code'),  # 선수 사진 URL용 코드
-                'name': player['web_name'],
-                'full_name': player_full_name,
-                'team': team_name,
-                'team_short': team.get('short_name', 'UNK'),
-                'position': ['GK', 'DEF', 'MID', 'FWD'][player['element_type'] - 1],
-                'goals': player.get('goals_scored', 0),
-                'assists': player.get('assists', 0),
-                'clean_sheets': player.get('clean_sheets', 0),
-                'total_points': player.get('total_points', 0),
-                'form': float(player.get('form', 0)),
-                'minutes': player.get('minutes', 0)
-            })
+            if squad_player:
+                # SQUAD_DATA 선수 정보 사용 (데이터 정합성 보장)
+                mapped_count += 1
+                enriched_players.append({
+                    'id': squad_player['id'],  # SQUAD_DATA ID 사용
+                    'code': player.get('code'),  # 선수 사진 URL용 코드 (FPL)
+                    'name': squad_player['name'],  # SQUAD_DATA 이름 사용
+                    'team': team_name,
+                    'team_short': team.get('short_name', 'UNK'),
+                    'position': squad_player['position'],  # SQUAD_DATA position 사용
+                    'goals': player.get('goals_scored', 0),  # FPL 통계
+                    'assists': player.get('assists', 0),  # FPL 통계
+                    'clean_sheets': player.get('clean_sheets', 0),  # FPL 통계
+                    'total_points': player.get('total_points', 0),  # FPL 통계
+                    'form': float(player.get('form', 0)),  # FPL 통계
+                    'minutes': player.get('minutes', 0)  # FPL 통계
+                })
+            else:
+                # 매핑 실패 시 FPL 데이터 그대로 사용 (fallback)
+                unmapped_count += 1
+                player_full_name = f"{player['first_name']} {player['second_name']}"
+                enriched_players.append({
+                    'id': player['id'],
+                    'code': player.get('code'),
+                    'name': player['web_name'],
+                    'team': team_name,
+                    'team_short': team.get('short_name', 'UNK'),
+                    'position': ['GK', 'DEF', 'MID', 'FWD'][player['element_type'] - 1],
+                    'goals': player.get('goals_scored', 0),
+                    'assists': player.get('assists', 0),
+                    'clean_sheets': player.get('clean_sheets', 0),
+                    'total_points': player.get('total_points', 0),
+                    'form': float(player.get('form', 0)),
+                    'minutes': player.get('minutes', 0)
+                })
+
+        logger.info(f"📊 리더보드 매핑 결과: 성공 {mapped_count}명, 실패 {unmapped_count}명")
 
         # 리더보드 생성
         leaderboard = {
@@ -1580,6 +1938,90 @@ def get_dashboard_data():
     except Exception as e:
         logger.error(f"Error generating dashboard: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+# ============================================================
+# V3 AI Simulation System Integration
+# ============================================================
+
+v3_routes_registered = []
+
+# Import and register Auth routes (core feature)
+try:
+    from api.v1.auth_routes import register_auth_routes
+    register_auth_routes(app)
+    v3_routes_registered.append("Auth")
+    logger.info("✅ V3 Auth routes registered")
+except Exception as e:
+    logger.warning(f"⚠️ V3 Auth routes not available: {e}")
+
+# Import and register Simulation routes (core feature)
+try:
+    from api.v1.simulation_routes import register_simulation_routes
+    register_simulation_routes(app)
+    v3_routes_registered.append("Simulation")
+    logger.info("✅ V3 Simulation routes registered")
+except Exception as e:
+    logger.warning(f"⚠️ V3 Simulation routes not available: {e}")
+
+# Import and register Payment routes (optional - requires Stripe config)
+try:
+    from api.v1.payment_routes import payment_bp
+    app.register_blueprint(payment_bp)
+    v3_routes_registered.append("Payment")
+    logger.info("✅ V3 Payment routes registered")
+except Exception as e:
+    logger.warning(f"⚠️ V3 Payment routes not available (Stripe not configured): {e}")
+
+# Import and register AI Simulation routes (Haiku-based Simple AI)
+try:
+    from api.ai_simulation_routes import ai_simulation_bp
+    app.register_blueprint(ai_simulation_bp)
+    v3_routes_registered.append("AI_Simulation")
+    logger.info("✅ AI Simulation routes registered (Claude Haiku)")
+except Exception as e:
+    logger.warning(f"⚠️ AI Simulation routes not available: {e}")
+
+if v3_routes_registered:
+    logger.info(f"🚀 V3 System activated: {', '.join(v3_routes_registered)}")
+else:
+    logger.info("ℹ️ V3 System not activated - using legacy routes only")
+
+
+# ============================================================
+# React SPA Support - Catch all routes
+# ============================================================
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    """
+    React SPA 라우팅 지원
+    - API 요청이 아닌 경우 React index.html 제공
+    """
+    # API 경로는 무시 (이미 정의된 API 엔드포인트로 라우팅됨)
+    if path.startswith('api/'):
+        return jsonify({
+            'error': {
+                'code': 'NOT_FOUND',
+                'message': 'The requested API endpoint was not found',
+                'status': 404
+            }
+        }), 404
+
+    # 정적 파일 요청 (js, css, images 등)
+    if path and os.path.exists(os.path.join(app.static_folder, path)):
+        return app.send_static_file(path)
+
+    # React index.html 제공 (클라이언트 사이드 라우팅)
+    if os.path.exists(os.path.join(app.static_folder, 'index.html')):
+        return app.send_static_file('index.html')
+
+    # 빌드 파일이 없는 경우
+    return jsonify({
+        'error': 'React build not found',
+        'message': 'Please run `npm run build` in the frontend directory'
+    }), 404
 
 
 if __name__ == '__main__':

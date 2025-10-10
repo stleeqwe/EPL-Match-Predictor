@@ -2,34 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Header = ({ darkMode, setDarkMode }) => {
+const Header = ({ darkMode, setDarkMode, onLogoClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // 스크롤 감지 - throttle 및 hysteresis 적용
   useEffect(() => {
     let ticking = false;
-    let lastScrollY = 0;
+    let isTransitioning = false; // 전환 중 플래그
 
     const handleScroll = () => {
-      if (!ticking) {
+      if (!ticking && !isTransitioning) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
 
-          // Hysteresis: 올라갈 때와 내려갈 때 다른 임계값 사용
-          if (currentScrollY > lastScrollY) {
-            // 아래로 스크롤 중
-            if (currentScrollY > 50) {
-              setIsScrolled(true);
-            }
-          } else {
-            // 위로 스크롤 중
-            if (currentScrollY < 20) {
-              setIsScrolled(false);
-            }
-          }
+          // Hysteresis: 현재 상태에 따라 다른 임계값 사용
+          setIsScrolled(prevState => {
+            const newState = !prevState
+              ? currentScrollY > 50  // false -> true 전환: 50 초과
+              : currentScrollY >= 20; // true 유지 또는 false 전환: 20 이상 유지
 
-          lastScrollY = currentScrollY;
+            // 상태가 변경되면 500ms 동안 추가 변경 방지
+            if (prevState !== newState) {
+              isTransitioning = true;
+              setTimeout(() => {
+                isTransitioning = false;
+              }, 500);
+            }
+
+            return newState;
+          });
+
           ticking = false;
         });
         ticking = true;
@@ -47,13 +50,14 @@ const Header = ({ darkMode, setDarkMode }) => {
         className={`
           sticky top-0 z-50
           ${isScrolled
-            ? 'py-3 backdrop-blur-xl bg-brand-darker/95 border-b border-white/10 shadow-glow-sm'
-            : 'py-4 bg-transparent'
+            ? 'py-2'
+            : 'py-3'
           }
         `}
         style={{
-          transition: 'padding 0.3s ease, background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
-          willChange: 'padding, background-color, backdrop-filter'
+          backgroundColor: '#1e1b2e',
+          transition: 'padding 0.3s ease',
+          willChange: 'padding'
         }}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -62,10 +66,17 @@ const Header = ({ darkMode, setDarkMode }) => {
         <div className="container-custom">
           <div className="flex items-center justify-between gap-4">
             {/* Left: Logo & Title */}
-            <div className="flex items-center gap-3">
+            <div
+              className="flex items-center gap-3 cursor-pointer group"
+              onClick={onLogoClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && onLogoClick?.()}
+              aria-label="메인 대시보드로 이동"
+            >
               {/* Logo */}
               <motion.img
-                src="/visionary-ai-logo.png"
+                src="/logo2.png"
                 alt="Visionary AI"
                 className={`
                   flex-shrink-0 object-contain
@@ -74,7 +85,7 @@ const Header = ({ darkMode, setDarkMode }) => {
                 style={{
                   transition: 'height 0.3s ease',
                   willChange: 'height',
-                  filter: 'drop-shadow(0 0 10px rgba(139, 92, 246, 0.3))'
+                  filter: 'drop-shadow(0 0 10px rgba(6, 182, 212, 0.3))'
                 }}
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: 'spring', stiffness: 300 }}
@@ -84,38 +95,44 @@ const Header = ({ darkMode, setDarkMode }) => {
               <div>
                 <h1
                   className={`
-                    font-extrabold tracking-wider
-                    ${isScrolled ? 'text-lg md:text-xl' : 'text-xl md:text-3xl'}
+                    font-extrabold tracking-wider group-hover:scale-[1.02] transition-transform
+                    ${isScrolled ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'}
                   `}
                   style={{
                     fontFamily: "'Space Grotesk', sans-serif",
                     transition: 'font-size 0.3s ease',
-                    willChange: 'font-size',
-                    textShadow: '0 0 20px rgba(139, 92, 246, 0.3)'
+                    willChange: 'font-size'
                   }}
                 >
-                  <span className="bg-gradient-to-r from-purple-400 via-pink-300 to-purple-200 bg-clip-text text-transparent">
+                  <span
+                    className="bg-clip-text text-transparent"
+                    style={{
+                      backgroundImage: 'linear-gradient(90deg, #a0ff80 0%, #00ffcc 50%, #8866ff 100%)',
+                      textShadow: '0 0 20px rgba(160, 255, 128, 0.4), 0 0 30px rgba(0, 255, 204, 0.3)'
+                    }}
+                  >
                     Visionary
                   </span>
                   {' '}
-                  <span className="text-brand-accent font-black">AI</span>
+                  <span
+                    className="font-black bg-clip-text text-transparent"
+                    style={{
+                      backgroundImage: 'linear-gradient(135deg, #d0ff60 0%, #00ddff 50%, #aa66ff 100%)',
+                      textShadow: '0 0 25px rgba(208, 255, 96, 0.5), 0 0 35px rgba(170, 102, 255, 0.4)'
+                    }}
+                  >
+                    AI
+                  </span>
                   {' '}
-                  <span className="bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-200 bg-clip-text text-transparent">
-                    Analytics
+                  <span
+                    className="italic font-light text-white/80"
+                    style={{
+                      fontSize: '0.65em'
+                    }}
+                  >
+                    for Soccer
                   </span>
                 </h1>
-                <p
-                  className={`
-                    text-white/70 font-medium tracking-wide
-                    ${isScrolled ? 'text-xs hidden md:block' : 'text-sm md:text-base mt-0.5'}
-                  `}
-                  style={{
-                    transition: 'font-size 0.3s ease, margin-top 0.3s ease, opacity 0.3s ease',
-                    willChange: 'font-size, margin-top, opacity'
-                  }}
-                >
-                  Personal Analysis & <span className="text-brand-accent">AI</span> Simulation
-                </p>
               </div>
             </div>
 
@@ -123,7 +140,7 @@ const Header = ({ darkMode, setDarkMode }) => {
             <div className="hidden md:flex items-center gap-3">
               {/* AI Engine Indicator */}
               <motion.div
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-sm bg-white/5 border border-white/10"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
@@ -139,7 +156,7 @@ const Header = ({ darkMode, setDarkMode }) => {
               {/* Dark Mode Toggle */}
               <motion.button
                 onClick={() => setDarkMode(!darkMode)}
-                className="btn-ghost p-2.5 rounded-lg hover:bg-white/10 transition-all"
+                className="btn-ghost p-2.5 rounded-sm hover:bg-white/10 transition-all"
                 aria-label="다크모드 토글"
                 whileHover={{ scale: 1.1, rotate: 15 }}
                 whileTap={{ scale: 0.9 }}
@@ -166,7 +183,7 @@ const Header = ({ darkMode, setDarkMode }) => {
             <div className="flex md:hidden items-center gap-2">
               <motion.button
                 onClick={() => setDarkMode(!darkMode)}
-                className="btn-ghost p-2 rounded-lg"
+                className="btn-ghost p-2 rounded-sm"
                 aria-label="다크모드 토글"
                 whileTap={{ scale: 0.9 }}
               >
@@ -179,7 +196,7 @@ const Header = ({ darkMode, setDarkMode }) => {
 
               <motion.button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="btn-ghost p-2 rounded-lg"
+                className="btn-ghost p-2 rounded-sm"
                 aria-label="메뉴"
                 whileTap={{ scale: 0.9 }}
               >
@@ -222,7 +239,7 @@ const Header = ({ darkMode, setDarkMode }) => {
             >
               <div className="space-y-4">
                 {/* AI Engine Indicator */}
-                <div className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 flex flex-col items-center gap-2">
+                <div className="w-full px-4 py-3 rounded-sm bg-white/5 border border-white/10 flex flex-col items-center gap-2">
                   <span className="text-sm text-white/70">Powered by AI</span>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-emerald-300">ChatGPT</span>
@@ -236,7 +253,7 @@ const Header = ({ darkMode, setDarkMode }) => {
 
                 {/* Additional Info */}
                 <div className="text-center text-sm text-white/60">
-                  <p>Visionary AI Analytics</p>
+                  <p>Visionary AI for Soccer</p>
                   <p className="text-xs mt-1">Version 1.0</p>
                 </div>
               </div>

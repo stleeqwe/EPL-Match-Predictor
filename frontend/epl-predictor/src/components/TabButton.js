@@ -52,7 +52,7 @@ const TabButton = ({ id, label, icon, activeTab, setActiveTab }) => {
     <motion.button
       onClick={() => setActiveTab(id)}
       className={`
-        relative min-w-[140px] px-6 py-4 rounded-xl font-semibold transition-all
+        relative min-w-[140px] px-6 py-4 rounded-sm font-semibold transition-all
         ${isActive
           ? `${colors.active} text-white shadow-xl ring-4 ${colors.ring}`
           : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'

@@ -8,11 +8,11 @@
 
 /* 🎨 CSS 변수 정의 */
 :root {
-  --brand-primary: #8B2BE2;
-  --brand-secondary: #9F7AEA;
-  --brand-accent: #00FF7F;
-  --brand-dark: #1A0320;
-  --brand-darker: #5A0063;
+  --brand-primary: #06B6D4;
+  --brand-secondary: #0891B2;
+  --brand-accent: #22D3EE;
+  --brand-dark: #1e293b;
+  --brand-darker: #0f172a;
 
   --success: #10B981;
   --warning: #F59E0B;
@@ -38,8 +38,26 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
-  background-color: var(--brand-darker);
+  background-color: #1e1b2e;
   color: white;
+  position: relative;
+}
+
+/* 반도체 회로 패턴 배경 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.06;
+  background-image: url('./background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 code {
@@ -66,18 +84,18 @@ code {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(139, 69, 159, 0.1);
+  background: rgba(6, 182, 212, 0.1);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 43, 226, 0.5);
+  background: rgba(6, 182, 212, 0.5);
   border-radius: 4px;
   transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 43, 226, 0.7);
+  background: rgba(6, 182, 212, 0.7);
 }
 
 /* 🎭 Toast notification animations */
@@ -100,43 +118,43 @@ code {
 @layer utilities {
   /* 텍스트 그라데이션 */
   .text-gradient {
-    background: linear-gradient(135deg, #8B2BE2 0%, #FF00FF 100%);
+    background: linear-gradient(135deg, #06B6D4 0%, #22D3EE 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .text-gradient-success {
-    background: linear-gradient(135deg, #10B981 0%, #00FF7F 100%);
+    background: linear-gradient(135deg, #10B981 0%, #22D3EE 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   /* 글래스모피즘 */
   .glass {
-    background: rgba(139, 69, 159, 0.15);
+    background: rgba(15, 23, 42, 0.15);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(186, 85, 211, 0.3);
+    border: 1px solid rgba(6, 182, 212, 0.3);
   }
-  
+
   .glass-strong {
-    background: rgba(139, 69, 159, 0.25);
+    background: rgba(15, 23, 42, 0.25);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(186, 85, 211, 0.4);
+    border: 1px solid rgba(6, 182, 212, 0.4);
   }
-  
+
   /* 네온 효과 */
   .neon-glow {
-    box-shadow: 0 0 10px rgba(139, 43, 226, 0.5),
-                0 0 20px rgba(139, 43, 226, 0.3),
-                0 0 30px rgba(139, 43, 226, 0.2);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.5),
+                0 0 20px rgba(6, 182, 212, 0.3),
+                0 0 30px rgba(6, 182, 212, 0.2);
   }
-  
+
   .neon-text {
-    text-shadow: 0 0 10px rgba(0, 255, 127, 0.8),
-                 0 0 20px rgba(0, 255, 127, 0.5),
-                 0 0 30px rgba(0, 255, 127, 0.3);
+    text-shadow: 0 0 10px rgba(34, 211, 238, 0.8),
+                 0 0 20px rgba(34, 211, 238, 0.5),
+                 0 0 30px rgba(34, 211, 238, 0.3);
   }
   
   /* 스크린 리더 전용 */
@@ -172,7 +190,7 @@ code {
 @layer components {
   /* 버튼 스타일 */
   .btn {
-    @apply px-4 py-2 rounded-lg font-semibold transition-all duration-200;
+    @apply px-4 py-2 rounded-sm font-semibold transition-all duration-200;
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
   }
   
@@ -202,18 +220,18 @@ code {
   
   /* 카드 스타일 */
   .card {
-    @apply rounded-xl border backdrop-blur-lg;
+    @apply rounded-sm border backdrop-blur-lg;
     @apply bg-white/5 border-white/10;
   }
-  
+
   .card-hover {
     @apply card transition-all duration-300;
     @apply hover:border-brand-primary/50 hover:shadow-glow;
   }
-  
+
   /* 입력 필드 */
   .input {
-    @apply px-4 py-2 rounded-lg border bg-white/5 border-white/10;
+    @apply px-4 py-2 rounded-sm border bg-white/5 border-white/10;
     @apply text-white placeholder-white/40;
     @apply focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent;
     @apply transition-all duration-200;
@@ -316,12 +334,12 @@ code {
 
 /* 🎯 선택 스타일 */
 ::selection {
-  background-color: rgba(139, 43, 226, 0.5);
+  background-color: rgba(6, 182, 212, 0.5);
   color: white;
 }
 
 ::-moz-selection {
-  background-color: rgba(139, 43, 226, 0.5);
+  background-color: rgba(6, 182, 212, 0.5);
   color: white;
 }
 
@@ -333,12 +351,51 @@ code {
 }
 
 .spinner {
-  border: 3px solid rgba(139, 43, 226, 0.3);
+  border: 3px solid rgba(6, 182, 212, 0.3);
   border-top-color: var(--brand-primary);
   border-radius: 50%;
   width: 40px;
   height: 40px;
   animation: spinner 0.6s linear infinite;
+}
+
+/* 🤖 머신 가동 대기 애니메이션 */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(0, 255, 204, 0.6));
+  }
+  50% {
+    opacity: 0.7;
+    filter: drop-shadow(0 0 12px rgba(0, 255, 204, 1));
+  }
+}
+
+@keyframes iconRotate {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(360deg);
+  }
+  25%, 50% {
+    transform: rotate(360deg);
+  }
+  75% {
+    transform: rotate(720deg);
+  }
+  75%, 100% {
+    transform: rotate(720deg);
+  }
 }
 
 /* 🌐 모바일 최적화 */

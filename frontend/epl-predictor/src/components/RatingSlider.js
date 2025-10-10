@@ -180,45 +180,53 @@ const RatingSlider = ({
     return { label: '평균 이하', emoji: '💭' };
   };
 
-  // Tech 색상 시스템 (Cyan/Blue 기반)
+  // 대조적인 색상 시스템 (평균 기준 양방향)
   const getColorSystem = (rating) => {
     if (rating >= 4.5) {
       return {
-        text: '#06B6D4',      // Excellent - Cyan
-        fill: 'rgba(6, 182, 212, 0.8)',
-        thumb: '#06B6D4',
-        glow: 'rgba(6, 182, 212, 0.5)'
+        text: '#00FFFF',      // 형광 사이언 - 월드클래스
+        fill: 'rgba(0, 255, 255, 0.8)',
+        thumb: '#00FFFF',
+        glow: 'rgba(0, 255, 255, 0.5)'
       };
     }
     if (rating >= 4.0) {
       return {
-        text: '#0EA5E9',      // Very Good - Sky Blue
-        fill: 'rgba(14, 165, 233, 0.8)',
-        thumb: '#0EA5E9',
-        glow: 'rgba(14, 165, 233, 0.5)'
+        text: '#60A5FA',      // 밝은 파랑 - 상위
+        fill: 'rgba(96, 165, 250, 0.8)',
+        thumb: '#60A5FA',
+        glow: 'rgba(96, 165, 250, 0.5)'
       };
     }
     if (rating >= 3.0) {
       return {
-        text: '#3B82F6',      // Good - Blue
-        fill: 'rgba(59, 130, 246, 0.8)',
-        thumb: '#3B82F6',
-        glow: 'rgba(59, 130, 246, 0.5)'
+        text: '#A855F7',      // 보라색 - 중상위
+        fill: 'rgba(168, 85, 247, 0.8)',
+        thumb: '#A855F7',
+        glow: 'rgba(168, 85, 247, 0.5)'
       };
     }
     if (rating >= 2.0) {
       return {
-        text: '#6366F1',      // Average - Indigo
-        fill: 'rgba(99, 102, 241, 0.8)',
-        thumb: '#6366F1',
-        glow: 'rgba(99, 102, 241, 0.5)'
+        text: '#FBBF24',      // 노랑색 - 평균
+        fill: 'rgba(251, 191, 36, 0.8)',
+        thumb: '#FBBF24',
+        glow: 'rgba(251, 191, 36, 0.5)'
+      };
+    }
+    if (rating >= 1.5) {
+      return {
+        text: '#FB923C',      // 빛바랜 주황색 - 평균 이하
+        fill: 'rgba(251, 146, 60, 0.8)',
+        thumb: '#FB923C',
+        glow: 'rgba(251, 146, 60, 0.5)'
       };
     }
     return {
-      text: '#8B5CF6',        // Poor - Purple
-      fill: 'rgba(139, 92, 246, 0.8)',
-      thumb: '#8B5CF6',
-      glow: 'rgba(139, 92, 246, 0.5)'
+      text: '#9CA3AF',        // 무채색 회색 - 하위
+      fill: 'rgba(156, 163, 175, 0.8)',
+      thumb: '#9CA3AF',
+      glow: 'rgba(156, 163, 175, 0.5)'
     };
   };
 
@@ -352,7 +360,7 @@ const RatingSlider = ({
               boxShadow: `0 0 10px ${colorSystem.glow}, inset 0 1px 0 rgba(255,255,255,0.1)`
             }}
             initial={{ width: 0 }}
-            animate={{ width: numericValue >= 5.0 ? '100%' : `calc(${thumbPosition}% + 12px)` }}
+            animate={{ width: `${(numericValue / 5) * 100}%` }}
             transition={{
               duration: isInitialLoad ? 0.8 : 0.15,
               ease: isInitialLoad ? [0.22, 1, 0.36, 1] : "easeOut",
@@ -407,12 +415,10 @@ const RatingSlider = ({
         />
 
         {/* Custom Thumb - Tech Square Style */}
+        {/* 🔧 저장 중 깜빡임 방지: disabled 상태에서도 opacity 유지 (2025-10-08) */}
         <motion.div
           ref={thumbRef}
-          className={`
-            absolute pointer-events-none z-30
-            ${disabled ? 'opacity-50' : ''}
-          `}
+          className="absolute pointer-events-none z-30"
           style={{
             left: `${thumbPosition}%`,
             top: '-2px',

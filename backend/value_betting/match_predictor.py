@@ -66,7 +66,7 @@ class MatchPredictor:
             for outcome, prob in probabilities.items()
         }
 
-    def calculate_consensus_probabilities(self, bookmakers: Dict[str, Dict]) -> Dict[str, float]:
+    def calculate_consensus_probabilities(self, bookmakers: Dict[str, Dict], return_details: bool = False):
         """
         여러 북메이커의 배당률로부터 합의 확률(consensus probability) 계산
 
@@ -75,9 +75,11 @@ class MatchPredictor:
         Args:
             bookmakers: 북메이커 배당률 딕셔너리
                 {'betfair': {'home': 1.5, 'draw': 4.0, 'away': 6.0}, ...}
+            return_details: True일 경우 계산 과정 상세 정보도 반환
 
         Returns:
-            {'home': 확률, 'draw': 확률, 'away': 확률}
+            return_details=False: {'home': 확률, 'draw': 확률, 'away': 확률}
+            return_details=True: (확률, 상세정보)
         """
         # 1. Sharp 북메이커만 필터링
         sharp_bookmakers = {
@@ -102,22 +104,42 @@ class MatchPredictor:
         draw_probs = []
         away_probs = []
 
+        # 상세 정보 저장 (북메이커별)
+        bookmaker_details = []
+
         # 3. Sharp 북메이커 데이터 처리
         for bookmaker_key, odds_data in sharp_bookmakers.items():
             if not isinstance(odds_data, dict):
                 continue
 
+            bookmaker_info = {'name': bookmaker_key}
+
             # 홈 배당률
             if 'home' in odds_data:
-                home_probs.append(self.odds_to_probability(odds_data['home']))
+                home_odd = odds_data['home']
+                home_prob = self.odds_to_probability(home_odd)
+                home_probs.append(home_prob)
+                bookmaker_info['home_odds'] = round(home_odd, 2)
+                bookmaker_info['home_prob'] = round(home_prob * 100, 2)
 
             # 무승부 배당률
             if 'draw' in odds_data:
-                draw_probs.append(self.odds_to_probability(odds_data['draw']))
+                draw_odd = odds_data['draw']
+                draw_prob = self.odds_to_probability(draw_odd)
+                draw_probs.append(draw_prob)
+                bookmaker_info['draw_odds'] = round(draw_odd, 2)
+                bookmaker_info['draw_prob'] = round(draw_prob * 100, 2)
 
             # 원정 배당률
             if 'away' in odds_data:
-                away_probs.append(self.odds_to_probability(odds_data['away']))
+                away_odd = odds_data['away']
+                away_prob = self.odds_to_probability(away_odd)
+                away_probs.append(away_prob)
+                bookmaker_info['away_odds'] = round(away_odd, 2)
+                bookmaker_info['away_prob'] = round(away_prob * 100, 2)
+
+            if len(bookmaker_info) > 1:  # name 외에 데이터가 있을 때만 추가
+                bookmaker_details.append(bookmaker_info)
 
         # 4. 평균 계산 후 마진 제거
         raw_probs = {
@@ -126,7 +148,28 @@ class MatchPredictor:
             'away': np.mean(away_probs) if away_probs else 0.33
         }
 
-        return self.remove_margin(raw_probs)
+        consensus_probs = self.remove_margin(raw_probs)
+
+        if not return_details:
+            return consensus_probs
+
+        # 상세 정보 포함하여 반환
+        details = {
+            'bookmakers': bookmaker_details,
+            'raw_average': {
+                'home': round(raw_probs['home'] * 100, 2),
+                'draw': round(raw_probs['draw'] * 100, 2),
+                'away': round(raw_probs['away'] * 100, 2)
+            },
+            'margin_removed': {
+                'home': round(consensus_probs['home'] * 100, 2),
+                'draw': round(consensus_probs['draw'] * 100, 2),
+                'away': round(consensus_probs['away'] * 100, 2)
+            },
+            'num_bookmakers': len(bookmaker_details)
+        }
+
+        return consensus_probs, details
 
     def extract_totals_odds(self, bookmakers: Dict[str, Dict]) -> Optional[Dict[str, float]]:
         """
@@ -462,8 +505,8 @@ class MatchPredictor:
         bookmakers = match_data.get('bookmakers', {})
         bookmakers_raw = match_data.get('bookmakers_raw', [])
 
-        # 1. Consensus 확률 계산 (h2h 승무패 확률)
-        consensus_probs = self.calculate_consensus_probabilities(bookmakers)
+        # 1. Consensus 확률 계산 (h2h 승무패 확률) - 상세 정보 포함
+        consensus_probs, consensus_details = self.calculate_consensus_probabilities(bookmakers, return_details=True)
 
         # 2. 언더/오버 배당률에서 총 득점 기댓값 계산
         total_goals = None
@@ -523,6 +566,15 @@ class MatchPredictor:
                     'home_win': round(poisson_result['home_win'] * 100, 1),
                     'draw': round(poisson_result['draw'] * 100, 1),
                     'away_win': round(poisson_result['away_win'] * 100, 1)
+                },
+                # 계산 과정 상세 정보 추가
+                'calculation_details': {
+                    'consensus': consensus_details,
+                    'total_goals': total_goals,
+                    'poisson_lambda': {
+                        'home': home_goals,
+                        'away': away_goals
+                    }
                 }
             },
             'methodology': {

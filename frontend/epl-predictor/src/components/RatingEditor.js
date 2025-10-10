@@ -29,6 +29,59 @@ const RatingEditor = ({
   const [comment, setComment] = useState('');
   const [photoError, setPhotoError] = useState(false);
 
+  // Premier League API 포지션 → Squad Builder 역할 변환
+  const getPlayerRole = (premierLeaguePosition) => {
+    if (!premierLeaguePosition) return 'CM';
+
+    const posLower = premierLeaguePosition.toLowerCase();
+
+    // Goalkeeper
+    if (posLower.includes('goalkeeper')) return 'GK';
+
+    // Defenders
+    if (posLower.includes('central defender') || posLower.includes('centre back') || posLower.includes('centre central defender')) return 'CB';
+    if (posLower.includes('full back') || posLower.includes('wing back') || posLower.includes('wingback')) return 'FB';
+
+    // Midfielders
+    if (posLower.includes('defensive midfielder')) return 'DM';
+    if (posLower.includes('attacking midfielder')) return 'CAM';
+    if (posLower.includes('central midfielder') || posLower.includes('centre midfielder')) return 'CM';
+
+    // Forwards
+    if (posLower.includes('winger') || posLower.includes('wide')) return 'WG';
+    if (posLower.includes('forward') || posLower.includes('striker')) return 'ST';
+
+    // Fallback
+    if (posLower.includes('defender')) return 'CB';
+    if (posLower.includes('midfielder')) return 'CM';
+
+    return 'CM';  // 기본값
+  };
+
+  // 포지션별 색상 스킴 (배지용)
+  const getPositionBadgeColor = (role) => {
+    switch (role) {
+      case 'GK':
+        return 'bg-amber-500/20 text-amber-300 border-amber-500/40';  // 골키퍼: 노란색
+      case 'CB':
+        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';  // 센터백: 녹색
+      case 'FB':
+        return 'bg-teal-500/20 text-teal-300 border-teal-500/40';  // 풀백: 청록색
+      case 'DM':
+        return 'bg-blue-500/20 text-blue-300 border-blue-500/40';  // 수비형 미드필더: 파란색
+      case 'CM':
+        return 'bg-purple-500/20 text-purple-300 border-purple-500/40';  // 중앙 미드필더: 보라색
+      case 'CAM':
+        return 'bg-pink-500/20 text-pink-300 border-pink-500/40';  // 공격형 미드필더: 핑크
+      case 'WG':
+        return 'bg-orange-500/20 text-orange-300 border-orange-500/40';  // 윙어: 주황색
+      case 'ST':
+        return 'bg-red-500/20 text-red-300 border-red-500/40';  // 스트라이커: 빨간색
+      default:
+        return 'bg-gray-500/20 text-gray-300 border-gray-500/40';  // 기본: 회색
+    }
+  };
+
   // Animated counter for avg.value
   const avgValueMotion = useMotionValue(0);
   const avgValueDisplay = useTransform(avgValueMotion, (latest) => latest.toFixed(2));
@@ -135,6 +188,7 @@ const RatingEditor = ({
   };
 
   const position = player.position || 'MF';
+  const playerRole = getPlayerRole(player.position);
   const availableSubPositions = getSubPositions(position);
   const attributes = POSITION_ATTRIBUTES[subPosition]?.attributes || [];
   const positionInfo = POSITION_ATTRIBUTES[subPosition];
@@ -159,45 +213,53 @@ const RatingEditor = ({
     return 'bg-position-fw/20 text-position-fw';
   };
 
-  // UI/UX 표준 색상 시스템 (부드럽고 차분한 톤)
+  // 대조적인 색상 시스템 (평균 기준 양방향)
   const getColorSystem = (avg) => {
     if (avg >= 4.5) {
       return {
         label: '월드클래스',
-        color: '#4ADE80',      // 부드러운 녹색
-        gradient: 'linear-gradient(to right, rgba(74, 222, 128, 0.5), rgba(74, 222, 128, 0.2))',
+        color: '#00FFFF',      // 형광 사이언 - 월드클래스
+        gradient: 'linear-gradient(to right, rgba(0, 255, 255, 0.5), rgba(0, 255, 255, 0.2))',
         emoji: '🌟'
       };
     }
     if (avg >= 4.0) {
       return {
         label: '최상위',
-        color: '#2DD4BF',      // 부드러운 청록색
-        gradient: 'linear-gradient(to right, rgba(45, 212, 191, 0.5), rgba(45, 212, 191, 0.2))',
+        color: '#60A5FA',      // 밝은 파랑 - 상위
+        gradient: 'linear-gradient(to right, rgba(96, 165, 250, 0.5), rgba(96, 165, 250, 0.2))',
         emoji: '⭐'
       };
     }
     if (avg >= 3.0) {
       return {
         label: '상위권',
-        color: '#60A5FA',      // 부드러운 파란색
-        gradient: 'linear-gradient(to right, rgba(96, 165, 250, 0.45), rgba(96, 165, 250, 0.18))',
+        color: '#A855F7',      // 보라색 - 중상위
+        gradient: 'linear-gradient(to right, rgba(168, 85, 247, 0.45), rgba(168, 85, 247, 0.18))',
         emoji: '✨'
       };
     }
     if (avg >= 2.0) {
       return {
         label: '평균',
-        color: '#FBBF24',      // 부드러운 노란색
+        color: '#FBBF24',      // 노랑색 - 평균
         gradient: 'linear-gradient(to right, rgba(251, 191, 36, 0.45), rgba(251, 191, 36, 0.18))',
         emoji: '⚡'
       };
     }
+    if (avg >= 1.5) {
+      return {
+        label: '평균 이하',
+        color: '#FB923C',      // 빛바랜 주황색 - 평균 이하
+        gradient: 'linear-gradient(to right, rgba(251, 146, 60, 0.45), rgba(251, 146, 60, 0.18))',
+        emoji: '💭'
+      };
+    }
     return {
-      label: '평균 이하',
-      color: '#FB7185',        // 부드러운 빨간색
-      gradient: 'linear-gradient(to right, rgba(251, 113, 133, 0.45), rgba(251, 113, 133, 0.18))',
-      emoji: '💭'
+      label: '하위',
+      color: '#9CA3AF',        // 무채색 회색 - 하위
+      gradient: 'linear-gradient(to right, rgba(156, 163, 175, 0.45), rgba(156, 163, 175, 0.18))',
+      emoji: '📉'
     };
   };
 
@@ -356,8 +418,8 @@ const RatingEditor = ({
                   </p>
                   {/* Single line: Position, Number, Age */}
                   <div className="flex items-center justify-center gap-2 text-sm">
-                    <span className="px-2 py-1 rounded-sm bg-cyan-500/20 text-cyan-100 text-xs font-bold border border-cyan-500/30">
-                      {position}
+                    <span className={`px-2 py-1 rounded-sm text-xs font-bold border font-mono uppercase ${getPositionBadgeColor(playerRole)}`}>
+                      {playerRole}
                     </span>
                     <span className="text-cyan-300/60">•</span>
                     <span className="text-white/80 font-mono">#{player.number || '?'}</span>
@@ -370,11 +432,11 @@ const RatingEditor = ({
               {/* Tech Divider */}
               <div className="relative h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
 
-              {/* Avg.Value Section - Tech Style */}
+              {/* AVG.RATING Section - Tech Style */}
               <div className="relative text-center space-y-4">
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-1 h-1 rounded-full bg-cyan-400 animate-pulse" />
-                  <span className="text-xs font-bold text-cyan-400 tracking-widest font-mono uppercase">Avg.Value</span>
+                  <span className="text-xs font-bold text-cyan-400 tracking-widest font-mono uppercase">AVG.RATING</span>
                   <div className="w-1 h-1 rounded-full bg-cyan-400 animate-pulse" />
                 </div>
 
@@ -498,12 +560,12 @@ const RatingEditor = ({
                 >
                   <motion.h3
                     className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400"
-                    style={{ fontFamily: 'Orbitron, monospace', letterSpacing: '0.1em' }}
+                    style={{ fontFamily: 'SF Mono, Roboto Mono, monospace', letterSpacing: '0.1em' }}
                     initial={{ opacity: 0, letterSpacing: '0.5em' }}
                     animate={{ opacity: 1, letterSpacing: '0.1em' }}
                     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
                   >
-                    VALUATION ARCHIVE
+                    PLAYER VALUATION
                   </motion.h3>
                 </motion.div>
 

@@ -78,3 +78,6 @@ coverage/
 *.bak
 *.swp
 *~
+.env
+*.env
+.env.*

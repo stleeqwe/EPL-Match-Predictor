@@ -14,14 +14,31 @@ scikit-learn==1.3.2
 # Database
 sqlalchemy==2.0.23
 
-# Web Scraping
+# Web Scraping & API
 beautifulsoup4==4.12.2
 lxml==4.9.3
 requests==2.31.0
 
-# Machine Learning (Optional - commented out if not needed)
+# Odds API (새로 추가)
+# The Odds API는 requests만 있으면 됨
+
+# Machine Learning (Optional - 보조 역할)
 # xgboost==2.0.3
 # catboost==1.2.2
 
 # Utilities
 python-dateutil==2.8.2
+python-dotenv==1.0.0
+
+# V3 AI Simulation System
+anthropic==0.39.0
+stripe==8.2.0
+PyJWT==2.8.0
+bcrypt==4.1.2
+psycopg2-binary==2.9.9
+redis==5.0.1
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0

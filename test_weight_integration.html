@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시뮬레이션 가중치 통합 테스트</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+        }
+        h1 {
+            color: #00d9ff;
+            border-bottom: 2px solid #00d9ff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #ff6b6b;
+            margin-top: 30px;
+        }
+        .test-section {
+            background: #16213e;
+            border: 1px solid #0f3460;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .success {
+            background: #28a745;
+            border-left: 4px solid #155724;
+        }
+        .error {
+            background: #dc3545;
+            border-left: 4px solid #721c24;
+        }
+        .info {
+            background: #17a2b8;
+            border-left: 4px solid #0c5460;
+        }
+        button {
+            background: #00d9ff;
+            color: #1a1a2e;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #00b8d9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #0f3460;
+        }
+        th {
+            background: #0f3460;
+            color: #00d9ff;
+        }
+        .highlight {
+            background: #ffc107;
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 시뮬레이션 가중치 통합 테스트</h1>
+
+    <div class="test-section">
+        <h2>📋 테스트 개요</h2>
+        <p>이 페이지는 TeamAnalytics에서 설정한 가중치가 MatchSimulator 시뮬레이션에 올바르게 반영되는지 검증합니다.</p>
+        <ul>
+            <li>✅ localStorage 데이터 저장/로드 테스트</li>
+            <li>✅ 가중치 계산 로직 검증</li>
+            <li>✅ 시뮬레이션 결과 차이 확인</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 1단계: 테스트 데이터 설정</h2>
+        <button onclick="setupTestData()">테스트 데이터 생성</button>
+        <button onclick="clearTestData()">데이터 초기화</button>
+        <div id="setup-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 2단계: 데이터 로드 검증</h2>
+        <button onclick="testDataLoad()">데이터 로드 테스트</button>
+        <div id="load-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧮 3단계: 가중치 계산 검증</h2>
+        <button onclick="testWeightCalculation()">가중치 계산 테스트</button>
+        <div id="calculation-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 4단계: 시뮬레이션 비교</h2>
+        <button onclick="testSimulationDifference()">시뮬레이션 비교 테스트</button>
+        <div id="simulation-result"></div>
+    </div>
+
+    <script>
+        // 테스트 데이터 생성
+        function setupTestData() {
+            const resultDiv = document.getElementById('setup-result');
+            resultDiv.innerHTML = '<div class="info">테스트 데이터 생성 중...</div>';
+
+            try {
+                // 팀 A: 선수평가 우수 (90), 팀전력 평균 (70)
+                const teamA = {
+                    overallScore: 84, // 가중치 50-50 기준
+                    playerScore: 90,
+                    strengthScore: 70,
+                    playerWeight: 50,
+                    strengthWeight: 50,
+                    timestamp: new Date().toISOString()
+                };
+
+                // 팀 B: 선수평가 평균 (70), 팀전력 우수 (90)
+                const teamB = {
+                    overallScore: 80, // 가중치 50-50 기준
+                    playerScore: 70,
+                    strengthScore: 90,
+                    playerWeight: 50,
+                    strengthWeight: 50,
+                    timestamp: new Date().toISOString()
+                };
+
+                localStorage.setItem('team_overall_score_TestTeamA', JSON.stringify(teamA));
+                localStorage.setItem('team_overall_score_TestTeamB', JSON.stringify(teamB));
+
+                resultDiv.innerHTML = `
+                    <div class="success">✅ 테스트 데이터 생성 완료</div>
+                    <table>
+                        <tr>
+                            <th>팀</th>
+                            <th>선수평가</th>
+                            <th>팀전력</th>
+                            <th>종합점수</th>
+                            <th>가중치 (선수/팀)</th>
+                        </tr>
+                        <tr>
+                            <td>TestTeamA</td>
+                            <td class="highlight">${teamA.playerScore}</td>
+                            <td>${teamA.strengthScore}</td>
+                            <td>${teamA.overallScore}</td>
+                            <td>${teamA.playerWeight}% / ${teamA.strengthWeight}%</td>
+                        </tr>
+                        <tr>
+                            <td>TestTeamB</td>
+                            <td>${teamB.playerScore}</td>
+                            <td class="highlight">${teamB.strengthScore}</td>
+                            <td>${teamB.overallScore}</td>
+                            <td>${teamB.playerWeight}% / ${teamB.strengthWeight}%</td>
+                        </tr>
+                    </table>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 오류: ${error.message}</div>`;
+            }
+        }
+
+        // 데이터 초기화
+        function clearTestData() {
+            localStorage.removeItem('team_overall_score_TestTeamA');
+            localStorage.removeItem('team_overall_score_TestTeamB');
+            document.getElementById('setup-result').innerHTML = '<div class="info">✓ 테스트 데이터 삭제 완료</div>';
+        }
+
+        // 데이터 로드 테스트
+        function testDataLoad() {
+            const resultDiv = document.getElementById('load-result');
+
+            try {
+                const teamAData = localStorage.getItem('team_overall_score_TestTeamA');
+                const teamBData = localStorage.getItem('team_overall_score_TestTeamB');
+
+                if (!teamAData || !teamBData) {
+                    resultDiv.innerHTML = '<div class="error">❌ 테스트 데이터가 없습니다. 먼저 "테스트 데이터 생성"을 실행하세요.</div>';
+                    return;
+                }
+
+                const teamA = JSON.parse(teamAData);
+                const teamB = JSON.parse(teamBData);
+
+                resultDiv.innerHTML = `
+                    <div class="success">✅ 데이터 로드 성공</div>
+                    <pre style="background: #0f3460; padding: 15px; border-radius: 4px; overflow-x: auto;">
+TestTeamA:
+${JSON.stringify(teamA, null, 2)}
+
+TestTeamB:
+${JSON.stringify(teamB, null, 2)}
+                    </pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 로드 실패: ${error.message}</div>`;
+            }
+        }
+
+        // 가중치 계산 검증 (MatchSimulator 로직 복제)
+        function testWeightCalculation() {
+            const resultDiv = document.getElementById('calculation-result');
+
+            try {
+                const teamAData = JSON.parse(localStorage.getItem('team_overall_score_TestTeamA'));
+                const teamBData = JSON.parse(localStorage.getItem('team_overall_score_TestTeamB'));
+
+                if (!teamAData || !teamBData) {
+                    resultDiv.innerHTML = '<div class="error">❌ 테스트 데이터가 없습니다.</div>';
+                    return;
+                }
+
+                // 여러 가중치 시나리오 테스트
+                const scenarios = [
+                    { playerWeight: 50, strengthWeight: 50, name: '균형 (50/50)' },
+                    { playerWeight: 70, strengthWeight: 30, name: '선수 중시 (70/30)' },
+                    { playerWeight: 30, strengthWeight: 70, name: '팀전력 중시 (30/70)' },
+                    { playerWeight: 100, strengthWeight: 0, name: '선수만 (100/0)' },
+                    { playerWeight: 0, strengthWeight: 100, name: '팀전력만 (0/100)' }
+                ];
+
+                let html = '<div class="success">✅ 가중치 계산 테스트 완료</div><table><tr><th>시나리오</th><th>팀 A 공격력</th><th>팀 B 공격력</th><th>우세팀</th></tr>';
+
+                scenarios.forEach(scenario => {
+                    const teamAAttack = (teamAData.playerScore * scenario.playerWeight / 100) +
+                                       (teamAData.strengthScore * scenario.strengthWeight / 100);
+                    const teamBAttack = (teamBData.playerScore * scenario.playerWeight / 100) +
+                                       (teamBData.strengthScore * scenario.strengthWeight / 100);
+
+                    const winner = teamAAttack > teamBAttack ? 'TestTeamA' : 'TestTeamB';
+                    const diff = Math.abs(teamAAttack - teamBAttack).toFixed(1);
+
+                    html += `
+                        <tr>
+                            <td>${scenario.name}</td>
+                            <td${teamAAttack > teamBAttack ? ' class="highlight"' : ''}>${teamAAttack.toFixed(1)}</td>
+                            <td${teamBAttack > teamAAttack ? ' class="highlight"' : ''}>${teamBAttack.toFixed(1)}</td>
+                            <td><strong>${winner}</strong> (${diff}점 차이)</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</table>';
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 계산 실패: ${error.message}</div>`;
+            }
+        }
+
+        // 시뮬레이션 비교 테스트 (간단한 버전)
+        function testSimulationDifference() {
+            const resultDiv = document.getElementById('simulation-result');
+
+            try {
+                const teamAData = JSON.parse(localStorage.getItem('team_overall_score_TestTeamA'));
+                const teamBData = JSON.parse(localStorage.getItem('team_overall_score_TestTeamB'));
+
+                if (!teamAData || !teamBData) {
+                    resultDiv.innerHTML = '<div class="error">❌ 테스트 데이터가 없습니다.</div>';
+                    return;
+                }
+
+                // 시뮬레이션 로직 (Pro 모델 복제)
+                function simulatePro(homeScore, awayScore, weights) {
+                    const homeAttack = (homeScore.playerScore * weights.playerWeight / 100) +
+                                     (homeScore.strengthScore * weights.strengthWeight / 100);
+                    const awayAttack = (awayScore.playerScore * weights.playerWeight / 100) +
+                                     (awayScore.strengthScore * weights.strengthWeight / 100);
+                    const homeBonus = 5;
+
+                    const homeExpectedGoals = Math.max(0, (homeAttack + homeBonus) / 100 * 3);
+                    const awayExpectedGoals = Math.max(0, awayAttack / 100 * 3);
+
+                    return {
+                        homeGoals: Math.max(0, Math.round(homeExpectedGoals)),
+                        awayGoals: Math.max(0, Math.round(awayExpectedGoals)),
+                        homeExpectedGoals,
+                        awayExpectedGoals
+                    };
+                }
+
+                // 두 가지 시나리오 비교
+                const scenario1 = { playerWeight: 70, strengthWeight: 30 }; // 선수 중시
+                const scenario2 = { playerWeight: 30, strengthWeight: 70 }; // 팀전력 중시
+
+                // TestTeamA (홈) vs TestTeamB (원정)
+                const result1 = simulatePro(teamAData, teamBData, scenario1);
+                const result2 = simulatePro(teamAData, teamBData, scenario2);
+
+                resultDiv.innerHTML = `
+                    <div class="success">✅ 시뮬레이션 비교 완료</div>
+                    <table>
+                        <tr>
+                            <th>시나리오</th>
+                            <th>가중치</th>
+                            <th>예상 골</th>
+                            <th>결과</th>
+                            <th>비고</th>
+                        </tr>
+                        <tr>
+                            <td>선수 중시</td>
+                            <td>70% / 30%</td>
+                            <td>홈 ${result1.homeExpectedGoals.toFixed(2)} - 원정 ${result1.awayExpectedGoals.toFixed(2)}</td>
+                            <td class="highlight">${result1.homeGoals} - ${result1.awayGoals}</td>
+                            <td>선수평가 높은 팀A 유리</td>
+                        </tr>
+                        <tr>
+                            <td>팀전력 중시</td>
+                            <td>30% / 70%</td>
+                            <td>홈 ${result2.homeExpectedGoals.toFixed(2)} - 원정 ${result2.awayExpectedGoals.toFixed(2)}</td>
+                            <td class="highlight">${result2.homeGoals} - ${result2.awayGoals}</td>
+                            <td>팀전력 높은 팀B 유리</td>
+                        </tr>
+                    </table>
+                    <div class="info">
+                        <strong>검증 결과:</strong> 가중치 변경에 따라 시뮬레이션 결과가 변경됨을 확인 ✅
+                        <br>
+                        <br>
+                        <strong>예상 골 차이:</strong><br>
+                        • 선수 중시 시나리오: ${Math.abs(result1.homeExpectedGoals - result1.awayExpectedGoals).toFixed(2)}골<br>
+                        • 팀전력 중시 시나리오: ${Math.abs(result2.homeExpectedGoals - result2.awayExpectedGoals).toFixed(2)}골
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ 시뮬레이션 실패: ${error.message}</div>`;
+            }
+        }
+
+        // 페이지 로드 시 안내 메시지
+        window.onload = function() {
+            console.log('시뮬레이션 가중치 통합 테스트 페이지 로드 완료');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,931 @@
+{
+  "Aston Villa": [
+    {
+      "number": 2,
+      "name": "RB",
+      "position": "Matty Cash"
+    },
+    {
+      "number": 3,
+      "name": "CB",
+      "position": "Axel Disasi"
+    },
+    {
+      "number": 4,
+      "name": "CB",
+      "position": "Ezri Konsa"
+    },
+    {
+      "number": 5,
+      "name": "CB",
+      "position": "Tyrone Mings"
+    },
+    {
+      "number": 6,
+      "name": "CM",
+      "position": "Ross Barkley"
+    },
+    {
+      "number": 7,
+      "name": "CM",
+      "position": "John McGinn (c)"
+    },
+    {
+      "number": 8,
+      "name": "CM",
+      "position": "Youri Tielemans"
+    },
+    {
+      "number": 9,
+      "name": "CF",
+      "position": "Marcus Rashford"
+    },
+    {
+      "number": 10,
+      "name": "AM",
+      "position": "Emiliano Buendía"
+    },
+    {
+      "number": 11,
+      "name": "CF",
+      "position": "Ollie Watkins"
+    },
+    {
+      "number": 12,
+      "name": "LB",
+      "position": "Lucas Digne"
+    },
+    {
+      "number": 14,
+      "name": "CB",
+      "position": "Pau Torres"
+    },
+    {
+      "number": 15,
+      "name": "LB",
+      "position": "Àlex Moreno"
+    },
+    {
+      "number": 16,
+      "name": "RB",
+      "position": "Andrés García"
+    },
+    {
+      "number": 17,
+      "name": "RW",
+      "position": "Donyell Malen"
+    },
+    {
+      "number": 17,
+      "name": "LW",
+      "position": "Samuel Iling-Junior"
+    },
+    {
+      "number": 18,
+      "name": "GK",
+      "position": "Joe Gauci"
+    },
+    {
+      "number": 20,
+      "name": "RB",
+      "position": "Kosta Nedeljković"
+    },
+    {
+      "number": 21,
+      "name": "RW",
+      "position": "Marco Asensio"
+    },
+    {
+      "number": 21,
+      "name": "DM",
+      "position": "Enzo Barrenechea"
+    },
+    {
+      "number": 22,
+      "name": "LB",
+      "position": "Ian Maatsen"
+    },
+    {
+      "number": 23,
+      "name": "GK",
+      "position": "Emiliano Martínez"
+    },
+    {
+      "number": 23,
+      "name": "LW",
+      "position": "Philippe Coutinho"
+    },
+    {
+      "number": 23,
+      "name": "LW",
+      "position": "Lewis Dobbin"
+    },
+    {
+      "number": 24,
+      "name": "DM",
+      "position": "Amadou Onana"
+    },
+    {
+      "number": 25,
+      "name": "GK",
+      "position": "Robin Olsen"
+    },
+    {
+      "number": 26,
+      "name": "DM",
+      "position": "Lamare Bogarde"
+    },
+    {
+      "number": 27,
+      "name": "LW",
+      "position": "Morgan Rogers"
+    },
+    {
+      "number": 29,
+      "name": "RB",
+      "position": "Kaine Kesler-Hayden"
+    },
+    {
+      "number": 30,
+      "name": "CB",
+      "position": "Kortney Hause"
+    },
+    {
+      "number": 31,
+      "name": "RW",
+      "position": "Leon Bailey"
+    },
+    {
+      "number": 32,
+      "name": "DM",
+      "position": "Leander Dendoncker"
+    },
+    {
+      "number": 35,
+      "name": "LW",
+      "position": "Louie Barry"
+    },
+    {
+      "number": 41,
+      "name": "AM",
+      "position": "Jacob Ramsey"
+    },
+    {
+      "number": 42,
+      "name": "GK",
+      "position": "Filip Marschall"
+    },
+    {
+      "number": 44,
+      "name": "DM",
+      "position": "Boubacar Kamara"
+    },
+    {
+      "number": 46,
+      "name": "AM",
+      "position": "Rico Richards"
+    },
+    {
+      "number": 48,
+      "name": "GK",
+      "position": "Oliwier Zych"
+    },
+    {
+      "number": 50,
+      "name": "CB",
+      "position": "Sil Swinkels"
+    },
+    {
+      "number": 54,
+      "name": "CM",
+      "position": "Aidan Borland"
+    },
+    {
+      "number": 56,
+      "name": "AM",
+      "position": "Jamaldeen Jimoh-Aloba"
+    },
+    {
+      "number": 58,
+      "name": "CM",
+      "position": "Tommi O'Reilly"
+    },
+    {
+      "number": 59,
+      "name": "CB",
+      "position": "Josh Feeney"
+    },
+    {
+      "number": 64,
+      "name": "GK",
+      "position": "James Wright"
+    },
+    {
+      "number": 66,
+      "name": "LB",
+      "position": "Travis Patterson"
+    },
+    {
+      "number": 69,
+      "name": "LB",
+      "position": "Finley Munroe"
+    },
+    {
+      "number": 72,
+      "name": "RW",
+      "position": "Kadan Young"
+    },
+    {
+      "number": 77,
+      "name": "CF",
+      "position": "Kobei Moore"
+    },
+    {
+      "number": 79,
+      "name": "AM",
+      "position": "Ben Broggio"
+    }
+  ],
+  "Brighton": [
+    {
+      "number": 1,
+      "name": "GK",
+      "position": "Bart Verbruggen"
+    },
+    {
+      "number": 2,
+      "name": "RB",
+      "position": "Tariq Lamptey"
+    },
+    {
+      "number": 3,
+      "name": "CB",
+      "position": "Igor Julio"
+    },
+    {
+      "number": 4,
+      "name": "CB",
+      "position": "Adam Webster"
+    },
+    {
+      "number": 5,
+      "name": "CB",
+      "position": "Lewis Dunk"
+    },
+    {
+      "number": 6,
+      "name": "CM",
+      "position": "James Milner"
+    },
+    {
+      "number": 7,
+      "name": "RW",
+      "position": "Solly March"
+    },
+    {
+      "number": 8,
+      "name": "AM",
+      "position": "Brajan Gruda"
+    },
+    {
+      "number": 9,
+      "name": "CF",
+      "position": "João Pedro"
+    },
+    {
+      "number": 11,
+      "name": "LW",
+      "position": "Simon Adingra"
+    },
+    {
+      "number": 14,
+      "name": "CF",
+      "position": "Georginio Rutter"
+    },
+    {
+      "number": 16,
+      "name": "CB",
+      "position": "Eiran Cashin"
+    },
+    {
+      "number": 17,
+      "name": "RW",
+      "position": "Yankuba Minteh"
+    },
+    {
+      "number": 18,
+      "name": "CF",
+      "position": "Danny Welbeck"
+    },
+    {
+      "number": 20,
+      "name": "CM",
+      "position": "Carlos Baleba"
+    },
+    {
+      "number": 22,
+      "name": "LW",
+      "position": "Kaoru Mitoma"
+    },
+    {
+      "number": 23,
+      "name": "GK",
+      "position": "Jason Steele"
+    },
+    {
+      "number": 24,
+      "name": "LB",
+      "position": "Ferdi Kadıoğlu"
+    },
+    {
+      "number": 25,
+      "name": "CM",
+      "position": "Diego Gómez"
+    },
+    {
+      "number": 26,
+      "name": "CM",
+      "position": "Yasin Ayari"
+    },
+    {
+      "number": 27,
+      "name": "CM",
+      "position": "Mats Wieffer"
+    },
+    {
+      "number": 29,
+      "name": "CB",
+      "position": "Jan Paul van Hecke"
+    },
+    {
+      "number": 30,
+      "name": "LB",
+      "position": "Pervis Estupiñán"
+    },
+    {
+      "number": 33,
+      "name": "CM",
+      "position": "Matt O'Riley"
+    },
+    {
+      "number": 34,
+      "name": "RB",
+      "position": "Joël Veltman"
+    },
+    {
+      "number": 39,
+      "name": "GK",
+      "position": "Carl Rushworth"
+    },
+    {
+      "number": 41,
+      "name": "CM",
+      "position": "Jack Hinshelwood"
+    }
+  ],
+  "Ipswich Town": [
+    {
+      "number": 1,
+      "name": "GK",
+      "position": "Arijanet Muric"
+    },
+    {
+      "number": 2,
+      "name": "RB",
+      "position": "Harry Clarke"
+    },
+    {
+      "number": 3,
+      "name": "LB",
+      "position": "Leif Davis"
+    },
+    {
+      "number": 5,
+      "name": "CM",
+      "position": "Sam Morsy"
+    },
+    {
+      "number": 6,
+      "name": "CB",
+      "position": "Luke Woolfenden"
+    },
+    {
+      "number": 7,
+      "name": "RM",
+      "position": "Wes Burns"
+    },
+    {
+      "number": 8,
+      "name": "DM",
+      "position": "Kalvin Phillips"
+    },
+    {
+      "number": 9,
+      "name": "LW",
+      "position": "Julio Enciso"
+    },
+    {
+      "number": 10,
+      "name": "SS",
+      "position": "Conor Chaplin"
+    },
+    {
+      "number": 11,
+      "name": "LW",
+      "position": "Marcus Harness"
+    },
+    {
+      "number": 12,
+      "name": "CM",
+      "position": "Jens Cajuste"
+    },
+    {
+      "number": 13,
+      "name": "GK",
+      "position": "Cieran Slicker"
+    },
+    {
+      "number": 14,
+      "name": "CM",
+      "position": "Jack Taylor"
+    },
+    {
+      "number": 15,
+      "name": "CB",
+      "position": "Cameron Burgess"
+    },
+    {
+      "number": 16,
+      "name": "CF",
+      "position": "Ali Al-Hamadi"
+    },
+    {
+      "number": 18,
+      "name": "RB",
+      "position": "Ben Johnson"
+    },
+    {
+      "number": 19,
+      "name": "CF",
+      "position": "Liam Delap"
+    },
+    {
+      "number": 20,
+      "name": "RW",
+      "position": "Omari Hutchinson"
+    },
+    {
+      "number": 21,
+      "name": "RW",
+      "position": "Chiedozie Ogbene"
+    },
+    {
+      "number": 22,
+      "name": "LB",
+      "position": "Conor Townsend"
+    },
+    {
+      "number": 23,
+      "name": "SS",
+      "position": "Sammie Szmodics"
+    },
+    {
+      "number": 24,
+      "name": "CB",
+      "position": "Jacob Greaves"
+    },
+    {
+      "number": 25,
+      "name": "CM",
+      "position": "Massimo Luongo"
+    },
+    {
+      "number": 26,
+      "name": "CB",
+      "position": "Dara O'Shea"
+    },
+    {
+      "number": 27,
+      "name": "CF",
+      "position": "George Hirst"
+    },
+    {
+      "number": 28,
+      "name": "GK",
+      "position": "Christian Walton"
+    },
+    {
+      "number": 29,
+      "name": "LW",
+      "position": "Jaden Philogene"
+    },
+    {
+      "number": 30,
+      "name": "CM",
+      "position": "Cameron Humphreys"
+    },
+    {
+      "number": 31,
+      "name": "GK",
+      "position": "Alex Palmer"
+    },
+    {
+      "number": 33,
+      "name": "SS",
+      "position": "Nathan Broadhead"
+    },
+    {
+      "number": 40,
+      "name": "CB",
+      "position": "Axel Tuanzebe"
+    },
+    {
+      "number": 44,
+      "name": "CB",
+      "position": "Ben Godfrey"
+    },
+    {
+      "number": 47,
+      "name": "LW",
+      "position": "Jack Clarke"
+    }
+  ],
+  "Man City": [
+    {
+      "number": 3,
+      "name": "CB",
+      "position": "Rúben Dias (VC)"
+    },
+    {
+      "number": 5,
+      "name": "CB",
+      "position": "John Stones"
+    },
+    {
+      "number": 6,
+      "name": "CB",
+      "position": "Nathan Aké"
+    },
+    {
+      "number": 7,
+      "name": "ST",
+      "position": "Omar Marmoush"
+    },
+    {
+      "number": 8,
+      "name": "DM",
+      "position": "Mateo Kovačić"
+    },
+    {
+      "number": 9,
+      "name": "ST",
+      "position": "Erling Haaland"
+    },
+    {
+      "number": 10,
+      "name": "LW",
+      "position": "Jack Grealish"
+    },
+    {
+      "number": 11,
+      "name": "RW",
+      "position": "Jérémy Doku"
+    },
+    {
+      "number": 14,
+      "name": "DM",
+      "position": "Nico González"
+    },
+    {
+      "number": 16,
+      "name": "DM",
+      "position": "Rodri (VC)"
+    },
+    {
+      "number": 17,
+      "name": "CM",
+      "position": "Kevin De Bruyne (C)"
+    },
+    {
+      "number": 18,
+      "name": "GK",
+      "position": "Stefan Ortega"
+    },
+    {
+      "number": 19,
+      "name": "CM",
+      "position": "İlkay Gündoğan (VC)"
+    },
+    {
+      "number": 20,
+      "name": "CM",
+      "position": "Bernardo Silva (VC)"
+    },
+    {
+      "number": 22,
+      "name": "CB",
+      "position": "Vitor Reis"
+    },
+    {
+      "number": 24,
+      "name": "CB",
+      "position": "Joško Gvardiol"
+    },
+    {
+      "number": 25,
+      "name": "CB",
+      "position": "Manuel Akanji"
+    },
+    {
+      "number": 26,
+      "name": "RW",
+      "position": "Savinho"
+    },
+    {
+      "number": 27,
+      "name": "CM",
+      "position": "Matheus Nunes"
+    },
+    {
+      "number": 30,
+      "name": "AM",
+      "position": "Claudio Echeverri"
+    },
+    {
+      "number": 31,
+      "name": "GK",
+      "position": "Ederson"
+    },
+    {
+      "number": 33,
+      "name": "GK",
+      "position": "Scott Carson"
+    },
+    {
+      "number": 45,
+      "name": "CB",
+      "position": "Abdukodir Khusanov"
+    },
+    {
+      "number": 47,
+      "name": "AM",
+      "position": "Phil Foden"
+    },
+    {
+      "number": 52,
+      "name": "RW",
+      "position": "Oscar Bobb"
+    },
+    {
+      "number": 75,
+      "name": "LB",
+      "position": "Nico O'Reilly"
+    },
+    {
+      "number": 82,
+      "name": "RB",
+      "position": "Rico Lewis"
+    },
+    {
+      "number": 87,
+      "name": "CM",
+      "position": "James McAtee"
+    }
+  ],
+  "Man Utd": [
+    {
+      "number": 13,
+      "name": "38",
+      "position": "Everton"
+    },
+    {
+      "number": 14,
+      "name": "38",
+      "position": "West Ham United"
+    },
+    {
+      "number": 15,
+      "name": "38",
+      "position": "Manchester United"
+    },
+    {
+      "number": 16,
+      "name": "38",
+      "position": "Wolverhampton Wanderers"
+    },
+    {
+      "number": 17,
+      "name": "38",
+      "position": "Tottenham Hotspur"
+    }
+  ],
+  "Nott'm Forest": [
+    {
+      "number": 4,
+      "name": "CB",
+      "position": "Morato"
+    },
+    {
+      "number": 5,
+      "name": "CB",
+      "position": "Murillo"
+    },
+    {
+      "number": 6,
+      "name": "DM",
+      "position": "Ibrahim Sangaré"
+    },
+    {
+      "number": 7,
+      "name": "RB",
+      "position": "Neco Williams"
+    },
+    {
+      "number": 8,
+      "name": "CM",
+      "position": "Elliot Anderson"
+    },
+    {
+      "number": 9,
+      "name": "CF",
+      "position": "Taiwo Awoniyi"
+    },
+    {
+      "number": 10,
+      "name": "AM",
+      "position": "Morgan Gibbs-White"
+    },
+    {
+      "number": 11,
+      "name": "CF",
+      "position": "Chris Wood"
+    },
+    {
+      "number": 13,
+      "name": "GK",
+      "position": "Wayne Hennessey"
+    },
+    {
+      "number": 14,
+      "name": "LW",
+      "position": "Callum Hudson-Odoi"
+    },
+    {
+      "number": 15,
+      "name": "LB",
+      "position": "Harry Toffolo"
+    },
+    {
+      "number": 16,
+      "name": "CM",
+      "position": "Nicolás Domínguez"
+    },
+    {
+      "number": 17,
+      "name": "RB",
+      "position": "Eric da Silva Moreira"
+    },
+    {
+      "number": 19,
+      "name": "LB",
+      "position": "Àlex Moreno"
+    },
+    {
+      "number": 20,
+      "name": "RW",
+      "position": "Jota Silva"
+    },
+    {
+      "number": 21,
+      "name": "RW",
+      "position": "Anthony Elanga"
+    },
+    {
+      "number": 22,
+      "name": "DM",
+      "position": "Ryan Yates"
+    },
+    {
+      "number": 24,
+      "name": "LW",
+      "position": "Ramón Sosa"
+    },
+    {
+      "number": 26,
+      "name": "GK",
+      "position": "Matz Sels"
+    },
+    {
+      "number": 28,
+      "name": "CM",
+      "position": "Danilo"
+    },
+    {
+      "number": 30,
+      "name": "CB",
+      "position": "Willy Boly"
+    },
+    {
+      "number": 31,
+      "name": "CB",
+      "position": "Nikola Milenković"
+    },
+    {
+      "number": 33,
+      "name": "GK",
+      "position": "Carlos Miguel"
+    },
+    {
+      "number": 34,
+      "name": "RB",
+      "position": "Ola Aina"
+    },
+    {
+      "number": 44,
+      "name": "CB",
+      "position": "Zach Abbott"
+    }
+  ],
+  "Wolves": [
+    {
+      "number": 1,
+      "name": "POR",
+      "position": "GK"
+    },
+    {
+      "number": 2,
+      "name": "IRL",
+      "position": "DF"
+    },
+    {
+      "number": 3,
+      "name": "ALG",
+      "position": "DF"
+    },
+    {
+      "number": 4,
+      "name": "URU",
+      "position": "DF"
+    },
+    {
+      "number": 5,
+      "name": "ZIM",
+      "position": "MF"
+    },
+    {
+      "number": 6,
+      "name": "MLI",
+      "position": "MF"
+    },
+    {
+      "number": 7,
+      "name": "BRA",
+      "position": "MF"
+    },
+    {
+      "number": 8,
+      "name": "BRA",
+      "position": "MF"
+    },
+    {
+      "number": 9,
+      "name": "NOR",
+      "position": "FW"
+    },
+    {
+      "number": 10,
+      "name": "BRA",
+      "position": "FW"
+    },
+    {
+      "number": 11,
+      "name": "KOR",
+      "position": "FW"
+    },
+    {
+      "number": 12,
+      "name": "CIV",
+      "position": "DF"
+    },
+    {
+      "number": 14,
+      "name": "COL",
+      "position": "DF"
+    },
+    {
+      "number": 15,
+      "name": "ENG",
+      "position": "DF"
+    },
+    {
+      "number": 18,
+      "name": "AUT",
+      "position": "FW"
+    },
+    {
+      "number": 19,
+      "name": "POR",
+      "position": "FW"
+    }
+  ]
+}

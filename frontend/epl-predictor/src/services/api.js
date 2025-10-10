@@ -1,263 +1,311 @@
 /**
- * API Service Layer
- * 모든 백엔드 API 호출을 중앙에서 관리
+ * API Service - EPL Player Analysis Platform
+ * Version 3.0 (Player Rating System)
  */
 
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+
+// 재시도 설정
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1초
 
 // Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 30000, // 30초
+  baseURL: API_URL,
+  timeout: 15000,
   headers: {
-    'Content-Type': 'application/json',
-  },
+    'Content-Type': 'application/json'
+  }
 });
 
-// 요청 인터셉터 (로깅)
-api.interceptors.request.use(
-  (config) => {
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
-    return config;
-  },
-  (error) => {
-    console.error('API Request Error:', error);
-    return Promise.reject(error);
-  }
-);
+// 재시도 가능한 에러인지 확인
+const shouldRetry = (error) => {
+  // 타임아웃이나 네트워크 에러는 재시도
+  if (!error.response) return true;
 
-// 응답 인터셉터 (에러 처리)
+  // 5xx 서버 에러는 재시도
+  const status = error.response.status;
+  return status >= 500 && status <= 599;
+};
+
+// 대기 함수
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Response interceptor (에러 핸들링 + 재시도 로직)
 api.interceptors.response.use(
-  (response) => {
-    console.log(`API Response: ${response.status} ${response.config.url}`);
-    return response;
-  },
-  (error) => {
-    if (error.response) {
-      // 서버가 응답했지만 2xx 범위를 벗어남
-      console.error(`API Error ${error.response.status}:`, error.response.data);
-    } else if (error.request) {
-      // 요청이 전송되었지만 응답이 없음
-      console.error('API No Response:', error.request);
-    } else {
-      // 요청 설정 중 에러
-      console.error('API Setup Error:', error.message);
+  response => response.data,
+  async (error) => {
+    const config = error.config;
+
+    // 재시도 가능한지 확인
+    if (!config || !shouldRetry(error)) {
+      console.error('❌ API Error:', error);
+
+      if (error.response) {
+        throw new Error(error.response.data?.error || 'API request failed');
+      } else if (error.request) {
+        throw new Error('No response from server');
+      } else {
+        throw new Error(error.message);
+      }
     }
-    return Promise.reject(error);
+
+    // 재시도 로직
+    config.metadata = config.metadata || { retryCount: 0 };
+    config.metadata.retryCount += 1;
+
+    if (config.metadata.retryCount <= MAX_RETRIES) {
+      const delay = RETRY_DELAY * Math.pow(2, config.metadata.retryCount - 1); // Exponential backoff
+
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(
+          `⚠️ Retrying request (${config.metadata.retryCount}/${MAX_RETRIES}) after ${delay}ms:`,
+          config.url
+        );
+      }
+
+      await wait(delay);
+      return api(config);
+    }
+
+    // 최대 재시도 초과
+    console.error(`❌ Max retries (${MAX_RETRIES}) exceeded for:`, config.url);
+    throw new Error('Maximum retry attempts exceeded');
   }
 );
 
-/**
- * 예측 관련 API
- */
-export const predictionsAPI = {
-  /**
-   * 경기 결과 예측
-   * @param {Object} data - 예측 요청 데이터
-   * @returns {Promise<Object>} 예측 결과
-   */
-  predict: async (data) => {
-    const response = await api.post('/predict', data);
-    return response.data;
-  },
+// ============================================================
+// Health & Status
+// ============================================================
 
-  /**
-   * 예측 히스토리 조회
-   * @param {number} limit - 조회할 개수
-   * @returns {Promise<Array>} 예측 히스토리
-   */
-  getHistory: async (limit = 50) => {
-    const response = await api.get('/predictions/history', { params: { limit } });
-    return response.data;
-  },
-
-  /**
-   * 예측 정확도 조회
-   * @param {number} days - 조회할 일수
-   * @returns {Promise<Object>} 정확도 통계
-   */
-  getAccuracy: async (days = 30) => {
-    const response = await api.get('/predictions/accuracy', { params: { days } });
-    return response.data;
-  },
+export const healthAPI = {
+  check: () => api.get('/health')
 };
 
-/**
- * 경기 일정 관련 API
- */
-export const fixturesAPI = {
-  /**
-   * 전체 경기 일정 조회
-   * @returns {Promise<Array>} 경기 일정 목록
-   */
-  getAll: async () => {
-    const response = await api.get('/fixtures');
-    return response.data;
-  },
-};
+// ============================================================
+// Teams API
+// ============================================================
 
-/**
- * 팀 관련 API
- */
 export const teamsAPI = {
   /**
-   * 전체 팀 목록 조회
-   * @returns {Promise<Array>} 팀 이름 목록
+   * 전체 EPL 팀 목록 조회
    */
-  getAll: async () => {
-    const response = await api.get('/teams');
-    return response.data;
-  },
-
-  /**
-   * 특정 팀의 통계 조회
-   * @param {string} teamName - 팀 이름
-   * @returns {Promise<Object>} 팀 통계
-   */
-  getStats: async (teamName) => {
-    const response = await api.get(`/team-stats/${teamName}`);
-    return response.data;
-  },
+  getAll: () => api.get('/teams'),
 
   /**
    * 특정 팀의 선수 명단 조회
    * @param {string} teamName - 팀 이름
-   * @returns {Promise<Array>} 선수 목록
    */
-  getSquad: async (teamName) => {
-    const response = await api.get(`/squad/${teamName}`);
-    return response.data;
-  },
+  getSquad: (teamName) => api.get(`/squad/${encodeURIComponent(teamName)}`)
 };
 
-/**
- * 리그 순위표 관련 API
- */
-export const standingsAPI = {
+// ============================================================
+// Players API
+// ============================================================
+
+export const playersAPI = {
   /**
-   * 리그 순위표 조회
-   * @param {string} season - 시즌 (예: "2024-2025")
-   * @returns {Promise<Array>} 순위표
+   * 특정 선수 정보 조회
+   * @param {number} playerId - 선수 ID
    */
-  getStandings: async (season = '2024-2025') => {
-    const response = await api.get('/standings', { params: { season } });
-    return response.data;
-  },
+  getById: (playerId) => api.get(`/player/${playerId}`),
+
+  /**
+   * 선수 검색 (선택적 구현)
+   * @param {string} query - 검색어
+   */
+  search: (query) => api.get('/players/search', { params: { q: query } })
 };
 
-/**
- * 선수 평가 관련 API
- */
+// ============================================================
+// Ratings API
+// ============================================================
+
 export const ratingsAPI = {
   /**
-   * 선수 능력치 저장
+   * 선수 능력치 조회
    * @param {number} playerId - 선수 ID
-   * @param {Object} ratings - 능력치 객체
-   * @returns {Promise<Object>} 저장 결과
+   * @param {string} userId - 사용자 ID (기본값: 'default')
    */
-  saveRating: async (playerId, ratings) => {
-    const response = await api.post('/save-rating', {
+  get: (playerId, userId = 'default') =>
+    api.get(`/ratings/${playerId}`, { params: { user_id: userId } }),
+
+  /**
+   * 선수 능력치 저장 (여러 능력치 일괄 저장)
+   * @param {number} playerId - 선수 ID
+   * @param {Object} ratings - { attribute_name: rating_value, ... }
+   * @param {string} userId - 사용자 ID (기본값: 'default')
+   */
+  save: (playerId, ratings, userId = 'default') =>
+    api.post('/ratings', {
       player_id: playerId,
-      ratings: ratings,
-    });
-    return response.data;
-  },
-};
+      user_id: userId,
+      ratings: ratings
+    }),
 
-/**
- * 헬스 체크
- */
-export const healthAPI = {
   /**
-   * API 서버 상태 확인
-   * @returns {Promise<Object>} 서버 상태
+   * 단일 능력치 업데이트
+   * @param {number} playerId - 선수 ID
+   * @param {string} attribute - 능력치 이름
+   * @param {number} rating - 평점 (0.0 ~ 5.0)
+   * @param {string} notes - 메모 (선택)
+   * @param {string} userId - 사용자 ID (기본값: 'default')
    */
-  check: async () => {
-    const response = await api.get('/health');
-    return response.data;
-  },
+  update: (playerId, attribute, rating, notes = '', userId = 'default') =>
+    api.put(`/ratings/${playerId}/${attribute}`, {
+      rating: rating,
+      notes: notes,
+      user_id: userId
+    }),
+
+  /**
+   * 선수 능력치 삭제
+   * @param {number} playerId - 선수 ID
+   * @param {string} userId - 사용자 ID (기본값: 'default')
+   */
+  delete: (playerId, userId = 'default') =>
+    api.delete(`/ratings/${playerId}`, { params: { user_id: userId } })
+};
+
+// ============================================================
+// Positions API
+// ============================================================
+
+export const positionsAPI = {
+  /**
+   * 포지션별 능력치 템플릿 조회
+   */
+  getAttributes: () => api.get('/positions'),
+
+  /**
+   * 평가 범위 정보 조회 (0.0 ~ 5.0, 0.25 step)
+   */
+  getRatingScale: () => api.get('/rating-scale')
+};
+
+// ============================================================
+// Analytics API (Phase 5에서 구현 예정)
+// ============================================================
+
+export const analyticsAPI = {
+  /**
+   * 팀 전체 능력치 분석
+   * @param {string} teamName - 팀 이름
+   * @param {string} userId - 사용자 ID
+   */
+  getTeamAnalysis: (teamName, userId = 'default') =>
+    api.get(`/analytics/team/${encodeURIComponent(teamName)}`, { params: { user_id: userId } }),
+
+  /**
+   * 포지션별 평균 능력치
+   * @param {string} position - 포지션 (GK/DF/MF/FW)
+   * @param {string} userId - 사용자 ID
+   */
+  getPositionAverage: (position, userId = 'default') =>
+    api.get(`/analytics/position/${position}`, { params: { user_id: userId } })
+};
+
+// ============================================================
+// Export/Import API (Phase 5에서 구현 예정)
+// ============================================================
+
+export const dataAPI = {
+  /**
+   * 능력치 데이터 내보내기
+   * @param {string} userId - 사용자 ID
+   */
+  exportRatings: (userId = 'default') =>
+    api.get('/data/export', { params: { user_id: userId } }),
+
+  /**
+   * 능력치 데이터 가져오기
+   * @param {Object} data - JSON 데이터
+   * @param {string} userId - 사용자 ID
+   */
+  importRatings: (data, userId = 'default') =>
+    api.post('/data/import', { data, user_id: userId })
+};
+
+// ============================================================
+// Utility Functions
+// ============================================================
+
+/**
+ * 능력치 유효성 검증
+ * @param {number} rating - 평점
+ * @returns {boolean} 유효 여부
+ */
+export const validateRating = (rating) => {
+  if (typeof rating !== 'number') return false;
+  if (rating < 0.0 || rating > 5.0) return false;
+  // 0.25 단위 검증
+  return Math.round(rating * 4) === rating * 4;
 };
 
 /**
- * 고급 분석 API (Advanced Analytics)
+ * 평균 능력치 계산
+ * @param {Object} ratings - { attribute: value, ... }
+ * @returns {number} 평균 능력치
  */
+export const calculateAverageRating = (ratings) => {
+  const values = Object.values(ratings).filter(v => typeof v === 'number');
+  if (values.length === 0) return 0;
+  return values.reduce((sum, val) => sum + val, 0) / values.length;
+};
+
+// ============================================================
+// Legacy/Deprecated APIs (for backward compatibility)
+// ============================================================
+
+// Temporary stub for old components that haven't been deleted yet
 export const advancedAPI = {
-  /**
-   * Bayesian Dixon-Coles 예측 (불확실성 정량화 포함)
-   * @param {Object} data - { home_team, away_team, n_sims, credible_interval, use_cached }
-   * @returns {Promise<Object>} Bayesian 예측 결과 + 신뢰구간
-   */
-  bayesian: async (data) => {
-    const response = await api.post('/predict/bayesian', {
-      home_team: data.home_team,
-      away_team: data.away_team,
-      n_sims: data.n_sims || 3000,
-      credible_interval: data.credible_interval || 0.95,
-      use_cached: data.use_cached !== undefined ? data.use_cached : true,
-    });
-    return response.data;
-  },
-
-  /**
-   * Bayesian 모델의 팀별 능력치 조회
-   * @returns {Promise<Object>} 팀별 공격력/수비력 posterior 분포
-   */
-  bayesianTeamRatings: async () => {
-    const response = await api.get('/bayesian/team-ratings');
-    return response.data;
-  },
-
-  /**
-   * Bayesian 모델 재학습
-   * @param {Object} data - { n_samples, burnin, thin, verbose }
-   * @returns {Promise<Object>} 학습 결과
-   */
-  bayesianRetrain: async (data) => {
-    const response = await api.post('/bayesian/retrain', data);
-    return response.data;
-  },
-
-  /**
-   * CatBoost 모델 예측
-   * @param {Object} data - { home_team, away_team, season }
-   * @returns {Promise<Object>} CatBoost 예측 결과
-   */
-  catboost: async (data) => {
-    const response = await api.post('/predict/catboost', data);
-    return response.data;
-  },
-
-  /**
-   * Expected Threat (xT) 계산
-   * @param {Object} data - { home_team, away_team, season }
-   * @returns {Promise<Object>} xT 분석 결과
-   */
-  expectedThreat: async (data) => {
-    const response = await api.post('/expected-threat', data);
-    return response.data;
-  },
-
-  /**
-   * 예측 평가 메트릭 (RPS, Brier Score 등)
-   * @param {Object} data - { predictions: [...], actuals: [...] }
-   * @returns {Promise<Object>} 평가 메트릭 결과
-   */
-  evaluate: async (data) => {
-    const response = await api.post('/evaluate', data);
-    return response.data;
-  },
-
-  /**
-   * 앙상블 예측
-   * @param {Object} data - { home_team, away_team, season, ensemble_method }
-   * @returns {Promise<Object>} 앙상블 예측 결과
-   */
-  ensemble: async (data) => {
-    const response = await api.post('/predict/ensemble', data);
-    return response.data;
-  },
+  analyze: () => Promise.resolve({ error: 'This API is deprecated' })
 };
 
-export default api;
+// ============================================================
+// EPL API (Official Data)
+// ============================================================
+
+export const eplAPI = {
+  /**
+   * EPL 리그 순위표 조회
+   */
+  getStandings: () => api.get('/epl/standings'),
+
+  /**
+   * EPL 경기 일정 및 결과 조회
+   * @param {Object} params - { event, team }
+   */
+  getFixtures: (params = {}) => api.get('/epl/fixtures', { params }),
+
+  /**
+   * EPL 리더보드 (득점왕, 도움왕 등)
+   */
+  getLeaderboard: () => api.get('/epl/leaderboard')
+};
+
+// ============================================================
+// Default Export
+// ============================================================
+
+const apiClient = {
+  health: healthAPI,
+  teams: teamsAPI,
+  players: playersAPI,
+  ratings: ratingsAPI,
+  positions: positionsAPI,
+  analytics: analyticsAPI,
+  data: dataAPI,
+  epl: eplAPI,
+
+  // Utilities
+  validateRating,
+  calculateAverageRating
+};
+
+export default apiClient;
+
+// Export raw axios instance for custom API calls
+export { api };
