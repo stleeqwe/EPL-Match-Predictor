@@ -22,25 +22,45 @@ EPL Match Predictor v2.0은 **개인 선수 분석을 통한 가상 시뮬레이
 
 ## 🚀 빠른 시작
 
-### 1. 백엔드 실행
+### 신규 설치 (새로운 PC)
 
 ```bash
-# 프로젝트 루트 디렉토리에서
-./start_backend.sh
-```
+# 1. GitHub에서 클론
+git clone https://github.com/stleeqwe/EPL-Match-Predictor.git
+cd EPL-Match-Predictor
 
-서버가 `http://localhost:5001`에서 실행됩니다.
+# 2. 원클릭 자동 설정
+./setup.sh
 
-### 2. 프론트엔드 실행
+# 3. 환경 변수 설정
+# backend/.env 파일에 API 키 입력
 
-새 터미널에서:
-
-```bash
-cd frontend/epl-predictor
-npm start
+# 4. 앱 시작
+./start.sh
 ```
 
 브라우저가 자동으로 `http://localhost:3000`을 엽니다.
+
+> 📚 **상세 가이드**: [SETUP_GUIDE.md](SETUP_GUIDE.md) 참조
+
+### 기존 환경에서 실행
+
+```bash
+# Backend + Frontend 동시 실행
+./start.sh
+```
+
+**개별 실행**:
+```bash
+# Terminal 1: Backend
+cd backend
+source venv/bin/activate
+python api/app.py
+
+# Terminal 2: Frontend
+cd frontend/epl-predictor
+npm start
+```
 
 ---
 
