@@ -94,13 +94,16 @@ const RatingEditor = ({
 
   // 초기화
   useEffect(() => {
-    const position = player.position || 'MF';
-    
+    // Premier League API 포지션을 Squad Builder 역할로 변환
+    const playerRole = getPlayerRole(player.position);
+
     let savedSubPosition;
-    if (POSITION_ATTRIBUTES[position]) {
-      savedSubPosition = initialRatings._subPosition || position;
+    // 저장된 세부 포지션이 있으면 사용, 없으면 변환된 역할 사용
+    if (initialRatings._subPosition && POSITION_ATTRIBUTES[initialRatings._subPosition]) {
+      savedSubPosition = initialRatings._subPosition;
     } else {
-      savedSubPosition = initialRatings._subPosition || DEFAULT_SUB_POSITION[position] || 'CM';
+      // playerRole이 세부 포지션으로 사용 가능하면 그대로, 아니면 일반 포지션의 기본값
+      savedSubPosition = POSITION_ATTRIBUTES[playerRole] ? playerRole : 'CM';
     }
 
     setSubPosition(savedSubPosition);
@@ -114,7 +117,7 @@ const RatingEditor = ({
     setRatings(initialState);
     setComment(initialRatings._comment || '');
     setHasChanges(false);
-  }, [player.id]);
+  }, [player.id, initialRatings]);
 
   // 세부 포지션 변경
   const handleSubPositionChange = (newSubPosition) => {
@@ -187,9 +190,8 @@ const RatingEditor = ({
     setHasChanges(true);
   };
 
-  const position = player.position || 'MF';
   const playerRole = getPlayerRole(player.position);
-  const availableSubPositions = getSubPositions(position);
+  const availableSubPositions = getSubPositions(playerRole);
   const attributes = POSITION_ATTRIBUTES[subPosition]?.attributes || [];
   const positionInfo = POSITION_ATTRIBUTES[subPosition];
   const weightedAverage = calculateWeightedAverage(ratings, subPosition) || 0;

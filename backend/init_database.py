@@ -41,6 +41,8 @@ def init_database():
 
     teams_created = 0
     players_created = 0
+    seen_player_ids = set()  # Track seen player IDs to skip duplicates
+    skipped_duplicates = 0
 
     for team_name, players in SQUAD_DATA.items():
         # 팀 생성
@@ -52,10 +54,21 @@ def init_database():
         print(f"\n  ⚽ {team_name}")
 
         # 선수 생성
+        team_players_added = 0
         for player_data in players:
+            player_id = player_data['id']
+
+            # Skip duplicate IDs
+            if player_id in seen_player_ids:
+                print(f"    ⚠️  Skipping duplicate ID {player_id}: {player_data['name']}")
+                skipped_duplicates += 1
+                continue
+
+            seen_player_ids.add(player_id)
+
             player = Player(
                 team_id=team.id,
-                id=player_data['id'],
+                id=player_id,
                 name=player_data['name'],
                 position=player_data['position'],
                 detailed_position=player_data.get('detailed_position', player_data['position']),
@@ -68,8 +81,9 @@ def init_database():
             )
             session.add(player)
             players_created += 1
+            team_players_added += 1
 
-        print(f"    ✅ {len(players)} players added")
+        print(f"    ✅ {team_players_added} players added")
 
     # 커밋
     session.commit()
@@ -78,6 +92,8 @@ def init_database():
     print(f"\n🎉 Database initialized successfully!")
     print(f"   📊 Teams: {teams_created}")
     print(f"   👥 Players: {players_created}")
+    if skipped_duplicates > 0:
+        print(f"   ⚠️  Skipped duplicates: {skipped_duplicates}")
     print(f"   💾 Database: {db_path}")
 
 
