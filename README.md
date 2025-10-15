@@ -30,24 +30,24 @@ git clone https://github.com/stleeqwe/EPL-Match-Predictor.git
 cd EPL-Match-Predictor
 
 # 2. 원클릭 자동 설정
-./setup.sh
+./scripts/setup/setup.sh
 
 # 3. 환경 변수 설정
 # backend/.env 파일에 API 키 입력
 
 # 4. 앱 시작
-./start.sh
+./scripts/setup/start.sh
 ```
 
 브라우저가 자동으로 `http://localhost:3000`을 엽니다.
 
-> 📚 **상세 가이드**: [SETUP_GUIDE.md](SETUP_GUIDE.md) 참조
+> 📚 **상세 가이드**: [docs/development/SETUP_GUIDE.md](docs/development/SETUP_GUIDE.md) 참조
 
 ### 기존 환경에서 실행
 
 ```bash
 # Backend + Frontend 동시 실행
-./start.sh
+./scripts/setup/start.sh
 ```
 
 **개별 실행**:
@@ -58,7 +58,7 @@ source venv/bin/activate
 python api/app.py
 
 # Terminal 2: Frontend
-cd frontend/epl-predictor
+cd frontend
 npm start
 ```
 
@@ -213,30 +213,59 @@ curl -X POST http://localhost:5001/api/simulate \
 ## 🏗️ 프로젝트 구조 (v2.0)
 
 ```
-soccer-predictor/
-├── backend/
-│   ├── api/
-│   │   └── app.py              # Flask API (v2.0)
-│   ├── data/
-│   │   └── squad_data.py       # 선수 데이터 (FPL API 기반)
-│   ├── simulation/             # 경기 시뮬레이션 엔진 (신규)
-│   └── models/                 # ML 모델 (v1.0 레거시)
-├── frontend/
-│   └── epl-predictor/
-│       ├── src/
-│       │   ├── components/
-│       │   │   ├── PlayerCard.js
-│       │   │   ├── RatingEditor.js
-│       │   │   ├── RatingSlider.js
-│       │   │   ├── SquadBuilder.js
-│       │   │   └── MatchSimulator.js
-│       │   ├── config/
-│       │   │   └── positionAttributes.js  # 포지션별 능력치 설정
-│       │   ├── utils/
-│       │   │   └── playerPhoto.js         # FPL API 이미지
-│       │   └── index.css                  # UI/UX 스타일
-│       └── package.json
-└── README.md (v2.0)
+EPL-Match-Predictor/
+├── docs/                          # 📚 프로젝트 문서
+│   ├── architecture/              # 아키텍처 설계 문서
+│   ├── deployment/                # 배포 가이드
+│   ├── development/               # 개발 가이드
+│   ├── features/                  # 기능별 문서
+│   │   ├── simulation/
+│   │   ├── agent-system/
+│   │   ├── market-value/
+│   │   └── bayesian/
+│   ├── phases/                    # 단계별 완료 보고서
+│   └── testing/                   # 테스트 문서
+│
+├── scripts/                       # 🔧 유틸리티 스크립트
+│   ├── diagnostics/               # 진단 스크립트
+│   ├── setup/                     # 설치/시작 스크립트
+│   ├── testing/                   # 테스트 스크립트
+│   └── analysis/                  # 분석 스크립트
+│
+├── backend/                       # ⚙️ Backend API
+│   ├── api/                       # Flask REST API
+│   │   ├── app.py                 # 메인 API 서버
+│   │   └── v1/                    # API v1 엔드포인트
+│   ├── services/                  # 비즈니스 로직
+│   ├── simulation/                # 경기 시뮬레이션 엔진
+│   │   ├── v2/                    # 최신 시뮬레이션 엔진
+│   │   └── legacy/                # 레거시 엔진
+│   ├── ai/                        # AI 분석 모듈
+│   ├── tactics/                   # 전술 분석
+│   ├── value_betting/             # Value Betting 모듈
+│   ├── docs/                      # Backend 문서
+│   ├── scripts/                   # Backend 스크립트
+│   └── tests/                     # Backend 테스트
+│
+├── frontend/                      # 🎨 React Frontend
+│   ├── src/                       # 소스 코드
+│   │   ├── components/
+│   │   │   ├── PlayerCard.js
+│   │   │   ├── PlayerRatingManager.js
+│   │   │   ├── SquadBuilder.js
+│   │   │   ├── MatchSimulator.js
+│   │   │   └── Leaderboard.js
+│   │   ├── contexts/              # React Contexts
+│   │   ├── services/              # API 클라이언트
+│   │   └── utils/                 # 유틸리티 함수
+│   ├── public/                    # 정적 파일
+│   ├── docs/                      # Frontend 문서
+│   └── package.json
+│
+├── data/                          # 데이터 파일
+├── .gitignore
+├── requirements.txt
+└── README.md
 ```
 
 ---

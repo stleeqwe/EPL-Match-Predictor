@@ -1,0 +1,521 @@
+{
+  "formations": {
+    "4-3-3": {
+      "name": "4-3-3 High Press",
+      "name_kr": "4-3-3 하이 프레싱",
+      "philosophy": "공을 높은 위치에서 되찾는다",
+      "defensive_style": "high_press",
+      "positions": {
+        "GK": {"x": 5, "y": 50, "role": "sweeper_keeper"},
+        "RB": {"x": 20, "y": 85, "role": "attacking_fullback"},
+        "CB_R": {"x": 18, "y": 60, "role": "ball_playing_defender"},
+        "CB_L": {"x": 18, "y": 40, "role": "ball_playing_defender"},
+        "LB": {"x": 20, "y": 15, "role": "attacking_fullback"},
+        "DM": {"x": 40, "y": 50, "role": "holding_midfielder"},
+        "CM_R": {"x": 50, "y": 65, "role": "box_to_box"},
+        "CM_L": {"x": 50, "y": 35, "role": "box_to_box"},
+        "RW": {"x": 75, "y": 88, "role": "inside_forward"},
+        "ST": {"x": 85, "y": 50, "role": "pressing_forward"},
+        "LW": {"x": 75, "y": 12, "role": "inside_forward"}
+      },
+      "default_tactics": {
+        "pressing_intensity": 9,
+        "defensive_line": 8,
+        "defensive_width": 8,
+        "compactness": 7,
+        "tempo": 8,
+        "buildup_style": "short_passing",
+        "width": 9,
+        "creativity": 8,
+        "counter_press": 9
+      },
+      "blocking_rates": {
+        "buildup_gradual": 92,
+        "buildup_medium": 85,
+        "counter_fast": 45,
+        "counter_normal": 65,
+        "central_penetration": 85,
+        "wide_penetration": 78,
+        "cutback": 70,
+        "cross_finish": 75,
+        "halfspace": 82,
+        "corner": 75,
+        "freekick": 72,
+        "penalty": 70
+      },
+      "strengths": [
+        "빌드업 점진적 전개 차단 (92%)",
+        "중앙 침투 차단 (85%)",
+        "전방 압박을 통한 높은 볼 회복률"
+      ],
+      "weaknesses": [
+        "역습 허용 (45%)",
+        "배후 공간 노출",
+        "오프사이드 트랩 실패 시 치명적"
+      ],
+      "key_positions": {
+        "DM": 0.30,
+        "CB_L": 0.15,
+        "CB_R": 0.15,
+        "RB": 0.10,
+        "LB": 0.10,
+        "CM_L": 0.08,
+        "CM_R": 0.08,
+        "RW": 0.02,
+        "LW": 0.02
+      },
+      "famous_teams": [
+        "Manchester City (Guardiola)",
+        "Liverpool (Klopp 2019-2020)"
+      ],
+      "overall_defensive_rating": 82
+    },
+
+    "4-2-3-1": {
+      "name": "4-2-3-1 Mid Block",
+      "name_kr": "4-2-3-1 미드 블록",
+      "philosophy": "중원을 장악하고 공간을 압축한다",
+      "defensive_style": "mid_block",
+      "positions": {
+        "GK": {"x": 5, "y": 50, "role": "goalkeeper"},
+        "RB": {"x": 25, "y": 85, "role": "fullback"},
+        "CB_R": {"x": 22, "y": 60, "role": "central_defender"},
+        "CB_L": {"x": 22, "y": 40, "role": "central_defender"},
+        "LB": {"x": 25, "y": 15, "role": "fullback"},
+        "CDM_R": {"x": 38, "y": 58, "role": "defensive_midfielder"},
+        "CDM_L": {"x": 38, "y": 42, "role": "defensive_midfielder"},
+        "RAM": {"x": 55, "y": 78, "role": "wide_midfielder"},
+        "CAM": {"x": 60, "y": 50, "role": "attacking_midfielder"},
+        "LAM": {"x": 55, "y": 22, "role": "wide_midfielder"},
+        "ST": {"x": 80, "y": 50, "role": "striker"}
+      },
+      "default_tactics": {
+        "pressing_intensity": 7,
+        "defensive_line": 7,
+        "defensive_width": 7,
+        "compactness": 9,
+        "tempo": 7,
+        "buildup_style": "balanced",
+        "width": 7,
+        "creativity": 7,
+        "counter_press": 7
+      },
+      "blocking_rates": {
+        "buildup_gradual": 65,
+        "buildup_medium": 85,
+        "counter_fast": 82,
+        "counter_normal": 85,
+        "central_penetration": 95,
+        "wide_penetration": 70,
+        "cutback": 88,
+        "cross_finish": 78,
+        "halfspace": 92,
+        "corner": 80,
+        "freekick": 78,
+        "penalty": 75
+      },
+      "strengths": [
+        "중앙 침투 차단 최고 (95%)",
+        "컷백 차단 효율적 (88%)",
+        "역습 전환 균형 (82%)",
+        "중원 수적 우위 (5명)"
+      ],
+      "weaknesses": [
+        "측면 침투 허용 (70%)",
+        "풀백 1대1 고립",
+        "빌드업 압박 소극적"
+      ],
+      "key_positions": {
+        "CDM_R": 0.22,
+        "CDM_L": 0.22,
+        "CB_L": 0.13,
+        "CB_R": 0.13,
+        "CAM": 0.10,
+        "RB": 0.08,
+        "LB": 0.08,
+        "RAM": 0.02,
+        "LAM": 0.02
+      },
+      "famous_teams": [
+        "Liverpool (Klopp 2019-2020)",
+        "Manchester United (Ten Hag)",
+        "Real Madrid (Ancelotti)"
+      ],
+      "overall_defensive_rating": 85
+    },
+
+    "4-4-2": {
+      "name": "4-4-2 Low Block",
+      "name_kr": "4-4-2 로우 블록",
+      "philosophy": "공간을 좁히고 중앙을 밀집시킨다",
+      "defensive_style": "low_block",
+      "positions": {
+        "GK": {"x": 5, "y": 50, "role": "goalkeeper"},
+        "RB": {"x": 22, "y": 85, "role": "defensive_fullback"},
+        "CB_R": {"x": 20, "y": 60, "role": "central_defender"},
+        "CB_L": {"x": 20, "y": 40, "role": "central_defender"},
+        "LB": {"x": 22, "y": 15, "role": "defensive_fullback"},
+        "RM": {"x": 40, "y": 88, "role": "wide_midfielder"},
+        "CM_R": {"x": 35, "y": 58, "role": "central_midfielder"},
+        "CM_L": {"x": 35, "y": 42, "role": "central_midfielder"},
+        "LM": {"x": 40, "y": 12, "role": "wide_midfielder"},
+        "ST_R": {"x": 70, "y": 58, "role": "striker"},
+        "ST_L": {"x": 70, "y": 42, "role": "striker"}
+      },
+      "default_tactics": {
+        "pressing_intensity": 3,
+        "defensive_line": 3,
+        "defensive_width": 5,
+        "compactness": 10,
+        "tempo": 5,
+        "buildup_style": "direct",
+        "width": 4,
+        "creativity": 5,
+        "counter_press": 4
+      },
+      "blocking_rates": {
+        "buildup_gradual": 65,
+        "buildup_medium": 75,
+        "counter_fast": 95,
+        "counter_normal": 92,
+        "central_penetration": 90,
+        "wide_penetration": 75,
+        "cutback": 85,
+        "cross_finish": 92,
+        "halfspace": 82,
+        "corner": 88,
+        "freekick": 85,
+        "penalty": 80
+      },
+      "strengths": [
+        "역습 차단 최고 (95%)",
+        "크로스→마무리 차단 (92%)",
+        "박스 내 밀집도 최고 (8명)",
+        "중앙 침투 차단 (90%)"
+      ],
+      "weaknesses": [
+        "빌드업 압박 포기 (65%)",
+        "높은 지역 압박 불가",
+        "상대 점유율 허용 (60-65%)"
+      ],
+      "key_positions": {
+        "CB_L": 0.18,
+        "CB_R": 0.18,
+        "CM_L": 0.15,
+        "CM_R": 0.15,
+        "RB": 0.12,
+        "LB": 0.12,
+        "RM": 0.05,
+        "LM": 0.05
+      },
+      "famous_teams": [
+        "Atletico Madrid (Simeone)",
+        "Leicester City (2015-16)",
+        "Burnley (Dyche)"
+      ],
+      "overall_defensive_rating": 87
+    },
+
+    "3-5-2": {
+      "name": "3-5-2 Wing-Back System",
+      "name_kr": "3-5-2 윙백 시스템",
+      "philosophy": "윙백 복귀로 5백을 만든다",
+      "defensive_style": "variable_defense",
+      "positions": {
+        "GK": {"x": 5, "y": 50, "role": "goalkeeper"},
+        "CB_R": {"x": 20, "y": 70, "role": "wide_center_back"},
+        "CB_C": {"x": 18, "y": 50, "role": "central_defender"},
+        "CB_L": {"x": 20, "y": 30, "role": "wide_center_back"},
+        "RWB": {"x": 45, "y": 90, "role": "wing_back"},
+        "CM_R": {"x": 45, "y": 63, "role": "central_midfielder"},
+        "CM_C": {"x": 42, "y": 50, "role": "holding_midfielder"},
+        "CM_L": {"x": 45, "y": 37, "role": "central_midfielder"},
+        "LWB": {"x": 45, "y": 10, "role": "wing_back"},
+        "ST_R": {"x": 75, "y": 58, "role": "striker"},
+        "ST_L": {"x": 75, "y": 42, "role": "striker"}
+      },
+      "default_tactics": {
+        "pressing_intensity": 6,
+        "defensive_line": 6,
+        "defensive_width": 9,
+        "compactness": 7,
+        "tempo": 7,
+        "buildup_style": "short_passing",
+        "width": 10,
+        "creativity": 7,
+        "counter_press": 6
+      },
+      "blocking_rates": {
+        "buildup_gradual": 70,
+        "buildup_medium": 78,
+        "counter_fast": 55,
+        "counter_normal": 72,
+        "central_penetration": 82,
+        "wide_penetration": 93,
+        "cutback": 88,
+        "cross_finish": 90,
+        "halfspace": 85,
+        "corner": 82,
+        "freekick": 80,
+        "penalty": 75
+      },
+      "strengths": [
+        "측면 침투 차단 최고 (93%)",
+        "크로스→마무리 차단 (90%)",
+        "이중 방어 시스템 (윙백+CB)",
+        "풀백 오버래핑 차단 (95%)"
+      ],
+      "weaknesses": [
+        "고속 역습 허용 (55%)",
+        "윙백 복귀 거리 긴 (평균 28m)",
+        "3백만으로 대응 시 폭 커버 부족"
+      ],
+      "key_positions": {
+        "CB_C": 0.20,
+        "CB_R": 0.15,
+        "CB_L": 0.15,
+        "RWB": 0.15,
+        "LWB": 0.15,
+        "CM_C": 0.10,
+        "CM_R": 0.05,
+        "CM_L": 0.05
+      },
+      "famous_teams": [
+        "Inter Milan (Conte)",
+        "Chelsea (Conte 2016-17)",
+        "Tottenham (Conte)"
+      ],
+      "overall_defensive_rating": 84
+    },
+
+    "4-1-4-1": {
+      "name": "4-1-4-1 Mid-Press Trap",
+      "name_kr": "4-1-4-1 미드블록 압박 덫",
+      "philosophy": "중원에서 턴오버를 유도한다",
+      "defensive_style": "mid_press",
+      "positions": {
+        "GK": {"x": 5, "y": 50, "role": "goalkeeper"},
+        "RB": {"x": 28, "y": 85, "role": "fullback"},
+        "CB_R": {"x": 25, "y": 60, "role": "central_defender"},
+        "CB_L": {"x": 25, "y": 40, "role": "central_defender"},
+        "LB": {"x": 28, "y": 15, "role": "fullback"},
+        "DM": {"x": 35, "y": 50, "role": "anchor_midfielder"},
+        "RM": {"x": 50, "y": 82, "role": "wide_midfielder"},
+        "CM_R": {"x": 48, "y": 62, "role": "central_midfielder"},
+        "CM_L": {"x": 48, "y": 38, "role": "central_midfielder"},
+        "LM": {"x": 50, "y": 18, "role": "wide_midfielder"},
+        "CF": {"x": 75, "y": 50, "role": "pressing_forward"}
+      },
+      "default_tactics": {
+        "pressing_intensity": 8,
+        "defensive_line": 6,
+        "defensive_width": 7,
+        "compactness": 9,
+        "tempo": 7,
+        "buildup_style": "balanced",
+        "width": 6,
+        "creativity": 6,
+        "counter_press": 8
+      },
+      "blocking_rates": {
+        "buildup_gradual": 60,
+        "buildup_medium": 92,
+        "counter_fast": 78,
+        "counter_normal": 82,
+        "central_penetration": 88,
+        "wide_penetration": 68,
+        "cutback": 75,
+        "cross_finish": 80,
+        "halfspace": 85,
+        "corner": 78,
+        "freekick": 75,
+        "penalty": 72
+      },
+      "strengths": [
+        "빌드업 중속 전개 차단 (92%)",
+        "중원 턴오버 유도 (경기당 18.2회)",
+        "패스 조합형 중앙 침투 차단 (90%)",
+        "중원 밀집도 높음 (5명)"
+      ],
+      "weaknesses": [
+        "측면 침투 허용 (68%)",
+        "풀백 1대1 고립",
+        "초기 빌드업 압박 약함"
+      ],
+      "key_positions": {
+        "DM": 0.30,
+        "CM_R": 0.15,
+        "CM_L": 0.15,
+        "CB_L": 0.12,
+        "CB_R": 0.12,
+        "RB": 0.06,
+        "LB": 0.06,
+        "RM": 0.02,
+        "LM": 0.02
+      },
+      "famous_teams": [
+        "Leicester City (Ranieri 2015-16)",
+        "Atletico Madrid (Simeone early years)",
+        "Chelsea (Mourinho)"
+      ],
+      "overall_defensive_rating": 81
+    },
+
+    "3-4-3": {
+      "name": "3-4-3 High Press Offensive",
+      "name_kr": "3-4-3 전방 압박 공세",
+      "philosophy": "높은 압박으로 볼을 빼앗는다",
+      "defensive_style": "extreme_high_press",
+      "positions": {
+        "GK": {"x": 5, "y": 50, "role": "sweeper_keeper"},
+        "CB_R": {"x": 20, "y": 68, "role": "wide_center_back"},
+        "CB_C": {"x": 18, "y": 50, "role": "central_defender"},
+        "CB_L": {"x": 20, "y": 32, "role": "wide_center_back"},
+        "RM": {"x": 48, "y": 88, "role": "wing_back"},
+        "CM_R": {"x": 45, "y": 62, "role": "box_to_box"},
+        "CM_L": {"x": 45, "y": 38, "role": "box_to_box"},
+        "LM": {"x": 48, "y": 12, "role": "wing_back"},
+        "RW": {"x": 75, "y": 85, "role": "winger"},
+        "ST": {"x": 85, "y": 50, "role": "pressing_forward"},
+        "LW": {"x": 75, "y": 15, "role": "winger"}
+      },
+      "default_tactics": {
+        "pressing_intensity": 10,
+        "defensive_line": 9,
+        "defensive_width": 8,
+        "compactness": 6,
+        "tempo": 9,
+        "buildup_style": "short_passing",
+        "width": 9,
+        "creativity": 9,
+        "counter_press": 10
+      },
+      "blocking_rates": {
+        "buildup_gradual": 95,
+        "buildup_medium": 90,
+        "counter_fast": 40,
+        "counter_normal": 48,
+        "central_penetration": 80,
+        "wide_penetration": 75,
+        "cutback": 72,
+        "cross_finish": 78,
+        "halfspace": 82,
+        "corner": 75,
+        "freekick": 72,
+        "penalty": 68
+      },
+      "strengths": [
+        "빌드업 점진적 전개 차단 최고 (95%)",
+        "전방 1/3 턴오버 (경기당 52회)",
+        "압박 강도 최고 (PPDA 7.2)"
+      ],
+      "weaknesses": [
+        "역습 허용 치명적 (40%)",
+        "배후 공간 거대 (42-48m)",
+        "오프사이드 트랩 실패 시 실점 확률 높음",
+        "윙백 복귀 거리 길음 (평균 32m)"
+      ],
+      "key_positions": {
+        "CB_C": 0.25,
+        "CB_R": 0.15,
+        "CB_L": 0.15,
+        "CM_R": 0.12,
+        "CM_L": 0.12,
+        "RM": 0.08,
+        "LM": 0.08,
+        "GK": 0.05
+      },
+      "famous_teams": [
+        "Liverpool (Klopp high-press variant)",
+        "Borussia Dortmund (Klopp)",
+        "RB Leipzig"
+      ],
+      "overall_defensive_rating": 79,
+      "note": "압박 성공 시 92점, 실패 시 58점"
+    }
+  },
+
+  "goal_categories": {
+    "buildup_gradual": {
+      "name": "빌드업 점진적",
+      "name_en": "Gradual Buildup",
+      "description": "5+ 패스, 점진적 전개",
+      "epl_frequency": 0.35
+    },
+    "buildup_medium": {
+      "name": "빌드업 중속",
+      "name_en": "Medium Buildup",
+      "description": "3-4 패스, 중속 전개",
+      "epl_frequency": 0.10
+    },
+    "counter_fast": {
+      "name": "고속 역습",
+      "name_en": "Fast Counter",
+      "description": "0-5초, 턴오버 후 즉시",
+      "epl_frequency": 0.04
+    },
+    "counter_normal": {
+      "name": "일반 역습",
+      "name_en": "Normal Counter",
+      "description": "6-15초, 빠른 전환",
+      "epl_frequency": 0.03
+    },
+    "central_penetration": {
+      "name": "중앙 침투",
+      "name_en": "Central Penetration",
+      "description": "중앙 공간 침투",
+      "epl_frequency": 0.28
+    },
+    "wide_penetration": {
+      "name": "측면 침투",
+      "name_en": "Wide Penetration",
+      "description": "측면 돌파 및 침투",
+      "epl_frequency": 0.28
+    },
+    "cutback": {
+      "name": "컷백",
+      "name_en": "Cutback",
+      "description": "박스 가장자리에서 중앙으로 패스",
+      "epl_frequency": 0.15
+    },
+    "cross_finish": {
+      "name": "크로스→마무리",
+      "name_en": "Cross Finish",
+      "description": "크로스 후 헤딩/슈팅",
+      "epl_frequency": 0.18
+    },
+    "halfspace": {
+      "name": "하프스페이스",
+      "name_en": "Half-Space",
+      "description": "하프스페이스 침투",
+      "epl_frequency": 0.05
+    },
+    "corner": {
+      "name": "코너킥",
+      "name_en": "Corner",
+      "description": "코너킥 상황",
+      "epl_frequency": 0.13
+    },
+    "freekick": {
+      "name": "프리킥",
+      "name_en": "Free Kick",
+      "description": "프리킥 상황",
+      "epl_frequency": 0.05
+    },
+    "penalty": {
+      "name": "페널티킥",
+      "name_en": "Penalty",
+      "description": "페널티킥",
+      "epl_frequency": 0.08
+    }
+  },
+
+  "metadata": {
+    "version": "1.0.0",
+    "data_source": "EPL 2017/18 - 2024/25 (8 seasons)",
+    "total_matches_analyzed": 2280,
+    "total_goals_analyzed": 5400,
+    "last_updated": "2025-01-12",
+    "author": "EPL Match Predictor Team"
+  }
+}

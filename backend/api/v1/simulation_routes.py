@@ -9,6 +9,7 @@ import logging
 from services.simulation_service import get_simulation_service
 from middleware.auth_middleware import require_auth, require_tier
 from middleware.rate_limiter import get_rate_limiter
+from simulation.v2 import get_match_simulator_v2
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,68 @@ def simulate_match():
     except Exception as e:
         logger.error(f"Simulation error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
+
+
+@simulation_bp.route('/predict', methods=['POST'])
+def predict_match():
+    """
+    AI-powered match prediction using v2.0 MatchSimulator.
+    v2.0: AI-guided iterative refinement with convergence loop
+
+    Body: {
+        "home_team": "Manchester City",
+        "away_team": "Arsenal",
+        "home_rating": 90.0,  # Optional
+        "away_rating": 85.0,  # Optional
+        "user_insight": "Optional user analysis"  # Optional
+    }
+
+    Response: {
+        "success": true,
+        "prediction": {
+            "match": {...},
+            "prediction": {...},
+            "match_events": {...},
+            "ai_analysis": {...},
+            "convergence_report": {...},
+            "metadata": {...}
+        }
+    }
+    """
+    try:
+        data = request.get_json()
+        home_team = data.get('home_team')
+        away_team = data.get('away_team')
+        home_rating = data.get('home_rating', 75.0)
+        away_rating = data.get('away_rating', 75.0)
+        user_insight = data.get('user_insight')
+
+        if not home_team or not away_team:
+            return jsonify({'error': 'Missing home_team or away_team'}), 400
+
+        # Get match simulator v2.0
+        simulator = get_match_simulator_v2()
+
+        # Run prediction
+        success, prediction, error = simulator.quick_predict(
+            home_team=home_team,
+            away_team=away_team,
+            home_rating=home_rating,
+            away_rating=away_rating,
+            user_insight=user_insight
+        )
+
+        if not success:
+            return jsonify({'error': 'Prediction failed', 'message': error}), 500
+
+        return jsonify({
+            'success': True,
+            'prediction': prediction
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Prediction error: {str(e)}")
+        return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
 
 
 @simulation_bp.route('/weight-presets', methods=['GET'])

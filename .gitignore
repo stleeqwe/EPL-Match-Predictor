@@ -16,6 +16,7 @@ build/
 venv/
 ENV/
 env/
+backend/venv/
 
 # IDEs
 .vscode/
@@ -36,6 +37,11 @@ Thumbs.db
 # Logs
 *.log
 logs/
+backend.log
+frontend.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Models (large binary files)
 *.pkl
@@ -45,9 +51,8 @@ logs/
 
 # Node modules
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+frontend/node_modules/
+frontend/epl-predictor/node_modules/
 
 # React build
 frontend/epl-predictor/build/
@@ -78,6 +83,9 @@ coverage/
 *.bak
 *.swp
 *~
-.env
-*.env
-.env.*
+
+# CatBoost
+catboost_info/
+
+# Backup folders
+backup/

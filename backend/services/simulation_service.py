@@ -12,7 +12,7 @@ import logging
 from datetime import datetime, timedelta
 import hashlib
 
-from ai.claude_client import get_claude_client
+from ai.ai_factory import get_ai_client
 from services.data_aggregation_service import get_data_aggregation_service
 
 
@@ -33,7 +33,7 @@ class SimulationService:
 
     def __init__(self):
         """Initialize simulation service."""
-        self.claude_client = get_claude_client()
+        self.ai_client = get_ai_client()
         self.data_service = get_data_aggregation_service()
 
         # Initialize Redis cache
@@ -90,10 +90,9 @@ class SimulationService:
             return False, None, error_msg
 
         # Run AI simulation
-        success, prediction, usage_data, error = self.claude_client.simulate_match(
+        success, prediction, usage_data, error = self.ai_client.simulate_match(
             home_team=home_team,
             away_team=away_team,
-            tier=tier,
             data_context=data_context
         )
 

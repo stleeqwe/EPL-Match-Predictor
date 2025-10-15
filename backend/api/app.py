@@ -28,6 +28,20 @@ import json
 from odds_collection import OddsAPIClient, OddsAggregator
 from value_betting import ValueDetector
 
+# 팀 이름 매핑 유틸리티
+from utils.team_mapping import (
+    TEAM_NAME_MAPPING,
+    REVERSE_TEAM_MAPPING,
+    TEAM_ALIASES,
+    RELEGATED_TEAMS,
+    normalize_team_name,
+    get_team_id_mapping,
+    is_relegated_team
+)
+
+# Injury Service
+from services.injury_service import get_injury_service
+
 # React 빌드 폴더 경로
 REACT_BUILD_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'epl-predictor', 'build')
 
@@ -280,32 +294,8 @@ def get_player_stats_from_fantasy(player_name, team_name, fantasy_data):
         elements = fantasy_data.get('elements', [])
         teams = fantasy_data.get('teams', [])
 
-        # 팀 이름 매핑
-        team_name_mapping = {
-            'Arsenal': 'Arsenal',
-            'Aston Villa': 'Aston Villa',
-            'Bournemouth': 'Bournemouth',
-            'Brentford': 'Brentford',
-            'Brighton': 'Brighton',
-            'Chelsea': 'Chelsea',
-            'Crystal Palace': 'Crystal Palace',
-            'Everton': 'Everton',
-            'Fulham': 'Fulham',
-            'Ipswich': 'Ipswich',
-            'Leicester': 'Leicester',
-            'Liverpool': 'Liverpool',
-            'Man City': 'Manchester City',
-            'Man Utd': 'Manchester United',
-            'Newcastle': 'Newcastle United',
-            "Nott'm Forest": 'Nottingham Forest',
-            'Southampton': 'Southampton',
-            'Spurs': 'Tottenham',
-            'West Ham': 'West Ham',
-            'Wolves': 'Wolverhampton Wanderers'
-        }
-
-        reverse_mapping = {v: k for k, v in team_name_mapping.items()}
-        fantasy_team_name = reverse_mapping.get(team_name, team_name)
+        # 팀 이름 정규화
+        fantasy_team_name = normalize_team_name(team_name, to_format='fantasy')
 
         # 팀 ID 찾기
         team_id = None
@@ -422,33 +412,8 @@ def get_player_role_by_ict(team_name, fantasy_data):
         elements = fantasy_data.get('elements', [])
         teams = fantasy_data.get('teams', [])
 
-        # 팀 이름 매핑
-        team_name_mapping = {
-            'Arsenal': 'Arsenal',
-            'Aston Villa': 'Aston Villa',
-            'Bournemouth': 'Bournemouth',
-            'Brentford': 'Brentford',
-            'Brighton': 'Brighton',
-            'Chelsea': 'Chelsea',
-            'Crystal Palace': 'Crystal Palace',
-            'Everton': 'Everton',
-            'Fulham': 'Fulham',
-            'Ipswich': 'Ipswich',
-            'Leicester': 'Leicester',
-            'Liverpool': 'Liverpool',
-            'Man City': 'Manchester City',
-            'Man Utd': 'Manchester United',
-            'Newcastle': 'Newcastle United',
-            "Nott'm Forest": 'Nottingham Forest',
-            'Southampton': 'Southampton',
-            'Spurs': 'Tottenham',
-            'West Ham': 'West Ham',
-            'Wolves': 'Wolverhampton Wanderers'
-        }
-
-        # 역매핑
-        reverse_mapping = {v: k for k, v in team_name_mapping.items()}
-        fantasy_team_name = reverse_mapping.get(team_name, team_name)
+        # 팀 이름 정규화
+        fantasy_team_name = normalize_team_name(team_name, to_format='fantasy')
 
         # 팀 ID 찾기
         team_id = None
@@ -571,6 +536,26 @@ def api_root():
                 'get': '/api/ratings/<player_id>',
                 'save': '/api/ratings (POST)',
                 'update': '/api/ratings/<player_id>/<attribute_name> (PUT)'
+            },
+            'team_setup': {
+                'overall_score': {
+                    'get': '/api/teams/<team_name>/overall_score',
+                    'save': '/api/teams/<team_name>/overall_score (POST)',
+                    'list': '/api/teams/overall_scores'
+                },
+                'formation': {
+                    'get': '/api/teams/<team_name>/formation',
+                    'save': '/api/teams/<team_name>/formation (POST)'
+                },
+                'lineup': {
+                    'get': '/api/teams/<team_name>/lineup',
+                    'save': '/api/teams/<team_name>/lineup (POST)'
+                },
+                'tactics': {
+                    'get': '/api/teams/<team_name>/tactics',
+                    'save': '/api/teams/<team_name>/tactics (POST)'
+                },
+                'simulation_ready': '/api/teams/<team_name>/simulation-ready'
             },
             'epl_data': {
                 'standings': '/api/epl/standings',
@@ -1015,10 +1000,26 @@ def get_rating_scale():
 
 # 종합 점수 저장 경로
 OVERALL_SCORES_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'overall_scores')
+FORMATIONS_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'formations')
+LINEUPS_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'lineups')
+TACTICS_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'tactics')
+INJURIES_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'injuries')
 
 def ensure_overall_scores_dir():
     """종합 점수 저장 디렉토리 생성"""
     os.makedirs(OVERALL_SCORES_DIR, exist_ok=True)
+
+def ensure_data_dirs():
+    """모든 팀 데이터 저장 디렉토리 생성"""
+    os.makedirs(OVERALL_SCORES_DIR, exist_ok=True)
+    os.makedirs(FORMATIONS_DIR, exist_ok=True)
+    os.makedirs(LINEUPS_DIR, exist_ok=True)
+    os.makedirs(TACTICS_DIR, exist_ok=True)
+    os.makedirs(INJURIES_DIR, exist_ok=True)
+    logger.info("📁 Data directories ready: formations, lineups, tactics, overall_scores, injuries")
+
+# 서버 시작 시 필요한 디렉토리 자동 생성
+ensure_data_dirs()
 
 @app.route('/api/teams/<team_name>/overall_score', methods=['POST'])
 def save_team_overall_score(team_name):
@@ -1163,11 +1164,507 @@ def get_all_overall_scores():
         raise APIError(f"Failed to fetch overall scores: {str(e)}", status_code=500)
 
 
+# ==================== Formation API ====================
+
+@app.route('/api/teams/<team_name>/formation', methods=['POST'])
+def save_team_formation(team_name):
+    """
+    팀 포메이션 저장
+
+    Body: {
+        "formation": "4-3-3",
+        "formation_data": {...}  # formations.json에서 가져온 데이터
+    }
+    """
+    try:
+        data = request.json or {}
+
+        # 필수 필드 검증
+        if 'formation' not in data:
+            raise ValidationError("Missing required field: formation")
+
+        formation = data['formation']
+        valid_formations = ['4-3-3', '4-2-3-1', '4-4-2', '3-5-2', '4-1-4-1', '3-4-3']
+        if formation not in valid_formations:
+            raise ValidationError(f"Invalid formation. Must be one of: {', '.join(valid_formations)}")
+
+        # 저장할 데이터
+        formation_data = {
+            'team_name': team_name,
+            'formation': formation,
+            'formation_data': data.get('formation_data', {}),
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # JSON 파일로 저장
+        ensure_data_dirs()
+        file_path = os.path.join(FORMATIONS_DIR, f"{team_name}.json")
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(formation_data, f, indent=2, ensure_ascii=False)
+
+        logger.info(f"✅ Saved formation for {team_name}: {formation}")
+
+        return jsonify({
+            'success': True,
+            'team': team_name,
+            'data': formation_data
+        })
+
+    except (ValidationError, NotFoundError):
+        raise
+    except Exception as e:
+        logger.error(f"Error saving formation: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to save formation: {str(e)}", status_code=500)
+
+
+@app.route('/api/teams/<team_name>/formation', methods=['GET'])
+def get_team_formation(team_name):
+    """
+    팀 포메이션 조회
+
+    Returns: {
+        "team_name": "Liverpool",
+        "formation": "4-3-3",
+        "formation_data": {...},
+        "timestamp": "2025-01-15T12:00:00"
+    }
+    """
+    try:
+        file_path = os.path.join(FORMATIONS_DIR, f"{team_name}.json")
+
+        if not os.path.exists(file_path):
+            return jsonify({
+                'success': False,
+                'message': f"No formation found for {team_name}"
+            }), 404
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            formation_data = json.load(f)
+
+        return jsonify({
+            'success': True,
+            'data': formation_data
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching formation: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch formation: {str(e)}", status_code=500)
+
+
+# ==================== Lineup API ====================
+
+@app.route('/api/teams/<team_name>/lineup', methods=['POST'])
+def save_team_lineup(team_name):
+    """
+    팀 라인업 저장 (포지션별 선수 매핑)
+
+    Body: {
+        "formation": "4-3-3",
+        "lineup": {
+            "GK": 123,
+            "RB": 456,
+            "CB_R": 789,
+            ...
+        }
+    }
+    """
+    try:
+        data = request.json or {}
+
+        # 필수 필드 검증
+        if 'lineup' not in data:
+            raise ValidationError("Missing required field: lineup")
+        if 'formation' not in data:
+            raise ValidationError("Missing required field: formation")
+
+        lineup = data['lineup']
+        formation = data['formation']
+
+        # 11명 선수 확인
+        if len(lineup) != 11:
+            raise ValidationError(f"Lineup must have exactly 11 players. Found: {len(lineup)}")
+
+        # 모든 포지션이 선수로 채워져 있는지 확인
+        if any(player_id is None or player_id == 0 for player_id in lineup.values()):
+            raise ValidationError("All positions must have a player assigned")
+
+        # 저장할 데이터
+        lineup_data = {
+            'team_name': team_name,
+            'formation': formation,
+            'lineup': lineup,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # JSON 파일로 저장
+        ensure_data_dirs()
+        file_path = os.path.join(LINEUPS_DIR, f"{team_name}.json")
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(lineup_data, f, indent=2, ensure_ascii=False)
+
+        logger.info(f"✅ Saved lineup for {team_name}: {len(lineup)} players")
+
+        return jsonify({
+            'success': True,
+            'team': team_name,
+            'data': lineup_data
+        })
+
+    except (ValidationError, NotFoundError):
+        raise
+    except Exception as e:
+        logger.error(f"Error saving lineup: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to save lineup: {str(e)}", status_code=500)
+
+
+@app.route('/api/teams/<team_name>/lineup', methods=['GET'])
+def get_team_lineup(team_name):
+    """
+    팀 라인업 조회
+
+    Returns: {
+        "team_name": "Liverpool",
+        "formation": "4-3-3",
+        "lineup": {...},
+        "timestamp": "2025-01-15T12:00:00"
+    }
+    """
+    try:
+        file_path = os.path.join(LINEUPS_DIR, f"{team_name}.json")
+
+        if not os.path.exists(file_path):
+            return jsonify({
+                'success': False,
+                'message': f"No lineup found for {team_name}"
+            }), 404
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lineup_data = json.load(f)
+
+        return jsonify({
+            'success': True,
+            'data': lineup_data
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching lineup: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch lineup: {str(e)}", status_code=500)
+
+
+# ==================== Tactics API ====================
+
+@app.route('/api/teams/<team_name>/tactics', methods=['POST'])
+def save_team_tactics(team_name):
+    """
+    팀 전술 설정 저장
+
+    Body: {
+        "defensive": {
+            "pressing_intensity": 8,
+            "defensive_line": 7,
+            "defensive_width": 7,
+            "compactness": 7,
+            "line_distance": 12.0
+        },
+        "offensive": {
+            "tempo": 8,
+            "buildup_style": "balanced",
+            "width": 7,
+            "creativity": 7,
+            "passing_directness": 5
+        },
+        "transition": {
+            "counter_press": 8,
+            "counter_speed": 7,
+            "transition_time": 3.0,
+            "recovery_speed": 7
+        }
+    }
+    """
+    try:
+        data = request.json or {}
+
+        # 필수 필드 검증
+        if 'defensive' not in data or 'offensive' not in data or 'transition' not in data:
+            raise ValidationError("Missing required fields: defensive, offensive, transition")
+
+        # 저장할 데이터
+        tactics_data = {
+            'team_name': team_name,
+            'defensive': data['defensive'],
+            'offensive': data['offensive'],
+            'transition': data['transition'],
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # JSON 파일로 저장
+        ensure_data_dirs()
+        file_path = os.path.join(TACTICS_DIR, f"{team_name}.json")
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(tactics_data, f, indent=2, ensure_ascii=False)
+
+        logger.info(f"✅ Saved tactics for {team_name}")
+
+        return jsonify({
+            'success': True,
+            'team': team_name,
+            'data': tactics_data
+        })
+
+    except (ValidationError, NotFoundError):
+        raise
+    except Exception as e:
+        logger.error(f"Error saving tactics: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to save tactics: {str(e)}", status_code=500)
+
+
+@app.route('/api/teams/<team_name>/tactics', methods=['GET'])
+def get_team_tactics(team_name):
+    """
+    팀 전술 설정 조회
+
+    Returns: {
+        "team_name": "Liverpool",
+        "defensive": {...},
+        "offensive": {...},
+        "transition": {...},
+        "timestamp": "2025-01-15T12:00:00"
+    }
+    """
+    try:
+        file_path = os.path.join(TACTICS_DIR, f"{team_name}.json")
+
+        if not os.path.exists(file_path):
+            return jsonify({
+                'success': False,
+                'message': f"No tactics found for {team_name}"
+            }), 404
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            tactics_data = json.load(f)
+
+        return jsonify({
+            'success': True,
+            'data': tactics_data
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching tactics: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch tactics: {str(e)}", status_code=500)
+
+
+# ==================== Simulation Readiness Check API ====================
+
+@app.route('/api/teams/<team_name>/simulation-ready', methods=['GET'])
+def check_simulation_ready(team_name):
+    """
+    팀의 시뮬레이션 준비 상태 확인
+
+    Returns: {
+        "ready": true/false,
+        "completed": {
+            "rating": true/false,
+            "formation": true/false,
+            "lineup": true/false,
+            "tactics": true/false
+        },
+        "missing": ["formation", "lineup"]  # 누락된 항목
+    }
+    """
+    try:
+        # 1. Rating 확인
+        rating_path = os.path.join(OVERALL_SCORES_DIR, f"{team_name}.json")
+        has_rating = os.path.exists(rating_path)
+
+        # 2. Formation 확인
+        formation_path = os.path.join(FORMATIONS_DIR, f"{team_name}.json")
+        has_formation = os.path.exists(formation_path)
+
+        # 3. Lineup 확인
+        lineup_path = os.path.join(LINEUPS_DIR, f"{team_name}.json")
+        has_lineup = os.path.exists(lineup_path)
+
+        # 4. Tactics 확인
+        tactics_path = os.path.join(TACTICS_DIR, f"{team_name}.json")
+        has_tactics = os.path.exists(tactics_path)
+
+        # 완료 상태
+        completed = {
+            'rating': has_rating,
+            'formation': has_formation,
+            'lineup': has_lineup,
+            'tactics': has_tactics
+        }
+
+        # 누락된 항목
+        missing = [key for key, value in completed.items() if not value]
+
+        # 모두 완료되었는지 확인
+        ready = all(completed.values())
+
+        return jsonify({
+            'success': True,
+            'team': team_name,
+            'ready': ready,
+            'completed': completed,
+            'missing': missing
+        })
+
+    except Exception as e:
+        logger.error(f"Error checking simulation readiness: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to check simulation readiness: {str(e)}", status_code=500)
+
+
+# ==================== Injury API ====================
+
+@app.route('/api/teams/<team_name>/injuries', methods=['GET'])
+def get_team_injuries_api(team_name):
+    """
+    팀의 부상자 정보 조회
+
+    Query Parameters:
+        force_refresh: true/false (강제 갱신)
+
+    Returns: {
+        "success": true,
+        "team": "Arsenal",
+        "last_updated": "2025-01-15T22:00:00Z",
+        "source": "api-football",
+        "injuries": [...],
+        "total_injured": 2,
+        "update_frequency": {
+            "strategy": "3일 전: 1일 2회",
+            "updates_per_day": 2,
+            "cache_duration_hours": 12
+        }
+    }
+    """
+    try:
+        force_refresh = request.args.get('force_refresh', 'false').lower() == 'true'
+
+        injury_service = get_injury_service()
+        result = injury_service.get_team_injuries(team_name, force_refresh=force_refresh)
+
+        # Get update frequency info
+        freq_info = injury_service.get_update_frequency_info()
+
+        return jsonify({
+            'success': True,
+            'team': team_name,
+            'last_updated': result.get('last_updated'),
+            'source': result.get('source'),
+            'injuries': result.get('injuries', []),
+            'total_injured': result.get('total_injured', 0),
+            'update_frequency': freq_info,
+            'error': result.get('error')
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching injuries: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch injuries: {str(e)}", status_code=500)
+
+
+@app.route('/api/teams/<team_name>/injuries/refresh', methods=['POST'])
+def refresh_team_injuries_api(team_name):
+    """
+    팀의 부상자 정보 강제 갱신
+
+    Returns: {
+        "success": true,
+        "message": "Injury data updated",
+        "updated_count": 5
+    }
+    """
+    try:
+        injury_service = get_injury_service()
+        result = injury_service.get_team_injuries(team_name, force_refresh=True)
+
+        return jsonify({
+            'success': True,
+            'message': f"Injury data updated for {team_name}",
+            'updated_count': result.get('total_injured', 0),
+            'source': result.get('source'),
+            'last_updated': result.get('last_updated')
+        })
+
+    except Exception as e:
+        logger.error(f"Error refreshing injuries: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to refresh injuries: {str(e)}", status_code=500)
+
+
+@app.route('/api/injuries/update-all', methods=['POST'])
+def update_all_team_injuries_api():
+    """
+    모든 팀의 부상자 정보 업데이트 (Cron Job용)
+
+    Body (optional): {
+        "force": true/false
+    }
+
+    Returns: {
+        "success": true,
+        "message": "Updated 20 teams",
+        "results": {...}
+    }
+    """
+    try:
+        data = request.json or {}
+        force = data.get('force', False)
+
+        injury_service = get_injury_service()
+        results = injury_service.update_all_teams(force=force)
+
+        total_updated = len(results)
+        total_injuries = sum(r.get('total_injured', 0) for r in results.values())
+
+        return jsonify({
+            'success': True,
+            'message': f"Updated {total_updated} teams",
+            'total_injuries_found': total_injuries,
+            'results': results
+        })
+
+    except Exception as e:
+        logger.error(f"Error updating all injuries: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to update all injuries: {str(e)}", status_code=500)
+
+
+@app.route('/api/injuries/frequency', methods=['GET'])
+def get_injury_update_frequency_api():
+    """
+    현재 부상자 업데이트 빈도 정보 조회
+
+    Returns: {
+        "success": true,
+        "days_until_match": 3,
+        "updates_per_day": 2,
+        "cache_duration_hours": 12,
+        "strategy": "3일 전: 1일 2회"
+    }
+    """
+    try:
+        injury_service = get_injury_service()
+        freq_info = injury_service.get_update_frequency_info()
+
+        return jsonify({
+            'success': True,
+            **freq_info
+        })
+
+    except Exception as e:
+        logger.error(f"Error getting frequency info: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to get frequency info: {str(e)}", status_code=500)
+
+
 @app.route('/api/ratings/<int:player_id>', methods=['GET'])
 def get_player_ratings(player_id):
     """
     특정 선수의 능력치 조회
     """
+    session = None
     try:
         user_id = request.args.get('user_id', 'default')
         session = get_player_session(DB_PATH)
@@ -1175,7 +1672,6 @@ def get_player_ratings(player_id):
         # 선수 정보 조회
         player = session.query(Player).filter_by(id=player_id).first()
         if not player:
-            session.close()
             raise NotFoundError(f"Player with ID {player_id} not found")
 
         # 능력치 조회
@@ -1192,8 +1688,6 @@ def get_player_ratings(player_id):
                 'updated_at': rating.updated_at.isoformat() if rating.updated_at else None
             }
 
-        session.close()
-
         return jsonify({
             'player_id': player_id,
             'player_name': player.name,
@@ -1206,6 +1700,9 @@ def get_player_ratings(player_id):
     except Exception as e:
         logger.error(f"Error fetching ratings: {str(e)}", exc_info=True)
         raise APIError(f"Failed to fetch ratings: {str(e)}", status_code=500)
+    finally:
+        if session:
+            session.close()
 
 
 @app.route('/api/ratings', methods=['POST'])
@@ -1223,6 +1720,7 @@ def save_player_ratings():
         }
     }
     """
+    session = None
     try:
         data = request.json or {}
         player_id = data.get('player_id')
@@ -1240,7 +1738,6 @@ def save_player_ratings():
         # 선수 존재 확인
         player = session.query(Player).filter_by(id=player_id).first()
         if not player:
-            session.close()
             raise NotFoundError(f"Player with ID {player_id} not found")
 
         # 각 능력치 저장/업데이트
@@ -1310,8 +1807,6 @@ def save_player_ratings():
             saved_count += 1
 
         session.commit()
-        session.close()
-
         logger.info(f"✅ Saved {saved_count} ratings for player {player_id}")
 
         return jsonify({
@@ -1320,11 +1815,18 @@ def save_player_ratings():
             'saved_count': saved_count
         })
 
-    except (ValidationError, NotFoundError):
+    except (ValidationError, NotFoundError) as e:
+        if session:
+            session.rollback()
         raise
     except Exception as e:
+        if session:
+            session.rollback()
         logger.error(f"Error saving ratings: {str(e)}", exc_info=True)
         raise APIError(f"Failed to save ratings: {str(e)}", status_code=500)
+    finally:
+        if session:
+            session.close()
 
 
 @app.route('/api/ratings/<int:player_id>/<attribute_name>', methods=['PUT'])
@@ -1338,6 +1840,7 @@ def update_single_rating(player_id, attribute_name):
         "user_id": "default"
     }
     """
+    session = None
     try:
         data = request.json or {}
         rating_value = data.get('rating')
@@ -1375,7 +1878,6 @@ def update_single_rating(player_id, attribute_name):
             session.add(new_rating)
 
         session.commit()
-        session.close()
 
         return jsonify({
             'success': True,
@@ -1384,11 +1886,18 @@ def update_single_rating(player_id, attribute_name):
             'rating': rating_value
         })
 
-    except (ValidationError, NotFoundError):
+    except (ValidationError, NotFoundError) as e:
+        if session:
+            session.rollback()
         raise
     except Exception as e:
+        if session:
+            session.rollback()
         logger.error(f"Error updating rating: {str(e)}", exc_info=True)
         raise APIError(f"Failed to update rating: {str(e)}", status_code=500)
+    finally:
+        if session:
+            session.close()
 
 
 # ============================================================================
@@ -1402,9 +1911,6 @@ def get_epl_standings():
     EPL 리그 순위표 가져오기
     """
     try:
-        # 강등팀 필터링 (2024-25 시즌 강등 → 2025-26 시즌 Championship)
-        RELEGATED_TEAMS = ['Leicester City', 'Ipswich Town', 'Southampton']
-
         # Bootstrap 데이터와 Fixtures 데이터 가져오기
         fantasy_data = fetch_fantasy_data()
         fixtures_response = requests.get('https://fantasy.premierleague.com/api/fixtures/', timeout=10)
@@ -1417,7 +1923,7 @@ def get_epl_standings():
         standings = {}
         for team in teams:
             # 강등팀 제외
-            if team['name'] in RELEGATED_TEAMS:
+            if is_relegated_team(team['name']):
                 continue
 
             team_id = team['id']
@@ -1551,9 +2057,6 @@ def get_epl_leaderboard():
     SQUAD_DATA와 매핑하여 데이터 정합성 보장
     """
     try:
-        # 강등팀 필터링 (2024-25 시즌 강등 → 2025-26 시즌 Championship)
-        RELEGATED_TEAMS = ['Leicester City', 'Ipswich Town', 'Southampton']
-
         fantasy_data = fetch_fantasy_data()
         players = fantasy_data.get('elements', [])
         teams_dict = {team['id']: team for team in fantasy_data.get('teams', [])}
@@ -1568,7 +2071,7 @@ def get_epl_leaderboard():
             team_name = team.get('name', 'Unknown')
 
             # 강등팀 제외
-            if team_name in RELEGATED_TEAMS:
+            if is_relegated_team(team_name):
                 continue
 
             # SQUAD_DATA와 매핑
