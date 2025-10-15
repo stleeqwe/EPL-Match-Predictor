@@ -9,7 +9,7 @@ echo "======================================"
 echo ""
 
 # Change to frontend directory
-cd "$(dirname "$0")/frontend/epl-predictor"
+cd "$(dirname "$0")/../../frontend"
 
 # Check if node_modules exists
 if [ ! -d "node_modules" ]; then

@@ -29,7 +29,7 @@ if [ ! -d "backend/venv" ]; then
     exit 1
 fi
 
-if [ ! -d "frontend/epl-predictor/node_modules" ]; then
+if [ ! -d "frontend/node_modules" ]; then
     echo -e "${RED}❌ Node modules not found!${NC}"
     echo -e "${YELLOW}⚠️  Please run ./setup.sh first${NC}"
     exit 1
@@ -61,10 +61,10 @@ echo -e "${GREEN}✅ Backend started (PID: $BACKEND_PID)${NC}"
 
 # Start frontend
 echo -e "${GREEN}[Frontend]${NC} Starting React app on port 3000..."
-cd frontend/epl-predictor
-npm start > ../../frontend.log 2>&1 &
+cd frontend
+npm start > ../frontend.log 2>&1 &
 FRONTEND_PID=$!
-cd ../..
+cd ..
 
 # Wait a moment for frontend to start
 sleep 2

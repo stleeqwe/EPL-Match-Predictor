@@ -39,7 +39,7 @@ sleep 2
 
 # 2. 프론트엔드 실행
 echo "🎨 프론트엔드 실행 중..."
-cd ../frontend/epl-predictor
+cd ../frontend
 
 # npm 의존성 확인
 if [ ! -d "node_modules" ]; then
@@ -74,8 +74,8 @@ echo "   - 프론트엔드: kill $FRONTEND_PID"
 echo "   - 또는: Ctrl+C (이 터미널에서)"
 echo ""
 echo "📚 문서:"
-echo "   - 사용 가이드: frontend/epl-predictor/MARKET_VALUE_GUIDE.md"
-echo "   - 구현 보고서: frontend/epl-predictor/MARKET_VALUE_IMPLEMENTATION.md"
+echo "   - 사용 가이드: frontend/docs/MARKET_VALUE_GUIDE.md"
+echo "   - 구현 보고서: frontend/docs/MARKET_VALUE_IMPLEMENTATION.md"
 echo ""
 echo "💡 데모 모드:"
 echo "   현재 데모 모드로 실행 중입니다."

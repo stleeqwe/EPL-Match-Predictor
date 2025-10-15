@@ -219,8 +219,8 @@ if [ -f "epl_predictor.db" ]; then
     fi
 else
     print_step "Initializing database..."
-    if [ -f "init_database.py" ]; then
-        python init_database.py
+    if [ -f "scripts/init/init_database.py" ]; then
+        python scripts/init/init_database.py
         print_success "Database initialized"
     else
         print_info "No database initialization script found (optional)"
@@ -233,7 +233,7 @@ cd ..
 # Frontend setup
 print_header "7/8 Frontend Setup"
 print_step "Installing Node.js dependencies..."
-cd frontend/epl-predictor
+cd frontend
 
 if [ -d "node_modules" ]; then
     print_warning "node_modules already exists. Removing..."
@@ -250,7 +250,7 @@ else
     exit 1
 fi
 
-cd ../..
+cd ..
 
 # Create start script
 print_header "8/8 Creating Start Script"
@@ -286,10 +286,10 @@ sleep 3
 
 # Start frontend
 echo -e "${GREEN}[Frontend]${NC} Starting React app on port 3000..."
-cd frontend/epl-predictor
+cd frontend
 npm start &
 FRONTEND_PID=$!
-cd ../..
+cd ..
 
 echo ""
 echo -e "${GREEN}✅ Both services started!${NC}"
