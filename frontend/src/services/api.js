@@ -290,6 +290,102 @@ export const eplAPI = {
 };
 
 // ============================================================
+// Formations API
+// ============================================================
+
+export const formationsAPI = {
+  /**
+   * 팀 포메이션 저장
+   * @param {string} teamName - 팀 이름
+   * @param {string} formation - 포메이션 (예: "4-3-3")
+   * @param {Object} formationData - 포메이션 상세 데이터
+   */
+  save: (teamName, formation, formationData = {}) =>
+    api.post(`/teams/${encodeURIComponent(teamName)}/formation`, {
+      formation,
+      formation_data: formationData
+    }),
+
+  /**
+   * 팀 포메이션 조회
+   * @param {string} teamName - 팀 이름
+   */
+  get: (teamName) =>
+    api.get(`/teams/${encodeURIComponent(teamName)}/formation`)
+};
+
+// ============================================================
+// Lineups API
+// ============================================================
+
+export const lineupsAPI = {
+  /**
+   * 팀 라인업 저장 (포지션별 선수 매핑)
+   * @param {string} teamName - 팀 이름
+   * @param {string} formation - 포메이션
+   * @param {Object} lineup - 라인업 { "GK": 123, "RB": 456, ... }
+   */
+  save: (teamName, formation, lineup) =>
+    api.post(`/teams/${encodeURIComponent(teamName)}/lineup`, {
+      formation,
+      lineup
+    }),
+
+  /**
+   * 팀 라인업 조회
+   * @param {string} teamName - 팀 이름
+   */
+  get: (teamName) =>
+    api.get(`/teams/${encodeURIComponent(teamName)}/lineup`)
+};
+
+// ============================================================
+// Tactics API
+// ============================================================
+
+export const tacticsAPI = {
+  /**
+   * 팀 전술 설정 저장
+   * @param {string} teamName - 팀 이름
+   * @param {Object} tactics - 전술 설정 (defensive, offensive, etc.)
+   */
+  save: (teamName, tactics) =>
+    api.post(`/teams/${encodeURIComponent(teamName)}/tactics`, tactics),
+
+  /**
+   * 팀 전술 설정 조회
+   * @param {string} teamName - 팀 이름
+   */
+  get: (teamName) =>
+    api.get(`/teams/${encodeURIComponent(teamName)}/tactics`)
+};
+
+// ============================================================
+// Team Strength API
+// ============================================================
+
+export const teamStrengthAPI = {
+  /**
+   * 팀 전력 분석 저장 (18개 세부 속성)
+   * @param {string} teamName - 팀 이름
+   * @param {Object} ratings - 18개 팀 전력 속성
+   * @param {string} comment - 팀 전체 코멘트 (선택)
+   */
+  save: (teamName, ratings, comment = '') =>
+    api.post(`/teams/${encodeURIComponent(teamName)}/strength`, {
+      ratings,
+      comment
+    }),
+
+  /**
+   * 팀 전력 분석 조회
+   * @param {string} teamName - 팀 이름
+   */
+  get: (teamName) =>
+    api.get(`/teams/${encodeURIComponent(teamName)}/strength`)
+};
+
+// ============================================================
 // Injuries API
 // ============================================================
 
@@ -337,6 +433,10 @@ const apiClient = {
   analytics: analyticsAPI,
   data: dataAPI,
   epl: eplAPI,
+  formations: formationsAPI,
+  lineups: lineupsAPI,
+  tactics: tacticsAPI,
+  teamStrength: teamStrengthAPI,
   injuries: injuriesAPI,
 
   // Utilities

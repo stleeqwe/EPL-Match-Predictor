@@ -595,14 +595,8 @@ function App() {
 
           {/* Main Content */}
           <main className="relative">
-            {/* 각 페이지를 동시에 마운트하고 CSS로 표시/숨김 제어 */}
-            <div
-              className={`w-full transition-opacity duration-300 ${
-                currentPage === 'dashboard'
-                  ? 'opacity-100 relative'
-                  : 'opacity-0 absolute inset-0 pointer-events-none'
-              }`}
-            >
+            {/* 조건부 렌더링: 현재 페이지만 마운트하여 성능 최적화 */}
+            {currentPage === 'dashboard' && (
               <EPLDashboard
                 darkMode={darkMode}
                 onTeamClick={handleTeamClick}
@@ -610,45 +604,27 @@ function App() {
                 onMatchPredictionClick={handleMatchPredictionClick}
                 onPlayerClick={handlePlayerClick}
               />
-            </div>
-            <div
-              className={`w-full transition-opacity duration-300 ${
-                currentPage === 'ratings'
-                  ? 'opacity-100 relative'
-                  : 'opacity-0 absolute inset-0 pointer-events-none'
-              }`}
-            >
+            )}
+            {currentPage === 'ratings' && (
               <PlayerRatingManager
                 darkMode={darkMode}
                 initialTeam={selectedTeam}
                 initialPlayer={selectedPlayer}
                 onRatingsUpdate={handleRatingsUpdate}
               />
-            </div>
-            <div
-              className={`w-full transition-opacity duration-300 ${
-                currentPage === 'match-simulator'
-                  ? 'opacity-100 relative'
-                  : 'opacity-0 absolute inset-0 pointer-events-none'
-              }`}
-            >
+            )}
+            {currentPage === 'match-simulator' && (
               <MatchSimulator
                 darkMode={darkMode}
                 selectedMatch={selectedMatch}
                 onTeamClick={handleTeamClick}
                 playerRatings={getMergedRatings()}
-                isActive={currentPage === 'match-simulator'}
+                isActive={true}
               />
-            </div>
-            <div
-              className={`w-full transition-opacity duration-300 ${
-                currentPage === 'match-predictions'
-                  ? 'opacity-100 relative'
-                  : 'opacity-0 absolute inset-0 pointer-events-none'
-              }`}
-            >
+            )}
+            {currentPage === 'match-predictions' && (
               <MatchPredictionsDashboard darkMode={darkMode} selectedMatch={selectedPredictionMatch} />
-            </div>
+            )}
           </main>
 
           {/* Footer */}

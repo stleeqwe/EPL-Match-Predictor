@@ -111,14 +111,29 @@ class PositionAttribute(Base):
 # 데이터베이스 초기화 함수
 def init_player_db(db_path='player_analysis.db'):
     """데이터베이스 초기화"""
-    engine = create_engine(f'sqlite:///{db_path}', echo=False)
+    # 환경 변수에서 DATABASE_URL 확인 (PostgreSQL)
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        engine = create_engine(database_url, echo=False)
+    else:
+        # Fallback to SQLite
+        engine = create_engine(f'sqlite:///{db_path}', echo=False)
+
     Base.metadata.create_all(engine)
     return engine
 
 
 def get_player_session(db_path='player_analysis.db'):
-    """세션 생성"""
-    engine = create_engine(f'sqlite:///{db_path}', echo=False)
+    """세션 생성 (SQLite 또는 PostgreSQL)"""
+    # 환경 변수에서 DATABASE_URL 확인
+    database_url = os.getenv('DATABASE_URL')
+    if database_url:
+        # PostgreSQL 연결
+        engine = create_engine(database_url, echo=False)
+    else:
+        # SQLite 연결 (로컬 개발)
+        engine = create_engine(f'sqlite:///{db_path}', echo=False)
+
     Session = sessionmaker(bind=engine)
     return Session()
 

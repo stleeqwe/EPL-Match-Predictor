@@ -1003,6 +1003,7 @@ OVERALL_SCORES_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'over
 FORMATIONS_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'formations')
 LINEUPS_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'lineups')
 TACTICS_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'tactics')
+TEAM_STRENGTH_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'team_strength')
 INJURIES_DIR = os.path.join(os.path.dirname(__file__), '..', 'data', 'injuries')
 
 def ensure_overall_scores_dir():
@@ -1015,8 +1016,9 @@ def ensure_data_dirs():
     os.makedirs(FORMATIONS_DIR, exist_ok=True)
     os.makedirs(LINEUPS_DIR, exist_ok=True)
     os.makedirs(TACTICS_DIR, exist_ok=True)
+    os.makedirs(TEAM_STRENGTH_DIR, exist_ok=True)
     os.makedirs(INJURIES_DIR, exist_ok=True)
-    logger.info("📁 Data directories ready: formations, lineups, tactics, overall_scores, injuries")
+    logger.info("📁 Data directories ready: formations, lineups, tactics, team_strength, overall_scores, injuries")
 
 # 서버 시작 시 필요한 디렉토리 자동 생성
 ensure_data_dirs()
@@ -1454,6 +1456,97 @@ def get_team_tactics(team_name):
     except Exception as e:
         logger.error(f"Error fetching tactics: {str(e)}", exc_info=True)
         raise APIError(f"Failed to fetch tactics: {str(e)}", status_code=500)
+
+
+# ==================== Team Strength API ====================
+
+@app.route('/api/teams/<team_name>/strength', methods=['POST'])
+def save_team_strength(team_name):
+    """
+    팀 전력 분석 저장 (18개 세부 속성)
+
+    Body: {
+        "ratings": {
+            "tactical_understanding": 3.5,
+            "positioning_balance": 3.75,
+            "attack_to_defense_transition": 3.25,
+            ...  # 18개 속성
+        },
+        "comment": "팀 전체 코멘트 (선택)"
+    }
+    """
+    try:
+        data = request.json or {}
+
+        # 필수 필드 검증
+        if 'ratings' not in data:
+            raise ValidationError("Missing required field: ratings")
+
+        ratings = data['ratings']
+        comment = data.get('comment', '')
+
+        # 저장할 데이터
+        strength_data = {
+            'team_name': team_name,
+            'ratings': ratings,
+            'comment': comment,
+            'timestamp': datetime.now().isoformat()
+        }
+
+        # JSON 파일로 저장
+        ensure_data_dirs()
+        file_path = os.path.join(TEAM_STRENGTH_DIR, f"{team_name}.json")
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(strength_data, f, indent=2, ensure_ascii=False)
+
+        logger.info(f"✅ Saved team strength for {team_name}: {len(ratings)} attributes")
+
+        return jsonify({
+            'success': True,
+            'team': team_name,
+            'data': strength_data
+        })
+
+    except (ValidationError, NotFoundError):
+        raise
+    except Exception as e:
+        logger.error(f"Error saving team strength: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to save team strength: {str(e)}", status_code=500)
+
+
+@app.route('/api/teams/<team_name>/strength', methods=['GET'])
+def get_team_strength(team_name):
+    """
+    팀 전력 분석 조회
+
+    Returns: {
+        "team_name": "Liverpool",
+        "ratings": {...},
+        "comment": "...",
+        "timestamp": "2025-01-15T12:00:00"
+    }
+    """
+    try:
+        file_path = os.path.join(TEAM_STRENGTH_DIR, f"{team_name}.json")
+
+        if not os.path.exists(file_path):
+            return jsonify({
+                'success': False,
+                'message': f"No team strength data found for {team_name}"
+            }), 404
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            strength_data = json.load(f)
+
+        return jsonify({
+            'success': True,
+            'data': strength_data
+        })
+
+    except Exception as e:
+        logger.error(f"Error fetching team strength: {str(e)}", exc_info=True)
+        raise APIError(f"Failed to fetch team strength: {str(e)}", status_code=500)
 
 
 # ==================== Simulation Readiness Check API ====================

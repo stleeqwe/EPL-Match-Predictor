@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Save, RotateCcw, Shield, Target, TrendingUp, Zap, Heart, Info, MessageSquare } from 'lucide-react';
 import RatingSlider from './RatingSlider';
+import { teamStrengthAPI } from '../services/api';
 
 /**
  * 팀 전력 분석 프레임워크
@@ -180,13 +181,30 @@ const TeamRating = ({ team, darkMode = false }) => {
     }
   }, [team]);
 
-  const loadTeamStrength = () => {
-    // localStorage에서 로드
+  const loadTeamStrength = async () => {
+    try {
+      // 1. Backend API에서 먼저 시도
+      const response = await teamStrengthAPI.get(team);
+
+      if (response.success && response.data) {
+        setRatings(response.data.ratings || {});
+        setComment(response.data.comment || '');
+        console.log(`✅ Loaded team strength from backend: ${team}`);
+        setHasChanges(false);
+        return;
+      }
+    } catch (error) {
+      console.warn('Failed to load team strength from backend, trying localStorage:', error);
+    }
+
+    // 2. Backend 실패 시 localStorage fallback
     const saved = localStorage.getItem(`team_strength_${team}`);
     const savedComment = localStorage.getItem(`team_comment_${team}`);
 
     if (saved) {
       setRatings(JSON.parse(saved));
+      setComment(savedComment || '');
+      console.log(`⚠️ Loaded team strength from localStorage (backend not available)`);
     } else {
       // 기본값 2.5로 초기화
       const initialRatings = {};
@@ -198,7 +216,6 @@ const TeamRating = ({ team, darkMode = false }) => {
       setRatings(initialRatings);
     }
 
-    setComment(savedComment || '');
     setHasChanges(false);
   };
 
@@ -218,12 +235,23 @@ const TeamRating = ({ team, darkMode = false }) => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
     try {
+      // 1. localStorage에 백업 저장 (fallback)
       localStorage.setItem(`team_strength_${team}`, JSON.stringify(ratings));
       localStorage.setItem(`team_comment_${team}`, comment);
-      alert('팀 전력 분석 및 코멘트가 저장되었습니다!');
+
+      // 2. Backend API에 저장
+      try {
+        await teamStrengthAPI.save(team, ratings, comment);
+        console.log(`✅ Saved team strength to backend: ${team}`);
+        alert('팀 전력 분석 및 코멘트가 저장되었습니다!');
+      } catch (apiError) {
+        console.warn('Failed to save to backend, saved to localStorage only:', apiError);
+        alert('서버 저장 실패 (로컬에는 저장됨): ' + apiError.message);
+      }
+
       setHasChanges(false);
     } catch (error) {
       console.error('Failed to save team strength:', error);

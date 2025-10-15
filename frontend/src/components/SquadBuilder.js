@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Save, RotateCcw, TrendingUp, Shield, Target, Activity, Award, Flame, X, Search, Filter, ChevronDown, AlertCircle, Check, User } from 'lucide-react';
 import './SquadBuilder.css';
 import { getPlayerPhotoUrl } from '../utils/playerPhoto';
-import { injuriesAPI } from '../services/api';
+import { injuriesAPI, formationsAPI, lineupsAPI } from '../services/api';
 import InjuryBadge, { InjuryIndicator } from './InjuryBadge';
+import { calculateWeightedAverage, DEFAULT_SUB_POSITION } from '../config/positionAttributes';
 
 /**
  * 컴팩트 선수 카드 컴포넌트 (Squad Builder용) - 프로필 사진 + 핵심 정보
@@ -107,7 +108,7 @@ const PlayerCardCompact = ({
                 player.rating >= 3.0 ? 'text-purple-400' :
                 'text-amber-400'
               }`}>
-                {player.rating.toFixed(1)}
+                {player.rating.toFixed(2)}
               </span>
             )}
           </div>
@@ -145,18 +146,19 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
   const formationDropdownRef = useRef(null);
   const selectedFormationRef = useRef(null);
 
-  // Calculate player rating from playerRatings
+  // Calculate player rating from playerRatings (using weighted average)
   const calculatePlayerRating = useCallback((player) => {
     const savedRatings = playerRatings[player.id];
 
-    if (savedRatings && typeof savedRatings === 'object') {
-      const ratingValues = Object.entries(savedRatings)
-        .filter(([key, value]) => !key.startsWith('_') && typeof value === 'number')
-        .map(([_, value]) => value);
+    if (savedRatings && typeof savedRatings === 'object' && Object.keys(savedRatings).length > 0) {
+      // 서브 포지션 가져오기
+      const subPosition = savedRatings._subPosition || DEFAULT_SUB_POSITION[player.position];
 
-      if (ratingValues.length > 0) {
-        const average = ratingValues.reduce((sum, val) => sum + val, 0) / ratingValues.length;
-        return Math.round(average * 10) / 10;
+      // 가중 평균 계산 (포지션별 중요 속성에 가중치 적용)
+      const weightedAverage = calculateWeightedAverage(savedRatings, subPosition);
+
+      if (weightedAverage !== null) {
+        return weightedAverage;
       }
     }
 
@@ -235,23 +237,74 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
     fetchInjuries();
   }, [fetchPlayers, fetchInjuries]);
 
-  // Load saved squad from localStorage
+  // Load saved squad from Backend (with localStorage fallback)
   useEffect(() => {
-    if (team) {
-      const savedSquad = localStorage.getItem(`squad_${team}`);
-      if (savedSquad) {
-        try {
+    const loadSquad = async () => {
+      if (!team) return;
+
+      try {
+        // 1. Backend API에서 먼저 시도
+        const [formationResponse, lineupResponse] = await Promise.allSettled([
+          formationsAPI.get(team),
+          lineupsAPI.get(team)
+        ]);
+
+        let loadedFormation = '4-3-3';
+        let loadedStarters = {};
+
+        // Formation 로드
+        if (formationResponse.status === 'fulfilled' && formationResponse.value.success) {
+          loadedFormation = formationResponse.value.data.formation;
+          console.log(`✅ Loaded formation from backend: ${loadedFormation}`);
+        }
+
+        // Lineup 로드
+        if (lineupResponse.status === 'fulfilled' && lineupResponse.value.success) {
+          loadedStarters = lineupResponse.value.data.lineup;
+          console.log(`✅ Loaded lineup from backend: ${Object.keys(loadedStarters).length} players`);
+        }
+
+        // Backend에서 불러온 데이터가 있으면 설정
+        if (loadedFormation || Object.keys(loadedStarters).length > 0) {
+          setFormation(loadedFormation);
+          setSquad({
+            starters: loadedStarters,
+            substitutes: []
+          });
+          return;
+        }
+
+        // 2. Backend에 데이터가 없으면 localStorage fallback
+        const savedSquad = localStorage.getItem(`squad_${team}`);
+        if (savedSquad) {
           const squadData = JSON.parse(savedSquad);
           setFormation(squadData.formation || '4-3-3');
           setSquad({
             starters: squadData.starters || {},
             substitutes: squadData.substitutes || []
           });
-        } catch (error) {
-          console.error('Failed to load saved squad:', error);
+          console.log(`⚠️ Loaded squad from localStorage (backend not available)`);
+        }
+      } catch (error) {
+        // 에러 발생 시 localStorage fallback
+        console.error('Failed to load squad from backend, trying localStorage:', error);
+        const savedSquad = localStorage.getItem(`squad_${team}`);
+        if (savedSquad) {
+          try {
+            const squadData = JSON.parse(savedSquad);
+            setFormation(squadData.formation || '4-3-3');
+            setSquad({
+              starters: squadData.starters || {},
+              substitutes: squadData.substitutes || []
+            });
+          } catch (parseError) {
+            console.error('Failed to parse localStorage squad:', parseError);
+          }
         }
       }
-    }
+    };
+
+    loadSquad();
   }, [team]);
 
   // 부상자가 스쿼드에 있으면 자동으로 제거
@@ -1015,7 +1068,7 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
     try {
       setSaveStatus('saving');
 
-      // localStorage에 스쿼드 저장
+      // 스쿼드 데이터
       const squadData = {
         team,
         formation,
@@ -1024,7 +1077,25 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
         savedAt: new Date().toISOString()
       };
 
+      // 1. localStorage에 백업 저장 (fallback)
       localStorage.setItem(`squad_${team}`, JSON.stringify(squadData));
+
+      // 2. Backend API에 저장
+      try {
+        // Formation 저장
+        await formationsAPI.save(team, formation, {});
+
+        // Lineup 저장 (11명 선수가 있는 경우만)
+        if (Object.keys(squad.starters).length === 11) {
+          await lineupsAPI.save(team, formation, squad.starters);
+          console.log(`✅ Saved squad to backend: ${team}`);
+        } else {
+          console.warn(`⚠️ Incomplete lineup (${Object.keys(squad.starters).length}/11), saved to localStorage only`);
+        }
+      } catch (apiError) {
+        // Backend 저장 실패해도 localStorage에는 저장되었으므로 경고만 출력
+        console.warn('Failed to save to backend, saved to localStorage only:', apiError);
+      }
 
       // 약간의 지연 후 성공 상태로 변경 (사용자가 인지할 수 있도록)
       await new Promise(resolve => setTimeout(resolve, 300));
@@ -1362,7 +1433,7 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
 
                               {/* Rating - 포지션 기반 색상 */}
                               <div className={`px-1.5 py-0 rounded-md text-base font-black ${getPositionBadgeColor(getRole(posKey))} border shadow-sm`}>
-                                {player.rating !== null ? player.rating.toFixed(1) : '-'}
+                                {player.rating !== null ? player.rating.toFixed(2) : '-'}
                               </div>
 
                               {/* Remove button */}
@@ -1828,7 +1899,7 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
                                     player.rating >= 3.0 ? 'text-purple-400' :
                                     'text-amber-400'
                                   }`}>
-                                    {player.rating.toFixed(1)}
+                                    {player.rating.toFixed(2)}
                                   </span>
                                   <span className="text-[10px] text-white/50 uppercase tracking-wider font-bold mt-0.5">
                                     Rating
