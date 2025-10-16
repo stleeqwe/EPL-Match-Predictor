@@ -25,14 +25,14 @@ class QwenClient(BaseAIClient):
 
     def __init__(
         self,
-        model: str = "qwen2.5:32b",
+        model: str = "qwen2.5:14b",
         base_url: str = "http://localhost:11434"
     ):
         """
         Initialize Qwen client.
 
         Args:
-            model: Qwen model name (default: qwen2.5:32b)
+            model: Qwen model name (default: qwen2.5:14b)
             base_url: Ollama server URL
         """
         self.model = model
@@ -295,7 +295,7 @@ Ensure probabilities sum to 1.0. Confidence levels: low, medium, high."""
         return {
             'provider': 'Qwen (Local Ollama)',
             'model': self.model,
-            'version': '2.5-32B',
+            'version': '2.5-14B',
             'capabilities': [
                 'Match prediction',
                 'Tactical analysis',
@@ -303,7 +303,7 @@ Ensure probabilities sum to 1.0. Confidence levels: low, medium, high."""
                 'Free (no API costs)'
             ],
             'cost_per_1k_tokens': 0.0,
-            'parameters': '32.8B',
+            'parameters': '14.7B',
             'quantization': 'Q4_K_M'
         }
 
@@ -333,7 +333,7 @@ Ensure probabilities sum to 1.0. Confidence levels: low, medium, high."""
 _qwen_client = None
 
 
-def get_qwen_client(model: str = "qwen2.5:32b") -> QwenClient:
+def get_qwen_client(model: str = "qwen2.5:14b") -> QwenClient:
     """Get global Qwen client instance (singleton)."""
     global _qwen_client
     if _qwen_client is None:
