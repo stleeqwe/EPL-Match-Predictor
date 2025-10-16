@@ -1,0 +1,378 @@
+/Users/stlee/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 145, in analyze_result
+    result = self._dict_to_analysis_result(analysis_dict)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 313, in _dict_to_analysis_result
+    adjusted_scenario = self._dict_to_scenario(data['adjusted_scenario'])
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 271, in _dict_to_scenario
+    events = [
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 272, in <listcomp>
+    ScenarioEvent(
+  File "<string>", line 9, in __init__
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/ai/data_models.py", line 125, in __post_init__
+    assert 0 <= self.minute_range[1] <= 90
+AssertionError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/test_comprehensive_scenarios.py", line 99, in run_scenario
+    result = self.simulator.simulate_match(match_input)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/match_simulator_v3.py", line 106, in simulate_match
+    analysis = self.ai.analyze_result(scenario, result, iteration, self.max_iterations)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 147, in analyze_result
+    raise AIClientError(f"Phase 3 AnalysisResult 생성 실패: {e}")
+simulation.v3.ai_integration.AIClientError: Phase 3 AnalysisResult 생성 실패: 
+
+======================================================================
+🚀 Comprehensive Domain Input Scenario Testing
+======================================================================
+✅ Qwen 2.5 14B ready
+
+
+======================================================================
+🎯 Scenario: Scenario 1: Strong vs Weak Team
+======================================================================
+
+🏠 Home: Manchester City
+   Formation: 4-3-3 | Style: possession
+   Attack: 95 | Defense: 90 | Press: 85
+
+✈️  Away: Sheffield United
+   Formation: 5-4-1 | Style: direct
+   Attack: 65 | Defense: 68 | Press: 70
+
+⏱️  Running simulation...
+
+============================================================
+Match Simulator V3: Manchester City vs Sheffield United
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 5개 이벤트
+
+--- Iteration 1/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 4-1
+  서사 일치율: 40%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.37
+  수렴 여부: ❌ No
+Phase 5: 시나리오 조정...
+  ✅ 시나리오 조정 완료
+
+--- Iteration 2/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 4-0
+  서사 일치율: 40%
+Phase 3: AI 분석/조정...
+  AI 상태: converged
+Phase 4: 수렴 판단...
+  수렴 점수: 0.73
+  수렴 여부: ✅ Yes
+
+✅ 수렴 완료! (Iteration 2)
+
+Phase 7: 최종 리포트 생성...
+  ✅ 리포트 생성 완료 (1565 문자)
+
+============================================================
+✅ 시뮬레이션 완료!
+============================================================
+
+
+📊 Results:
+   Score: 4-0
+   Iterations: 2
+   Convergence: 0.73
+
+📈 Stats:
+   Home Shots: 20 | Away Shots: 9
+   Home Possession: 49% | Away Possession: 41%
+
+🔍 Validation:
+   ✅ Home team dominance reflected in score
+   ⚠️  Possession style not well reflected
+   ✅ Higher attack strength reflected in shots (20 vs 9)
+   ✅ Reasonable convergence score: 0.73
+
+✅ Scenario PASSED
+
+
+======================================================================
+🎯 Scenario: Scenario 2: Evenly Matched Teams
+======================================================================
+
+🏠 Home: Arsenal
+   Formation: 4-3-3 | Style: possession
+   Attack: 88 | Defense: 85 | Press: 82
+
+✈️  Away: Liverpool
+   Formation: 4-3-3 | Style: possession
+   Attack: 87 | Defense: 84 | Press: 88
+
+⏱️  Running simulation...
+
+============================================================
+Match Simulator V3: Arsenal vs Liverpool
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 7개 이벤트
+
+--- Iteration 1/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 1-0
+  서사 일치율: 14%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.20
+  수렴 여부: ❌ No
+Phase 5: 시나리오 조정...
+  ✅ 시나리오 조정 완료
+
+--- Iteration 2/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 3-0
+  서사 일치율: 14%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.21
+  수렴 여부: ❌ No
+Phase 5: 시나리오 조정...
+  ✅ 시나리오 조정 완료
+
+⚠️  최대 반복 2회 도달
+
+Phase 7: 최종 리포트 생성...
+  ✅ 리포트 생성 완료 (1463 문자)
+
+============================================================
+✅ 시뮬레이션 완료!
+============================================================
+
+
+📊 Results:
+   Score: 3-0
+   Iterations: 2
+   Convergence: 0.21
+
+📈 Stats:
+   Home Shots: 11 | Away Shots: 13
+   Home Possession: 38% | Away Possession: 52%
+
+🔍 Validation:
+   ✅ Balanced match (score: 3-0)
+   ⚠️  Low convergence: 0.21
+
+✅ Scenario PASSED
+
+
+======================================================================
+🎯 Scenario: Scenario 3: Attack-focused vs Defense-focused
+======================================================================
+
+🏠 Home: Newcastle United
+   Formation: 4-2-3-1 | Style: direct
+   Attack: 90 | Defense: 72 | Press: 78
+
+✈️  Away: Atletico Madrid
+   Formation: 4-4-2 | Style: direct
+   Attack: 75 | Defense: 92 | Press: 85
+
+⏱️  Running simulation...
+
+============================================================
+Match Simulator V3: Newcastle United vs Atletico Madrid
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 6개 이벤트
+
+--- Iteration 1/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 0-3
+  서사 일치율: 0%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.11
+  수렴 여부: ❌ No
+Phase 5: 시나리오 조정...
+  ✅ 시나리오 조정 완료
+
+--- Iteration 2/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 0-3
+  서사 일치율: 0%
+Phase 3: AI 분석/조정...
+
+❌ Scenario FAILED: Phase 3 AnalysisResult 생성 실패: 
+
+
+======================================================================
+🎯 Scenario: Scenario 4: Possession vs Direct Playstyle
+======================================================================
+
+🏠 Home: Brighton
+   Formation: 4-3-3 | Style: possession
+   Attack: 80 | Defense: 78 | Press: 75
+
+✈️  Away: Burnley
+   Formation: 4-4-2 | Style: direct
+   Attack: 72 | Defense: 80 | Press: 78
+
+⏱️  Running simulation...
+
+============================================================
+Match Simulator V3: Brighton vs Burnley
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 6개 이벤트
+
+--- Iteration 1/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 1-2
+  서사 일치율: 0%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.11
+  수렴 여부: ❌ No
+Phase 5: 시나리오 조정...
+  ✅ 시나리오 조정 완료
+
+--- Iteration 2/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 4-0
+  서사 일치율: 17%
+Phase 3: AI 분석/조정...
+  AI 상태: converged
+Phase 4: 수렴 판단...
+  수렴 점수: 0.57
+  수렴 여부: ❌ No
+  ℹ️  조정된 시나리오 없음, 현재 시나리오 유지
+
+⚠️  최대 반복 2회 도달
+
+Phase 7: 최종 리포트 생성...
+  ✅ 리포트 생성 완료 (1646 문자)
+
+============================================================
+✅ 시뮬레이션 완료!
+============================================================
+
+
+📊 Results:
+   Score: 4-0
+   Iterations: 2
+   Convergence: 0.57
+
+📈 Stats:
+   Home Shots: 19 | Away Shots: 10
+   Home Possession: 61% | Away Possession: 29%
+
+🔍 Validation:
+   ✅ Possession style reflected in stats (Home: 61%)
+   ✅ Reasonable convergence score: 0.57
+
+✅ Scenario PASSED
+
+
+======================================================================
+🎯 Scenario: Scenario 5: Formation Variety (3-5-2 vs 4-2-3-1)
+======================================================================
+
+🏠 Home: Tottenham
+   Formation: 3-5-2 | Style: mixed
+   Attack: 85 | Defense: 80 | Press: 82
+
+✈️  Away: Chelsea
+   Formation: 4-2-3-1 | Style: possession
+   Attack: 83 | Defense: 82 | Press: 80
+
+⏱️  Running simulation...
+
+============================================================
+Match Simulator V3: Tottenham vs Chelsea
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 6개 이벤트
+
+--- Iteration 1/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 2-5
+  서사 일치율: 0%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.11
+  수렴 여부: ❌ No
+Phase 5: 시나리오 조정...
+  ✅ 시나리오 조정 완료
+
+--- Iteration 2/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 3-5
+  서사 일치율: 0%
+Phase 3: AI 분석/조정...
+  AI 상태: converged
+Phase 4: 수렴 판단...
+  수렴 점수: 0.46
+  수렴 여부: ❌ No
+  ℹ️  조정된 시나리오 없음, 현재 시나리오 유지
+
+⚠️  최대 반복 2회 도달
+
+Phase 7: 최종 리포트 생성...
+  ✅ 리포트 생성 완료 (1843 문자)
+
+============================================================
+✅ 시뮬레이션 완료!
+============================================================
+
+
+📊 Results:
+   Score: 3-5
+   Iterations: 2
+   Convergence: 0.46
+
+📈 Stats:
+   Home Shots: 13 | Away Shots: 34
+   Home Possession: 17% | Away Possession: 73%
+
+🔍 Validation:
+   ✅ Reasonable convergence score: 0.46
+
+✅ Scenario PASSED
+
+
+======================================================================
+📋 Test Summary
+======================================================================
+
+Total Scenarios: 5
+Passed: 4
+Failed: 1
+
+----------------------------------------------------------------------
+✅ 1. Scenario 1: Strong vs Weak Team
+   Score: 4-0 | Convergence: 0.73
+✅ 2. Scenario 2: Evenly Matched Teams
+   Score: 3-0 | Convergence: 0.21
+❌ 3. Scenario 3: Attack-focused vs Defense-focused
+   Error: Phase 3 AnalysisResult 생성 실패: 
+✅ 4. Scenario 4: Possession vs Direct Playstyle
+   Score: 4-0 | Convergence: 0.57
+✅ 5. Scenario 5: Formation Variety (3-5-2 vs 4-2-3-1)
+   Score: 3-5 | Convergence: 0.46
+----------------------------------------------------------------------
+
+⚠️  1 scenario(s) failed
