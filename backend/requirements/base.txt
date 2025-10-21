@@ -1,0 +1,42 @@
+# EPL Match Predictor - Base Dependencies
+# Core dependencies required for all environments
+
+# Web Framework
+flask==3.0.0
+flask-cors==4.0.0
+werkzeug==3.0.1
+
+# Data Processing
+pandas==2.1.4
+numpy==1.26.2
+
+# Scientific Computing
+scipy==1.11.4
+scikit-learn==1.3.2
+
+# Database
+sqlalchemy==2.0.23
+
+# Web Scraping & API
+beautifulsoup4==4.12.2
+lxml==4.9.3
+requests==2.31.0
+
+# Utilities
+python-dateutil==2.8.2
+python-dotenv==1.0.0
+
+# Validation & Data Models
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# AI & ML
+anthropic==0.39.0
+google-generativeai==0.8.3
+
+# Authentication & Security
+PyJWT==2.8.0
+bcrypt==4.1.2
+
+# Async Support
+httpx==0.26.0

@@ -1,0 +1,20 @@
+# EPL Match Predictor - Production Dependencies
+# Dependencies for production deployment
+
+-r base.txt
+
+# Production Web Server
+gunicorn==21.2.0
+
+# Production Database
+psycopg2-binary==2.9.9
+
+# Caching
+redis==5.0.1
+hiredis==2.3.2
+
+# Monitoring & Error Tracking
+sentry-sdk==1.39.2
+
+# Performance Optimization
+flask-caching==2.1.0
