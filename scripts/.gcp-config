@@ -1,0 +1,12 @@
+# GCP 배포 설정
+export GCP_PROJECT_ID="epl-predictor-2025"
+export GCP_REGION="asia-northeast3"
+export GCP_ZONE="asia-northeast3-a"
+export GCP_SERVICE_NAME="epl-predictor-backend"
+export GCP_DB_INSTANCE="epl-db-prod"
+export GCP_BUCKET_NAME="epl-predictor-2025-frontend"
+export GCP_ARTIFACT_REPO="epl-docker-repo"
+export GCP_DB_PASSWORD='yDyXvwaihU8lVVmHgyL1AGFmT'
+export GCP_BACKEND_URL='https://epl-predictor-backend-481906190891.asia-northeast3.run.app'
+export GCP_FRONTEND_IP='34.49.202.56'
+export GCP_FRONTEND_URL='http://34.49.202.56'

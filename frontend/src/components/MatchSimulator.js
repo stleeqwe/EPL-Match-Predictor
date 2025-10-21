@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, RefreshCw, Trophy, Swords } from 'lucide-react';
 import WeightSettings from './WeightSettings';
 import TeamDropdown from './TeamDropdown';
+import InlineSimulationProgress from './InlineSimulationProgress';
 import { simulationAPI } from '../services/authAPI';
 
 /**
@@ -25,6 +26,7 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
     stats: 0.15
   });
   const [showWeightSettings, setShowWeightSettings] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
 
   useEffect(() => {
     fetchTeams();
@@ -273,38 +275,46 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
     setSimulating(true);
 
     try {
+      // V3 Pipeline mode - Use SSE streaming with InlineSimulationProgress
+      if (aiModel === 'v3') {
+        console.log('Using V3 Pipeline for simulation');
+        setShowDashboard(true);
+        setSimulating(false); // InlineSimulationProgress handles its own loading state
+        return;
+      }
+
+      // Client-side simulation (Basic/Pro/Super/Gemini models)
       const homeScore = await getTeamScore(homeTeam);
       const awayScore = await getTeamScore(awayTeam);
 
-      // 클라이언트 사이드 시뮬레이션 (Qwen AI 로직 적용)
-        await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // AI 모델에 따라 다른 시뮬레이션 실행
-        let goals;
-        if (aiModel === 'basic') {
-          goals = simulateBasic(homeScore, awayScore);
-        } else if (aiModel === 'pro') {
-          goals = simulatePro(homeScore, awayScore);
-        } else if (aiModel === 'super') {
-          goals = simulateSuper(homeScore, awayScore);
-        }
+      // AI 모델에 따라 다른 시뮬레이션 실행
+      let goals;
+      if (aiModel === 'basic') {
+        goals = simulateBasic(homeScore, awayScore);
+      } else if (aiModel === 'pro') {
+        goals = simulatePro(homeScore, awayScore);
+      } else if (aiModel === 'super') {
+        goals = simulateSuper(homeScore, awayScore);
+      }
 
-        const { homeGoals, awayGoals } = goals;
+      const { homeGoals, awayGoals } = goals;
 
-        setResult({
-          home: {
-            name: homeTeam,
-            goals: homeGoals,
-            score: homeScore
-          },
-          away: {
-            name: awayTeam,
-            goals: awayGoals,
-            score: awayScore
-          },
-          winner: homeGoals > awayGoals ? 'home' : awayGoals > homeGoals ? 'away' : 'draw',
-          aiModel: aiModel
-        });
+      setResult({
+        home: {
+          name: homeTeam,
+          goals: homeGoals,
+          score: homeScore
+        },
+        away: {
+          name: awayTeam,
+          goals: awayGoals,
+          score: awayScore
+        },
+        winner: homeGoals > awayGoals ? 'home' : awayGoals > homeGoals ? 'away' : 'draw',
+        aiModel: aiModel
+      });
 
     } catch (error) {
       console.error('시뮬레이션 오류:', error);
@@ -318,7 +328,48 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
     setResult(null);
     setHomeTeam('');
     setAwayTeam('');
+    setShowDashboard(false);
     // aiModel은 유지 (사용자가 선택한 모델 유지)
+  };
+
+  const handleDashboardComplete = async (dashboardResult) => {
+    console.log('V3 Pipeline completed:', dashboardResult);
+
+    // Map V3 Pipeline result to MatchSimulator result format
+    const probabilities = dashboardResult.probabilities;
+    const winner =
+      probabilities.home_win > probabilities.away_win && probabilities.home_win > probabilities.draw ? 'home' :
+      probabilities.away_win > probabilities.home_win && probabilities.away_win > probabilities.draw ? 'away' :
+      'draw';
+
+    setResult({
+      home: {
+        name: homeTeam,
+        goals: null, // V3 doesn't provide exact goals
+        score: null,
+        winProbability: probabilities.home_win
+      },
+      away: {
+        name: awayTeam,
+        goals: null,
+        score: null,
+        winProbability: probabilities.away_win
+      },
+      winner: winner,
+      aiModel: 'v3',
+      probabilities: probabilities,
+      scenarios: dashboardResult.scenarios,
+      validation: dashboardResult.validation,
+      executionTime: dashboardResult.execution_time
+    });
+
+    setShowDashboard(false);
+  };
+
+  const handleDashboardCancel = () => {
+    console.log('V3 Pipeline cancelled');
+    setShowDashboard(false);
+    setSimulating(false);
   };
 
   if (loading) {
@@ -402,16 +453,25 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                 <p className="text-white/60">내가 평가한 팀 데이터를 기반으로 경기 결과를 예측합니다</p>
               </div>
 
-          {/* Team Selection */}
+          {/* Team Selection / V3 Pipeline Progress */}
           <AnimatePresence mode="wait">
             {!result ? (
-              <motion.div
-                key="selection"
-                className="relative z-10"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
+              showDashboard ? (
+                <InlineSimulationProgress
+                  key="progress"
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  onComplete={handleDashboardComplete}
+                  onCancel={handleDashboardCancel}
+                />
+              ) : (
+                <motion.div
+                  key="selection"
+                  className="relative z-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   {/* Home Team */}
                   <div className="p-6 rounded-sm bg-slate-900/60 backdrop-blur-sm border border-cyan-500/20">
@@ -541,7 +601,7 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                   <h3 className="text-base font-bold text-white mb-3 flex items-center gap-2">
                     🤖 AI 엔진 모델 선택 (Powered by Qwen 2.5 32B)
                   </h3>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-4 gap-2">
                     {/* Basic */}
                     <motion.button
                       onClick={() => setAiModel('basic')}
@@ -601,6 +661,26 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                         <div className="text-2xl mb-2">👽</div>
                         <div className="text-lg font-extrabold text-white mb-1">Super</div>
                         <div className="text-sm text-amber-400">Outstanding</div>
+                      </div>
+                    </motion.button>
+
+                    {/* V3 Pipeline */}
+                    <motion.button
+                      onClick={() => setAiModel('v3')}
+                      className={`
+                        p-4 rounded-sm border-2 transition-all
+                        ${aiModel === 'v3'
+                          ? 'border-green-500 bg-green-500/10'
+                          : 'border-white/10 bg-white/5 hover:border-green-500/40'}
+                      `}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      disabled={simulating}
+                    >
+                      <div className="text-center">
+                        <div className="text-2xl mb-2">⚡</div>
+                        <div className="text-lg font-extrabold text-white mb-1">V3</div>
+                        <div className="text-sm text-green-400">Pipeline</div>
                       </div>
                     </motion.button>
                   </div>
@@ -726,6 +806,41 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                             </ul>
                           </>
                         )}
+                        {aiModel === 'v3' && (
+                          <>
+                            <div className="flex items-center gap-2 mb-4">
+                              <div className="font-bold text-green-500 text-lg">⚡ V3 Pipeline</div>
+                              <div
+                                className="ml-auto px-3 py-1 rounded-full border border-slate-600/50"
+                                style={{
+                                  background: 'linear-gradient(135deg, rgba(50, 50, 55, 0.5) 0%, rgba(30, 30, 35, 0.6) 100%)',
+                                  boxShadow: 'inset 0 1px 0 0 rgba(192, 192, 192, 0.1), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5)',
+                                }}
+                              >
+                                <span className="text-xs font-bold text-green-500">시뮬레이션 정확도 95-98%</span>
+                              </div>
+                            </div>
+                            <div
+                              className="p-3 rounded-sm mb-3 border border-green-600/30"
+                              style={{
+                                background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%)',
+                                boxShadow: 'inset 0 1px 0 0 rgba(34, 197, 94, 0.1), inset 0 -1px 0 0 rgba(0, 0, 0, 0.5)',
+                              }}
+                            >
+                              <div className="text-white font-semibold text-sm mb-1">🚀 파이프라인</div>
+                              <div className="text-green-400 font-bold">
+                                Mathematical Models + AI + Monte Carlo (12,000 runs)
+                              </div>
+                            </div>
+                            <ul className="text-white/80 space-y-2 ml-4 list-disc text-sm">
+                              <li><span className="text-green-400 font-semibold">Phase 1:</span> Poisson-Rating + Zone Dominance + Key Player 수학 모델</li>
+                              <li><span className="text-green-400 font-semibold">Phase 2:</span> AI 기반 동적 시나리오 생성 (2-5개)</li>
+                              <li><span className="text-green-400 font-semibold">Phase 3:</span> Monte Carlo 검증 (시나리오당 3,000회)</li>
+                              <li>연산 속도: <span className="text-error font-semibold">매우 느림 (~50초)</span></li>
+                              <li><span className="text-success font-semibold">실시간 SSE 스트리밍</span>으로 진행 상황 확인</li>
+                            </ul>
+                          </>
+                        )}
                       </div>
                     </motion.div>
                   </AnimatePresence>
@@ -826,6 +941,7 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                   </div>
                 </motion.button>
               </motion.div>
+              )
             ) : (
               <motion.div
                 key="result"
@@ -848,8 +964,15 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', delay: 0.2 }}
                       >
-                        {result.home.goals}
+                        {result.home.goals !== null ? result.home.goals : (
+                          <div className="text-3xl">
+                            {result.home.winProbability ? `${(result.home.winProbability * 100).toFixed(1)}%` : '-'}
+                          </div>
+                        )}
                       </motion.div>
+                      {result.aiModel === 'v3' && (
+                        <div className="text-sm text-white/60 mt-2">승률</div>
+                      )}
                     </div>
 
                     {/* VS */}
@@ -868,8 +991,15 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', delay: 0.3 }}
                       >
-                        {result.away.goals}
+                        {result.away.goals !== null ? result.away.goals : (
+                          <div className="text-3xl">
+                            {result.away.winProbability ? `${(result.away.winProbability * 100).toFixed(1)}%` : '-'}
+                          </div>
+                        )}
                       </motion.div>
+                      {result.aiModel === 'v3' && (
+                        <div className="text-sm text-white/60 mt-2">승률</div>
+                      )}
                     </div>
                   </div>
 
@@ -907,10 +1037,10 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                       }}
                     >
                       <span className="text-sm">
-                        {result.aiModel === 'basic' ? '🎯' : result.aiModel === 'pro' ? '🚀' : result.aiModel === 'super' ? '👽' : '🤖'}
+                        {result.aiModel === 'basic' ? '🎯' : result.aiModel === 'pro' ? '🚀' : result.aiModel === 'super' ? '👽' : result.aiModel === 'v3' ? '⚡' : '🤖'}
                       </span>
                       <span className="text-sm font-semibold text-white">
-                        {result.aiModel === 'basic' ? 'Basic' : result.aiModel === 'pro' ? 'Pro' : result.aiModel === 'super' ? 'Super' : 'Claude AI'} 모델 사용
+                        {result.aiModel === 'basic' ? 'Basic' : result.aiModel === 'pro' ? 'Pro' : result.aiModel === 'super' ? 'Super' : result.aiModel === 'v3' ? 'V3 Pipeline' : 'Claude AI'} 모델 사용
                       </span>
                     </div>
                   </motion.div>
@@ -1052,46 +1182,48 @@ const MatchSimulator = ({ darkMode = false, selectedMatch = null, onTeamClick = 
                   </div>
                 )}
 
-                {/* Team Stats Comparison */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  {/* Home Stats */}
-                  <div className="p-4 rounded-sm bg-slate-900/60 backdrop-blur-sm border border-cyan-500/20">
-                    <h4 className="text-sm font-semibold text-white/60 mb-3">{result.home.name} 능력치</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-white/70">종합 측정:</span>
-                        <span className="font-bold text-brand-accent">{result.home.score.overall.toFixed(1)}/100</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/70">선수 평가:</span>
-                        <span className="font-bold text-blue-400">{result.home.score.player.toFixed(1)} ({result.home.score.playerWeight}%)</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/70">팀 전력:</span>
-                        <span className="font-bold text-purple-400">{result.home.score.strength.toFixed(1)} ({result.home.score.strengthWeight}%)</span>
+                {/* Team Stats Comparison - Only show for client-side simulations */}
+                {result.home.score && result.away.score && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {/* Home Stats */}
+                    <div className="p-4 rounded-sm bg-slate-900/60 backdrop-blur-sm border border-cyan-500/20">
+                      <h4 className="text-sm font-semibold text-white/60 mb-3">{result.home.name} 능력치</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-white/70">종합 측정:</span>
+                          <span className="font-bold text-brand-accent">{result.home.score.overall.toFixed(1)}/100</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-white/70">선수 평가:</span>
+                          <span className="font-bold text-blue-400">{result.home.score.player.toFixed(1)} ({result.home.score.playerWeight}%)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-white/70">팀 전력:</span>
+                          <span className="font-bold text-purple-400">{result.home.score.strength.toFixed(1)} ({result.home.score.strengthWeight}%)</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Away Stats */}
-                  <div className="p-4 rounded-sm bg-slate-900/60 backdrop-blur-sm border border-cyan-500/20">
-                    <h4 className="text-sm font-semibold text-white/60 mb-3">{result.away.name} 능력치</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-white/70">종합 측정:</span>
-                        <span className="font-bold text-brand-accent">{result.away.score.overall.toFixed(1)}/100</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/70">선수 평가:</span>
-                        <span className="font-bold text-blue-400">{result.away.score.player.toFixed(1)} ({result.away.score.playerWeight}%)</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-white/70">팀 전력:</span>
-                        <span className="font-bold text-purple-400">{result.away.score.strength.toFixed(1)} ({result.away.score.strengthWeight}%)</span>
+                    {/* Away Stats */}
+                    <div className="p-4 rounded-sm bg-slate-900/60 backdrop-blur-sm border border-cyan-500/20">
+                      <h4 className="text-sm font-semibold text-white/60 mb-3">{result.away.name} 능력치</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-white/70">종합 측정:</span>
+                          <span className="font-bold text-brand-accent">{result.away.score.overall.toFixed(1)}/100</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-white/70">선수 평가:</span>
+                          <span className="font-bold text-blue-400">{result.away.score.player.toFixed(1)} ({result.away.score.playerWeight}%)</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-white/70">팀 전력:</span>
+                          <span className="font-bold text-purple-400">{result.away.score.strength.toFixed(1)} ({result.away.score.strengthWeight}%)</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Reset Button */}
                 <motion.button

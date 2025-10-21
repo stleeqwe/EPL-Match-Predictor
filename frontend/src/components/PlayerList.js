@@ -166,7 +166,13 @@ const PlayerList = ({
     const ratings = playerRatings[playerId];
     if (!ratings || Object.keys(ratings).length === 0) return null;
 
-    const subPosition = ratings._subPosition || DEFAULT_SUB_POSITION[playerPosition];
+    let subPosition = ratings._subPosition || DEFAULT_SUB_POSITION[playerPosition];
+
+    // 🔧 Fix: Remove numeric suffixes from subPosition (CB1 → CB, CM2 → CM, etc.)
+    if (subPosition && typeof subPosition === 'string') {
+      subPosition = subPosition.replace(/\d+$/, '');
+    }
+
     return calculateWeightedAverage(ratings, subPosition);
   };
 
@@ -196,7 +202,11 @@ const PlayerList = ({
         filtered = filtered.filter(p => {
           const parsedPos = parsePosition(p.position);
           if (parsedPos !== 'DF') return false;
-          const subPosition = playerRatings[p.id]?._subPosition || 'CB';
+          let subPosition = playerRatings[p.id]?._subPosition || 'CB';
+          // 🔧 Fix: Remove numeric suffixes (CB1 → CB)
+          if (typeof subPosition === 'string') {
+            subPosition = subPosition.replace(/\d+$/, '');
+          }
           return subPosition === positionFilter;
         });
       } else if (['DM', 'CM', 'CAM'].includes(positionFilter)) {
@@ -204,7 +214,11 @@ const PlayerList = ({
         filtered = filtered.filter(p => {
           const parsedPos = parsePosition(p.position);
           if (parsedPos !== 'MF') return false;
-          const subPosition = playerRatings[p.id]?._subPosition || 'CM';
+          let subPosition = playerRatings[p.id]?._subPosition || 'CM';
+          // 🔧 Fix: Remove numeric suffixes (CM1 → CM)
+          if (typeof subPosition === 'string') {
+            subPosition = subPosition.replace(/\d+$/, '');
+          }
           return subPosition === positionFilter;
         });
       } else if (['WG', 'ST'].includes(positionFilter)) {
@@ -212,7 +226,11 @@ const PlayerList = ({
         filtered = filtered.filter(p => {
           const parsedPos = parsePosition(p.position);
           if (parsedPos !== 'FW') return false;
-          const subPosition = playerRatings[p.id]?._subPosition || 'ST';
+          let subPosition = playerRatings[p.id]?._subPosition || 'ST';
+          // 🔧 Fix: Remove numeric suffixes (ST1 → ST)
+          if (typeof subPosition === 'string') {
+            subPosition = subPosition.replace(/\d+$/, '');
+          }
           return subPosition === positionFilter;
         });
       }
@@ -261,7 +279,12 @@ const PlayerList = ({
       const parsedPos = parsePosition(p.position);
 
       // 세부 포지션이 있으면 사용, 없으면 일반 포지션의 기본 세부 포지션
-      const subPosition = playerRatings[p.id]?._subPosition;
+      let subPosition = playerRatings[p.id]?._subPosition;
+
+      // 🔧 Fix: Remove numeric suffixes from subPosition (CB1 → CB, CM2 → CM, etc.)
+      if (subPosition && typeof subPosition === 'string') {
+        subPosition = subPosition.replace(/\d+$/, '');
+      }
 
       if (parsedPos === 'GK') {
         stats.GK++;

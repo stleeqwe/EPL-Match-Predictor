@@ -47,7 +47,13 @@ const DataManager = ({
 
       if (player) {
         // 평균 능력치 계산
-        const subPosition = ratings._subPosition || DEFAULT_SUB_POSITION[player.position];
+        let subPosition = ratings._subPosition || DEFAULT_SUB_POSITION[player.position];
+
+        // 🔧 Fix: Remove numeric suffixes from subPosition (CB1 → CB, CM2 → CM, etc.)
+        if (subPosition && typeof subPosition === 'string') {
+          subPosition = subPosition.replace(/\d+$/, '');
+        }
+
         const averageRating = calculateWeightedAverage(ratings, subPosition);
 
         enrichedPlayerRatings[playerId] = {

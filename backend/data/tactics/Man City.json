@@ -1,0 +1,24 @@
+{
+  "team_name": "Man City",
+  "defensive": {
+    "pressing_intensity": 8,
+    "defensive_line": 8,
+    "defensive_width": 7,
+    "compactness": 6,
+    "line_distance": 12.0
+  },
+  "offensive": {
+    "tempo": 8,
+    "buildup_style": "short_passing",
+    "width": 9,
+    "creativity": 9,
+    "passing_directness": 4
+  },
+  "transition": {
+    "counter_press": 9,
+    "counter_speed": 9,
+    "transition_time": 2.0,
+    "recovery_speed": 8
+  },
+  "timestamp": "2025-10-16T23:07:43.961248"
+}

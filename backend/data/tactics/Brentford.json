@@ -1,0 +1,24 @@
+{
+  "team_name": "Brentford",
+  "defensive": {
+    "pressing_intensity": 7,
+    "defensive_line": 7,
+    "defensive_width": 7,
+    "compactness": 7,
+    "line_distance": 10.0
+  },
+  "offensive": {
+    "tempo": 7,
+    "buildup_style": "mixed",
+    "width": 7,
+    "creativity": 7,
+    "passing_directness": 5
+  },
+  "transition": {
+    "counter_press": 7,
+    "counter_speed": 7,
+    "transition_time": 2.5,
+    "recovery_speed": 7
+  },
+  "timestamp": "2025-10-16T23:07:44.028844"
+}

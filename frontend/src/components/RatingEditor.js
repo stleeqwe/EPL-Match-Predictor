@@ -9,6 +9,7 @@ import {
   calculateWeightedAverage
 } from '../config/positionAttributes';
 import { getPlayerPhotoUrl } from '../utils/playerPhoto';
+import api from '../services/api';
 
 /**
  * RatingEditor Component - Enhanced with Framer Motion
@@ -28,6 +29,10 @@ const RatingEditor = ({
   const [subPosition, setSubPosition] = useState('');
   const [comment, setComment] = useState('');
   const [photoError, setPhotoError] = useState(false);
+
+  // AI Generate states
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiConfidence, setAiConfidence] = useState(null);
 
   // Premier League API 포지션 → Squad Builder 역할 변환
   const getPlayerRole = (premierLeaguePosition) => {
@@ -99,8 +104,19 @@ const RatingEditor = ({
 
     let savedSubPosition;
     // 저장된 세부 포지션이 있으면 사용, 없으면 변환된 역할 사용
-    if (initialRatings._subPosition && POSITION_ATTRIBUTES[initialRatings._subPosition]) {
-      savedSubPosition = initialRatings._subPosition;
+    if (initialRatings._subPosition) {
+      // 🔧 Fix: Remove numeric suffixes before checking (CB1 → CB)
+      let normalizedSubPosition = initialRatings._subPosition;
+      if (typeof normalizedSubPosition === 'string') {
+        normalizedSubPosition = normalizedSubPosition.replace(/\d+$/, '');
+      }
+
+      if (POSITION_ATTRIBUTES[normalizedSubPosition]) {
+        savedSubPosition = normalizedSubPosition;
+      } else {
+        // playerRole이 세부 포지션으로 사용 가능하면 그대로, 아니면 일반 포지션의 기본값
+        savedSubPosition = POSITION_ATTRIBUTES[playerRole] ? playerRole : 'CM';
+      }
     } else {
       // playerRole이 세부 포지션으로 사용 가능하면 그대로, 아니면 일반 포지션의 기본값
       savedSubPosition = POSITION_ATTRIBUTES[playerRole] ? playerRole : 'CM';
@@ -149,6 +165,87 @@ const RatingEditor = ({
     if (value.length <= 500) {
       setComment(value);
       setHasChanges(true);
+    }
+  };
+
+  // AI Generate 핸들러
+  const handleAIGenerate = async () => {
+    if (isGenerating) return;
+
+    try {
+      setIsGenerating(true);
+      setAiConfidence(null);
+
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.log('🤖 [AI GENERATE] START');
+      console.log(`   Player: ${player.name}`);
+      console.log(`   Position: ${subPosition} (${POSITION_ATTRIBUTES[subPosition]?.name})`);
+      console.log(`   Team: ${player.team || 'Unknown'}`);
+      console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      // Real API 호출
+      const response = await api.ratings.aiGenerate(
+        player.name,
+        subPosition,
+        player.team || 'Unknown'
+      );
+
+      console.log('📦 [AI GENERATE] RAW RESPONSE:', response);
+      console.log('   - Type:', typeof response);
+      console.log('   - Keys:', Object.keys(response || {}));
+      console.log('   - success:', response?.success);
+      console.log('   - ratings:', response?.ratings ? Object.keys(response.ratings).length : 'N/A');
+      console.log('   - comment:', response?.comment?.substring(0, 50));
+      console.log('   - confidence:', response?.confidence);
+
+      if (response && response.success) {
+        // 능력치 검증
+        const attributes = POSITION_ATTRIBUTES[subPosition]?.attributes || [];
+        const missingAttrs = attributes.filter(attr => !(attr.key in response.ratings));
+
+        if (missingAttrs.length > 0) {
+          console.warn('⚠️ [AI GENERATE] Missing attributes:', missingAttrs.map(a => a.key));
+        }
+
+        // 한 번에 모든 능력치 설정
+        setRatings(response.ratings);
+        setComment(response.comment);
+        setAiConfidence(response.confidence);
+        setHasChanges(true);
+
+        console.log('✅ [AI GENERATE] SUCCESS');
+        console.log(`   - Ratings: ${Object.keys(response.ratings).length} attributes`);
+        console.log(`   - FPL Stats: ${response.data_sources?.fpl_stats?.name} (${response.data_sources?.fpl_stats?.team})`);
+        console.log(`   - AI Model: ${response.data_sources?.ai_model}`);
+        console.log(`   - Confidence: ${(response.confidence * 100).toFixed(1)}%`);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      } else {
+        console.error('❌ [AI GENERATE] response.success is FALSE or undefined');
+        console.error('   Full response:', JSON.stringify(response, null, 2));
+        throw new Error('API returned success=false');
+      }
+    } catch (error) {
+      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      console.error('❌ [AI GENERATE] ERROR');
+      console.error('   Error Type:', error.constructor.name);
+      console.error('   Error Message:', error.message);
+      console.error('   Error Response:', error.response);
+      console.error('   Error Response Data:', error.response?.data);
+      console.error('   Error Response Status:', error.response?.status);
+      console.error('   Full Error:', error);
+      console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
+      // 에러 메시지 포맷팅
+      let errorMessage = 'AI 생성에 실패했습니다.';
+      if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage += '\n\n' + error.message;
+      }
+
+      alert(errorMessage);
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -569,6 +666,37 @@ const RatingEditor = ({
                   >
                     PLAYER VALUATION
                   </motion.h3>
+
+                  {/* AI Generate Button */}
+                  <motion.button
+                    onClick={handleAIGenerate}
+                    disabled={isGenerating || isSaving}
+                    className={`
+                      relative px-4 py-2 rounded-lg font-bold text-sm
+                      flex items-center gap-2 overflow-hidden
+                      transition-all duration-300
+                      ${isGenerating || isSaving
+                        ? 'bg-gradient-to-r from-purple-500/50 to-pink-500/50 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 cursor-pointer'}
+                    `}
+                    whileHover={!isGenerating && !isSaving ? { scale: 1.05 } : {}}
+                    whileTap={!isGenerating && !isSaving ? { scale: 0.95 } : {}}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                  >
+                    {isGenerating ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span className="text-white">AI 분석 중...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 text-white" />
+                        <span className="text-white">AI Generate</span>
+                      </>
+                    )}
+                  </motion.button>
                 </motion.div>
 
                 {/* Sub Position Selection - Tech Style */}
@@ -611,6 +739,33 @@ const RatingEditor = ({
 
               {/* Tech Divider */}
               <div className="relative h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+
+              {/* AI Confidence Badge */}
+              <AnimatePresence>
+                {aiConfidence && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="mt-4 mx-4 p-3 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm font-semibold text-purple-300">
+                          AI Generated
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-purple-400">Confidence:</span>
+                        <span className="text-sm font-bold text-purple-300">
+                          {(aiConfidence * 100).toFixed(0)}%
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Sliders Section with Enhanced Scroll */}

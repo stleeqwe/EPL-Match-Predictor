@@ -195,7 +195,7 @@ const TeamDropdown = ({
       </AnimatePresence>
 
       {/* Custom Scrollbar Styles */}
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
         }
@@ -209,7 +209,7 @@ const TeamDropdown = ({
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: rgba(6, 182, 212, 0.5);
         }
-      `}</style>
+      `}} />
     </div>
   );
 };

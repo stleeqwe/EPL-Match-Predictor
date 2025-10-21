@@ -1,17 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Trophy, Award, Star, Circle, GitBranch, Shield } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Trophy, Star, Circle, GitBranch, Shield } from 'lucide-react';
 import { eplAPI } from '../services/api';
 import { getPlayerPhoto } from '../utils/teamLogos';
 
-const Leaderboard = ({ darkMode = false, onPlayerClick }) => {
-  const [leaderboard, setLeaderboard] = useState(null);
-  const [loading, setLoading] = useState(true);
+/**
+ * Leaderboard Component
+ * 🔧 preloadedData 지원 (깜빡임 방지)
+ * 🎬 탭 전환 시마다 애니메이션 실행
+ */
+const Leaderboard = ({ darkMode = false, onPlayerClick, preloadedData = null }) => {
+  const [leaderboard, setLeaderboard] = useState(preloadedData);
+  const [loading, setLoading] = useState(!preloadedData);
   const [activeTab, setActiveTab] = useState('points'); // goals, assists, clean_sheets, points
 
+  // 🎬 애니메이션 설정 (항상 실행)
+  const shouldAnimate = true;
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.05,
+        duration: 0.3,
+        ease: 'easeOut'
+      }
+    })
+  };
+
   useEffect(() => {
-    fetchLeaderboard();
-  }, []);
+    // preloadedData가 있으면 fetch 스킵
+    if (!preloadedData) {
+      fetchLeaderboard();
+    }
+  }, [preloadedData]);
 
   const fetchLeaderboard = async () => {
     try {
@@ -25,22 +50,24 @@ const Leaderboard = ({ darkMode = false, onPlayerClick }) => {
     }
   };
 
-  const tabs = [
+  // 🔧 tabs를 useMemo 밖으로 이동 (상수이므로)
+  const tabs = useMemo(() => [
     { id: 'points', label: 'FPL 포인트', icon: Trophy, key: 'top_points', stat: 'total_points' },
     { id: 'goals', label: '득점', icon: Circle, key: 'top_scorers', stat: 'goals' },
     { id: 'assists', label: '도움', icon: GitBranch, key: 'top_assists', stat: 'assists' },
     { id: 'clean_sheets', label: '클린시트', icon: Shield, key: 'top_clean_sheets', stat: 'clean_sheets' }
-  ];
+  ], []);
 
-  const currentTab = tabs.find(t => t.id === activeTab);
-  const players = leaderboard?.[currentTab.key] || [];
+  // 🚀 useMemo로 계산 최적화
+  const currentTab = useMemo(() =>
+    tabs.find(t => t.id === activeTab),
+    [activeTab, tabs]
+  );
 
-  const getMedalColor = (index) => {
-    if (index === 0) return 'text-yellow-400'; // Gold
-    if (index === 1) return 'text-gray-300'; // Silver
-    if (index === 2) return 'text-orange-400'; // Bronze
-    return 'text-white/40';
-  };
+  const players = useMemo(() =>
+    leaderboard?.[currentTab.key] || [],
+    [leaderboard, currentTab]
+  );
 
   if (loading) {
     return (
@@ -109,12 +136,20 @@ const Leaderboard = ({ darkMode = false, onPlayerClick }) => {
         {/* Players List */}
         <div className="relative">
         <div className="space-y-3">
-          {players.slice(0, 10).map((player, idx) => (
-            <div
-              key={player.id}
-              onClick={() => onPlayerClick && onPlayerClick(player)}
-              className="bg-white/5 hover:bg-white/10 rounded-sm p-4 border border-white/10 transition-all flex items-center justify-between group cursor-pointer"
-            >
+          {players.slice(0, 10).map((player, idx) => {
+            const Component = shouldAnimate ? motion.div : 'div';
+            return (
+              <Component
+                key={player.id}
+                onClick={() => onPlayerClick && onPlayerClick(player)}
+                className="bg-white/5 hover:bg-white/10 rounded-sm p-4 border border-white/10 transition-all flex items-center justify-between group cursor-pointer"
+                {...(shouldAnimate ? {
+                  custom: idx,
+                  variants: cardVariants,
+                  initial: "hidden",
+                  animate: "visible"
+                } : {})}
+              >
               {/* Left: Rank + Player Photo + Player Info */}
               <div className="flex items-center gap-4 flex-1 min-w-0">
                 {/* Rank */}
@@ -170,8 +205,9 @@ const Leaderboard = ({ darkMode = false, onPlayerClick }) => {
               `}>
                 {player[currentTab.stat]}
               </div>
-            </div>
-          ))}
+            </Component>
+          );
+          })}
         </div>
       </div>
     </div>
@@ -189,4 +225,5 @@ Leaderboard.defaultProps = {
   onPlayerClick: null
 };
 
-export default Leaderboard;
+// 🚀 React.memo로 불필요한 리렌더링 방지
+export default React.memo(Leaderboard);

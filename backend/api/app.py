@@ -11,6 +11,7 @@ import logging
 from datetime import datetime
 import requests
 from dotenv import load_dotenv
+import re
 
 # Load environment variables from .env file
 load_dotenv()
@@ -41,6 +42,9 @@ from utils.team_mapping import (
 
 # Injury Service
 from services.injury_service import get_injury_service
+
+# Position attributes and rating calculation
+from config.position_attributes import calculate_weighted_average, DEFAULT_SUB_POSITION
 
 # React 빌드 폴더 경로
 REACT_BUILD_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'frontend', 'epl-predictor', 'build')
@@ -649,7 +653,7 @@ def get_teams():
 @cache.cached(timeout=1800, query_string=True)
 def get_squad(team_name):
     """
-    특정 팀의 선수 명단 가져오기 (ICT Index 기반 주전/후보/기타 정보 포함)
+    특정 팀의 선수 명단 가져오기 (ICT Index 기반 주전/후보/기타 정보 + 평점 계산 포함)
     """
     try:
         if team_name not in SQUAD_DATA:
@@ -662,6 +666,32 @@ def get_squad(team_name):
         # FPL API에서 ICT Index 기반 역할 정보 가져오기
         fantasy_data = fetch_fantasy_data()
         player_roles = get_player_role_by_ict(team_name, fantasy_data) if fantasy_data else {}
+
+        # 데이터베이스에서 모든 선수의 평점 가져오기
+        ratings_by_player = {}
+        try:
+            session = get_player_session()
+            try:
+                # 모든 선수 ID 수집
+                player_ids = [p.get('id') for p in players if p.get('id')]
+
+                # 한 번에 모든 평점 가져오기 (성능 최적화)
+                all_ratings = session.query(PlayerRating).filter(
+                    PlayerRating.player_id.in_(player_ids),
+                    PlayerRating.user_id == 'default'
+                ).all()
+
+                # player_id별로 평점 그룹화
+                for rating in all_ratings:
+                    if rating.player_id not in ratings_by_player:
+                        ratings_by_player[rating.player_id] = {}
+                    ratings_by_player[rating.player_id][rating.attribute_name] = rating.rating
+            finally:
+                session.close()
+        except Exception as db_error:
+            # 데이터베이스가 없거나 테이블이 없는 경우 빈 평점으로 진행
+            logger.warning(f"⚠️ Could not fetch player ratings from database: {db_error}")
+            ratings_by_player = {}
 
         # squad_data.py의 데이터를 그대로 사용 (Premier League 공식 API 기반)
         squad_players = []
@@ -696,23 +726,48 @@ def get_squad(team_name):
             # is_starter 필드도 업데이트 (하위 호환성)
             player_copy['is_starter'] = (player_copy['role'] == 'starter')
 
+            # 팀 정보 추가 (AI Rating Generator를 위해 필수)
+            player_copy['team'] = team_name
+
+            # 평점 계산 추가
+            player_ratings = ratings_by_player.get(player_id, {})
+            if player_ratings:
+                # _subPosition 가져오기 또는 기본값 사용
+                sub_position = player_ratings.get('_subPosition', DEFAULT_SUB_POSITION.get(player.get('position'), 'CM'))
+
+                # 🔧 Fix: Remove numeric suffixes from subPosition (CB1 → CB, CM2 → CM, etc.)
+                if sub_position and isinstance(sub_position, str):
+                    sub_position = re.sub(r'\d+$', '', sub_position)
+
+                # 가중 평균 계산
+                weighted_rating = calculate_weighted_average(player_ratings, sub_position)
+                player_copy['rating'] = weighted_rating if weighted_rating is not None else 2.5
+            else:
+                # 평가값이 없으면 기본값 2.5
+                player_copy['rating'] = 2.5
+
+            # Form 계산 (기존 로직 유지)
+            base_form = 3.5
+            minutes_bonus = 0.5 if player_copy.get('minutes', 0) > 500 else 0
+            stats_bonus = (player_copy.get('goals', 0) + player_copy.get('assists', 0)) * 0.15
+            player_copy['form'] = min(5.0, base_form + minutes_bonus + stats_bonus)
+
             squad_players.append(player_copy)
 
-        # ICT Index 순위로 정렬 (주전 → 후보 → 기타 순)
-        role_order = {'starter': 0, 'substitute': 1, 'other': 2}
+        # 평점순으로 정렬 (높은 평점 우선, 평점이 같으면 ICT 순위로 정렬)
         squad_players.sort(key=lambda p: (
-            role_order.get(p.get('role', 'other'), 3),
-            p.get('ict_rank', 999)
+            -p.get('rating', 0),  # 평점 내림차순 (높은 평점 우선)
+            p.get('ict_rank', 999)  # ICT 순위 오름차순 (낮은 순위가 우선)
         ))
 
         response_data = {'squad': squad_players}
-        starters_count = sum(1 for p in squad_players if p.get('role') == 'starter')
-        substitute_count = sum(1 for p in squad_players if p.get('role') == 'substitute')
-        other_count = sum(1 for p in squad_players if p.get('role') == 'other')
+
+        # 통계 로깅
+        rated_count = sum(1 for p in squad_players if p.get('rating', 2.5) != 2.5)
+        avg_rating = sum(p.get('rating', 0) for p in squad_players) / len(squad_players) if squad_players else 0
         logger.info(
             f"📊 {team_name} Squad: "
-            f"주전 {starters_count}명, 후보 {substitute_count}명, 기타 {other_count}명 "
-            f"(총 {len(squad_players)}명)"
+            f"총 {len(squad_players)}명, 평가 완료 {rated_count}명, 평균 평점 {avg_rating:.2f}"
         )
 
         return jsonify(response_data)
@@ -1113,10 +1168,19 @@ def get_team_overall_score(team_name):
         file_path = os.path.join(OVERALL_SCORES_DIR, f"{team_name}.json")
 
         if not os.path.exists(file_path):
+            # Return default values instead of 404 to prevent console errors
             return jsonify({
-                'success': False,
-                'message': f"No overall score found for {team_name}"
-            }), 404
+                'success': True,
+                'data': {
+                    'team_name': team_name,
+                    'overallScore': 0,
+                    'playerScore': 0,
+                    'strengthScore': 0,
+                    'playerWeight': 50,
+                    'strengthWeight': 50,
+                    'timestamp': None
+                }
+            }), 200
 
         with open(file_path, 'r', encoding='utf-8') as f:
             score_data = json.load(f)
@@ -2560,6 +2624,15 @@ try:
 except Exception as e:
     logger.warning(f"⚠️ V3 Simulation routes not available: {e}")
 
+# Import and register Ratings routes (AI-powered player rating generation)
+try:
+    from api.v1.ratings_routes import register_ratings_routes
+    register_ratings_routes(app)
+    v3_routes_registered.append("Ratings")
+    logger.info("✅ V3 Ratings routes registered")
+except Exception as e:
+    logger.warning(f"⚠️ V3 Ratings routes not available: {e}")
+
 # Import and register Payment routes (optional - requires Stripe config)
 try:
     from api.v1.payment_routes import payment_bp
@@ -2621,4 +2694,4 @@ def serve_react(path):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True, threaded=True)

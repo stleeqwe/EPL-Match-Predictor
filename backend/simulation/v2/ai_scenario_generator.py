@@ -10,7 +10,7 @@ import logging
 import re
 from typing import Dict, List, Optional, Tuple
 
-from ai.qwen_client import get_qwen_client
+from ai.ai_factory import get_ai_client
 from .scenario import Scenario, ScenarioEvent, EventType
 
 logger = logging.getLogger(__name__)
@@ -21,17 +21,18 @@ class AIScenarioGenerator:
     AI 기반 다중 시나리오 생성기
     설계 문서 Section 3 구현
 
-    Qwen AI를 사용해 5-7개의 구체적 시나리오 생성
+    AI를 사용해 5-7개의 구체적 시나리오 생성
     각 시나리오는 이벤트 시퀀스와 확률 부스트 포함
     """
 
-    def __init__(self, model: str = "qwen2.5:32b"):
+    def __init__(self, model: str = None):
         """
         Args:
-            model: Qwen model name
+            model: AI model name (optional, uses AI_PROVIDER from .env if not specified)
         """
-        self.ai_client = get_qwen_client(model=model)
-        logger.info(f"AIScenarioGenerator initialized with {model}")
+        self.ai_client = get_ai_client()  # Uses AI_PROVIDER from .env
+        model_info = self.ai_client.get_model_info()
+        logger.info(f"AIScenarioGenerator initialized with {model_info['provider']}: {model_info['model']}")
 
     def generate_scenarios(
         self,
@@ -66,7 +67,7 @@ class AIScenarioGenerator:
             )
 
             # 2. Call AI
-            logger.info("Calling Qwen AI for scenario generation...")
+            logger.info("Calling AI for scenario generation...")
             success, response_text, usage_data, error = self.ai_client.generate(
                 prompt=user_prompt,
                 system_prompt=system_prompt,
@@ -331,7 +332,7 @@ ONLY return the JSON. No explanations before or after."""
 _scenario_generator = None
 
 
-def get_scenario_generator(model: str = "qwen2.5:32b") -> AIScenarioGenerator:
+def get_scenario_generator(model: str = None) -> AIScenarioGenerator:
     """Get global scenario generator instance (singleton)."""
     global _scenario_generator
     if _scenario_generator is None:

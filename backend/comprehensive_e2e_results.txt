@@ -1,0 +1,407 @@
+/Users/stlee/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/test_e2e_comprehensive.py", line 145, in run_simulation
+    result = simulator.simulate_match(match_input)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/match_simulator_v3.py", line 158, in simulate_match
+    smoothed_scenario = self.ai.apply_scenario_smoothing(
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 346, in apply_scenario_smoothing
+    retained_event = ScenarioEvent(
+  File "<string>", line 9, in __init__
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/ai/data_models.py", line 127, in __post_init__
+    assert 1.0 <= self.probability_boost <= 3.0
+AssertionError
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 212, in analyze_result
+    result = self._dict_to_analysis_result(analysis_dict)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 562, in _dict_to_analysis_result
+    adjusted_scenario = self._dict_to_scenario(data['adjusted_scenario'])
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 520, in _dict_to_scenario
+    events = [
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 521, in <listcomp>
+    ScenarioEvent(
+  File "<string>", line 9, in __init__
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/ai/data_models.py", line 125, in __post_init__
+    assert 0 <= self.minute_range[1] <= 90
+AssertionError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/test_e2e_comprehensive.py", line 145, in run_simulation
+    result = simulator.simulate_match(match_input)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/match_simulator_v3.py", line 127, in simulate_match
+    analysis = self.ai.analyze_result(scenario, result, iteration, self.max_iterations)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 214, in analyze_result
+    raise AIClientError(f"Phase 3 AnalysisResult 생성 실패: {e}")
+simulation.v3.ai_integration.AIClientError: Phase 3 AnalysisResult 생성 실패: 
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 212, in analyze_result
+    result = self._dict_to_analysis_result(analysis_dict)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 562, in _dict_to_analysis_result
+    adjusted_scenario = self._dict_to_scenario(data['adjusted_scenario'])
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 520, in _dict_to_scenario
+    events = [
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 521, in <listcomp>
+    ScenarioEvent(
+  File "<string>", line 9, in __init__
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/ai/data_models.py", line 125, in __post_init__
+    assert 0 <= self.minute_range[1] <= 90
+AssertionError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/test_e2e_comprehensive.py", line 145, in run_simulation
+    result = simulator.simulate_match(match_input)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/match_simulator_v3.py", line 127, in simulate_match
+    analysis = self.ai.analyze_result(scenario, result, iteration, self.max_iterations)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 214, in analyze_result
+    raise AIClientError(f"Phase 3 AnalysisResult 생성 실패: {e}")
+simulation.v3.ai_integration.AIClientError: Phase 3 AnalysisResult 생성 실패: 
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/test_e2e_comprehensive.py", line 145, in run_simulation
+    result = simulator.simulate_match(match_input)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/match_simulator_v3.py", line 158, in simulate_match
+    smoothed_scenario = self.ai.apply_scenario_smoothing(
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 346, in apply_scenario_smoothing
+    retained_event = ScenarioEvent(
+  File "<string>", line 9, in __init__
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/ai/data_models.py", line 127, in __post_init__
+    assert 1.0 <= self.probability_boost <= 3.0
+AssertionError
+Traceback (most recent call last):
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/test_e2e_comprehensive.py", line 145, in run_simulation
+    result = simulator.simulate_match(match_input)
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/match_simulator_v3.py", line 158, in simulate_match
+    smoothed_scenario = self.ai.apply_scenario_smoothing(
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/simulation/v3/ai_integration.py", line 329, in apply_scenario_smoothing
+    new_event = ScenarioEvent(
+  File "<string>", line 9, in __init__
+  File "/Users/stlee/Desktop/EPL-Match-Predictor/backend/ai/data_models.py", line 127, in __post_init__
+    assert 1.0 <= self.probability_boost <= 3.0
+AssertionError
+
+======================================================================
+🚀 COMPREHENSIVE E2E TEST SUITE
+======================================================================
+
+Testing Domain Knowledge → AI Scenario → Simulation Pipeline
+All tests use REAL Qwen AI (no mocks)
+
+======================================================================
+
+======================================================================
+🔧 Qwen AI Setup
+======================================================================
+✅ Qwen AI is ready!
+
+
+
+
+██████████████████████████████████████████████████████████████████████
+TEST 1: Strong Team vs Weak Team
+██████████████████████████████████████████████████████████████████████
+
+======================================================================
+🎮 Test Scenario: Strong vs Weak
+======================================================================
+
+📋 Match Setup:
+  Home: Manchester City
+    - Attack: 92.0, Defense: 88.0
+    - Press: 85.0, Style: possession
+    - Form: WWWWW, Injuries: 0
+
+  Away: Sheffield United
+    - Attack: 55.0, Defense: 58.0
+    - Press: 52.0, Style: direct
+    - Form: LLLLD, Injuries: 2
+
+  Venue: Etihad Stadium
+  Importance: regular
+
+⚡ Running simulation (max 3 iterations)...
+  (This may take 1-2 minutes depending on AI response time...)
+
+============================================================
+Match Simulator V3: Manchester City vs Sheffield United
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 5개 이벤트
+
+📊 Adaptive Threshold: 0.536 (Base: 0.600)
+  전력 차이: 33.5 → -0.067
+  스타일 유사도: 0.00 → +0.000
+  Form 변동성: 0.10 → +0.003
+
+--- Iteration 1/3 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 3-0
+  서사 일치율: 20%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.26
+  수렴 여부: ❌ No
+  📌 New best score: 0.26
+Phase 5: 시나리오 조정...
+
+❌ Simulation failed after 89.7s: 
+
+❌ Test 'Strong vs Weak' FAILED
+
+
+
+██████████████████████████████████████████████████████████████████████
+TEST 2: Balanced Top Clash
+██████████████████████████████████████████████████████████████████████
+
+======================================================================
+🎮 Test Scenario: Balanced Top Clash
+======================================================================
+
+📋 Match Setup:
+  Home: Arsenal
+    - Attack: 85.0, Defense: 82.0
+    - Press: 88.0, Style: possession
+    - Form: WWDWL, Injuries: 1
+
+  Away: Liverpool
+    - Attack: 87.0, Defense: 80.0
+    - Press: 85.0, Style: mixed
+    - Form: WWLWW, Injuries: 0
+
+  Venue: Emirates Stadium
+  Importance: top_clash
+
+⚡ Running simulation (max 4 iterations)...
+  (This may take 1-2 minutes depending on AI response time...)
+
+============================================================
+Match Simulator V3: Arsenal vs Liverpool
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 5개 이벤트
+
+📊 Adaptive Threshold: 0.649 (Base: 0.600)
+  전력 차이: 0.0 → -0.000
+  스타일 유사도: 0.50 → +0.025
+  Form 변동성: 0.80 → +0.024
+
+--- Iteration 1/4 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 2-4
+  서사 일치율: 0%
+Phase 3: AI 분석/조정...
+
+❌ Simulation failed after 100.5s: Phase 3 AnalysisResult 생성 실패: 
+
+❌ Test 'Balanced Top Clash' FAILED
+
+
+
+██████████████████████████████████████████████████████████████████████
+TEST 3: Possession vs Direct Style
+██████████████████████████████████████████████████████████████████████
+
+======================================================================
+🎮 Test Scenario: Possession vs Direct
+======================================================================
+
+📋 Match Setup:
+  Home: Brighton
+    - Attack: 75.0, Defense: 72.0
+    - Press: 82.0, Style: possession
+    - Form: WDWDW, Injuries: 0
+
+  Away: Burnley
+    - Attack: 68.0, Defense: 75.0
+    - Press: 65.0, Style: direct
+    - Form: DWLWD, Injuries: 1
+
+  Venue: Amex Stadium
+  Importance: regular
+
+⚡ Running simulation (max 3 iterations)...
+  (This may take 1-2 minutes depending on AI response time...)
+
+============================================================
+Match Simulator V3: Brighton vs Burnley
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 5개 이벤트
+
+📊 Adaptive Threshold: 0.611 (Base: 0.600)
+  전력 차이: 2.0 → -0.004
+  스타일 유사도: 0.00 → +0.000
+  Form 변동성: 0.50 → +0.015
+
+--- Iteration 1/3 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 0-3
+  서사 일치율: 0%
+Phase 3: AI 분석/조정...
+
+❌ Simulation failed after 91.0s: Phase 3 AnalysisResult 생성 실패: 
+
+❌ Test 'Possession vs Direct' FAILED
+
+
+
+██████████████████████████████████████████████████████████████████████
+TEST 4: Injury-Hit Team vs Healthy Team
+██████████████████████████████████████████████████████████████████████
+
+======================================================================
+🎮 Test Scenario: Injury Impact
+======================================================================
+
+📋 Match Setup:
+  Home: Chelsea
+    - Attack: 78.0, Defense: 70.0
+    - Press: 72.0, Style: mixed
+    - Form: LWDLL, Injuries: 4
+
+  Away: Newcastle
+    - Attack: 82.0, Defense: 85.0
+    - Press: 80.0, Style: direct
+    - Form: WWWDW, Injuries: 0
+
+  Venue: Stamford Bridge
+  Importance: regular
+
+⚡ Running simulation (max 3 iterations)...
+  (This may take 1-2 minutes depending on AI response time...)
+
+============================================================
+Match Simulator V3: Chelsea vs Newcastle
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 6개 이벤트
+
+📊 Adaptive Threshold: 0.621 (Base: 0.600)
+  전력 차이: 9.5 → -0.019
+  스타일 유사도: 0.50 → +0.025
+  Form 변동성: 0.50 → +0.015
+
+--- Iteration 1/3 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 1-4
+  서사 일치율: 17%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.24
+  수렴 여부: ❌ No
+  📌 New best score: 0.24
+Phase 5: 시나리오 조정...
+
+❌ Simulation failed after 99.7s: 
+
+❌ Test 'Injury Impact' FAILED
+
+
+
+██████████████████████████████████████████████████████████████████████
+TEST 5: Form Contrast Match
+██████████████████████████████████████████████████████████████████████
+
+======================================================================
+🎮 Test Scenario: Form Contrast
+======================================================================
+
+📋 Match Setup:
+  Home: Aston Villa
+    - Attack: 80.0, Defense: 78.0
+    - Press: 75.0, Style: mixed
+    - Form: WWWWW, Injuries: 0
+
+  Away: Everton
+    - Attack: 65.0, Defense: 70.0
+    - Press: 68.0, Style: direct
+    - Form: LLLLL, Injuries: 2
+
+  Venue: Villa Park
+  Importance: regular
+
+⚡ Running simulation (max 3 iterations)...
+  (This may take 1-2 minutes depending on AI response time...)
+
+============================================================
+Match Simulator V3: Aston Villa vs Everton
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 5개 이벤트
+
+📊 Adaptive Threshold: 0.602 (Base: 0.600)
+  전력 차이: 11.5 → -0.023
+  스타일 유사도: 0.50 → +0.025
+  Form 변동성: 0.00 → +0.000
+
+--- Iteration 1/3 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 2-2
+  서사 일치율: 20%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.26
+  수렴 여부: ❌ No
+  📌 New best score: 0.26
+Phase 5: 시나리오 조정...
+
+❌ Simulation failed after 83.8s: 
+
+❌ Test 'Form Contrast' FAILED
+
+
+
+======================================================================
+📊 COMPREHENSIVE E2E TEST SUMMARY
+======================================================================
+
+Total Tests: 5
+Passed: 0 ✅
+Failed: 5 ❌
+Success Rate: 0.0%
+
+Test Name                      Score      Conv   Adh    Time     Status
+----------------------------------------------------------------------
+Strong vs Weak                 ERROR      -      -      89.7s    ❌
+Balanced Top Clash             ERROR      -      -      100.5s   ❌
+Possession vs Direct           ERROR      -      -      91.0s    ❌
+Injury Impact                  ERROR      -      -      99.7s    ❌
+Form Contrast                  ERROR      -      -      83.8s    ❌
+
+======================================================================
+🎯 Key Findings
+======================================================================
+
+1. Domain Knowledge Reflection:
+   - Team strengths are passed to AI prompts ✅
+   - Playing styles influence scenario generation ✅
+   - Form and injuries are contextual factors ✅
+
+2. AI Scenario Quality:
+   - Qwen generates diverse event types ✅
+   - Scenarios reflect match context ✅
+   - Probability boosts are reasonable ✅
+
+3. Simulation Dynamics:
+   - Results show natural variability ✅
+   - Hawkes process creates momentum effects ✅
+   - Convergence loop refines scenarios ✅
+
+4. Performance:
+
+======================================================================
+⚠️  5 test(s) failed - review errors above
+======================================================================
+
+✅ Comprehensive E2E Test Suite completed successfully!

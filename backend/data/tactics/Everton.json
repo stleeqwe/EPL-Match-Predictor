@@ -1,0 +1,24 @@
+{
+  "team_name": "Everton",
+  "defensive": {
+    "pressing_intensity": 6,
+    "defensive_line": 5,
+    "defensive_width": 8,
+    "compactness": 9,
+    "line_distance": 8.0
+  },
+  "offensive": {
+    "tempo": 6,
+    "buildup_style": "long_ball",
+    "width": 6,
+    "creativity": 6,
+    "passing_directness": 7
+  },
+  "transition": {
+    "counter_press": 6,
+    "counter_speed": 8,
+    "transition_time": 3.0,
+    "recovery_speed": 6
+  },
+  "timestamp": "2025-10-16T23:07:44.060233"
+}

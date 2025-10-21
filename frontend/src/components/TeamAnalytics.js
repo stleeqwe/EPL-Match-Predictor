@@ -97,7 +97,84 @@ const TeamAnalytics = ({
     }
   }, [team]);
 
-  const loadTeamStrength = () => {
+  // 🔧 자동 저장: playerRatings나 teamStrength가 변경될 때마다 overall score 자동 저장
+  useEffect(() => {
+    const autoSaveOverallScore = async () => {
+      // 팀이 있고, 선수 평가 데이터가 있을 때만 저장
+      if (!team || analytics.teamAverage === 0) return;
+
+      // 너무 자주 저장되지 않도록 debounce 효과 (500ms 대기)
+      const timeoutId = setTimeout(async () => {
+        try {
+          const scores = calculateOverallScore();
+          const dataToSave = {
+            overallScore: scores.overall,
+            playerScore: scores.playerScore,
+            strengthScore: scores.strengthScore,
+            playerWeight: playerWeight,
+            strengthWeight: 100 - playerWeight
+          };
+
+          const response = await fetch(`http://localhost:5001/api/teams/${encodeURIComponent(team)}/overall_score`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSave)
+          });
+
+          if (response.ok) {
+            console.log(`✅ Auto-saved overall score for ${team}:`, scores.overall.toFixed(1));
+          }
+        } catch (error) {
+          console.warn('Failed to auto-save overall score:', error);
+        }
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    };
+
+    autoSaveOverallScore();
+  }, [team, analytics.teamAverage, teamStrength.overall, playerWeight]);
+
+  const loadTeamStrength = async () => {
+    try {
+      // 🔧 Backend API에서 먼저 로드 시도
+      const response = await fetch(`http://localhost:5001/api/teams/${encodeURIComponent(team)}/strength`);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data && result.data.ratings) {
+          const ratings = result.data.ratings;
+          const categories = {};
+          let overallWeightedSum = 0;
+          let overallTotalWeight = 0;
+
+          Object.entries(TEAM_STRENGTH_FRAMEWORK).forEach(([key, category]) => {
+            const categoryRatings = category.attributes
+              .map(attrKey => ratings[attrKey])
+              .filter(val => typeof val === 'number' && val >= 0);
+
+            if (categoryRatings.length > 0) {
+              const avg = categoryRatings.reduce((sum, val) => sum + val, 0) / categoryRatings.length;
+              categories[key] = avg;
+              overallWeightedSum += avg * category.weight;
+              overallTotalWeight += category.weight;
+            } else {
+              categories[key] = 0;
+            }
+          });
+
+          const overall = overallTotalWeight > 0 ? overallWeightedSum / overallTotalWeight : 0;
+          setTeamStrength({ overall, categories });
+          console.log(`✅ Loaded team strength from backend for ${team}`);
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load team strength from backend, trying localStorage:', error);
+    }
+
+    // Fallback to localStorage
     const saved = localStorage.getItem(`team_strength_${team}`);
     if (saved) {
       const ratings = JSON.parse(saved);
@@ -122,6 +199,7 @@ const TeamAnalytics = ({
 
       const overall = overallTotalWeight > 0 ? overallWeightedSum / overallTotalWeight : 0;
       setTeamStrength({ overall, categories });
+      console.log(`⚠️ Loaded team strength from localStorage for ${team}`);
     } else {
       const categories = {};
       Object.keys(TEAM_STRENGTH_FRAMEWORK).forEach(key => {
@@ -209,7 +287,13 @@ const TeamAnalytics = ({
     const ratings = playerRatings[playerId];
     if (!ratings || Object.keys(ratings).length === 0) return 0;
     const normalizedPos = normalizePosition(playerPosition) || playerPosition;
-    const subPosition = ratings._subPosition || DEFAULT_SUB_POSITION[normalizedPos];
+    let subPosition = ratings._subPosition || DEFAULT_SUB_POSITION[normalizedPos];
+
+    // 🔧 Fix: Remove numeric suffixes from subPosition (CB1 → CB, CM2 → CM, etc.)
+    if (subPosition && typeof subPosition === 'string') {
+      subPosition = subPosition.replace(/\d+$/, '');
+    }
+
     return calculateWeightedAverage(ratings, subPosition) || 0;
   };
 

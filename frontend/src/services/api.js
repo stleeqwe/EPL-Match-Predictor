@@ -169,7 +169,21 @@ export const ratingsAPI = {
    * @param {string} userId - 사용자 ID (기본값: 'default')
    */
   delete: (playerId, userId = 'default') =>
-    api.delete(`/ratings/${playerId}`, { params: { user_id: userId } })
+    api.delete(`/ratings/${playerId}`, { params: { user_id: userId } }),
+
+  /**
+   * AI로 선수 능력치 자동 생성
+   * @param {string} playerName - 선수 이름
+   * @param {string} position - 포지션 (GK, CB, FB, DM, CM, CAM, WG, ST)
+   * @param {string} team - 팀 이름
+   * @returns {Promise<{success: boolean, ratings: Object, comment: string, confidence: number, data_sources: Object}>}
+   */
+  aiGenerate: (playerName, position, team) =>
+    api.post('/v1/ratings/ai-generate', {
+      player_name: playerName,
+      position: position,
+      team: team
+    })
 };
 
 // ============================================================
@@ -421,6 +435,21 @@ export const injuriesAPI = {
 };
 
 // ============================================================
+// Simulation API (E2E Integration - Phase 3)
+// ============================================================
+
+export const simulationAPI = {
+  /**
+   * Check if team is ready for enriched simulation
+   * @param {string} teamName - Team name
+   * @returns {Promise} Readiness details
+   */
+  checkReadiness: (teamName) => {
+    return api.get(`/v1/simulation/enriched/check-readiness/${encodeURIComponent(teamName)}`);
+  }
+};
+
+// ============================================================
 // Default Export
 // ============================================================
 
@@ -438,6 +467,7 @@ const apiClient = {
   tactics: tacticsAPI,
   teamStrength: teamStrengthAPI,
   injuries: injuriesAPI,
+  simulation: simulationAPI,
 
   // Utilities
   validateRating,

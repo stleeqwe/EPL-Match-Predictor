@@ -10,7 +10,7 @@ import logging
 import re
 from typing import Dict, List, Optional, Tuple
 
-from ai.qwen_client import get_qwen_client
+from ai.ai_factory import get_ai_client
 from .scenario import Scenario
 from .event_simulation_engine import EPL_BASELINE
 
@@ -30,13 +30,14 @@ class AIAnalyzer:
     5. 수렴 판정
     """
 
-    def __init__(self, model: str = "qwen2.5:32b"):
+    def __init__(self, model: str = None):
         """
         Args:
-            model: Qwen model name
+            model: AI model name (optional, uses AI_PROVIDER from .env if not specified)
         """
-        self.ai_client = get_qwen_client(model=model)
-        logger.info(f"AIAnalyzer initialized with {model}")
+        self.ai_client = get_ai_client()  # Uses AI_PROVIDER from .env
+        model_info = self.ai_client.get_model_info()
+        logger.info(f"AIAnalyzer initialized with {model_info['provider']}: {model_info['model']}")
 
     def analyze_and_adjust(
         self,
@@ -65,7 +66,7 @@ class AIAnalyzer:
             )
 
             # 2. Call AI
-            logger.info(f"Calling Qwen AI for analysis (iteration {iteration})...")
+            logger.info(f"Calling AI for analysis (iteration {iteration})...")
             success, response_text, usage_data, error = self.ai_client.generate(
                 prompt=user_prompt,
                 system_prompt=system_prompt,
@@ -85,8 +86,10 @@ class AIAnalyzer:
             if not analysis:
                 return False, None, "Failed to parse analysis from AI response"
 
-            logger.info(f"✓ Analysis complete: {len(analysis.get('issues', []))} issues detected")
-            logger.info(f"✓ Convergence: {analysis['convergence']['converged']}")
+            # Extract issues from nested structure
+            issues = analysis.get('analysis', {}).get('issues', [])
+            logger.info(f"✓ Analysis complete: {len(issues)} issues detected")
+            logger.info(f"✓ Convergence: {analysis.get('convergence', {}).get('converged', False)}")
 
             return True, analysis, None
 
@@ -305,14 +308,25 @@ def apply_adjustments(
     """
     logger.info("Applying AI adjustments...")
 
+    # Safely extract issues
+    analysis_section = ai_analysis.get('analysis', {})
+    if not analysis_section:
+        logger.warning("No 'analysis' section in AI response, returning scenarios unchanged")
+        return scenarios
+
+    issues = analysis_section.get('issues', [])
+    if not issues:
+        logger.info("No issues detected, returning scenarios unchanged")
+        return scenarios
+
     adjusted_scenarios = []
 
     # Process each scenario
     for scenario in scenarios:
         # Find issues for this scenario
         scenario_issues = [
-            issue for issue in ai_analysis['analysis']['issues']
-            if issue.get('scenario_id') == scenario.id
+            issue for issue in issues
+            if issue and issue.get('scenario_id') == scenario.id
         ]
 
         if not scenario_issues:
@@ -393,7 +407,7 @@ def apply_adjustments(
 _analyzer = None
 
 
-def get_analyzer(model: str = "qwen2.5:32b") -> AIAnalyzer:
+def get_analyzer(model: str = None) -> AIAnalyzer:
     """Get global analyzer instance (singleton)."""
     global _analyzer
     if _analyzer is None:

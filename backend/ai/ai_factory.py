@@ -8,7 +8,6 @@ import logging
 from typing import Optional
 
 from ai.base_client import BaseAIClient
-from ai.qwen_client import get_qwen_client
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +17,8 @@ class AIFactory:
     Factory for creating AI clients.
 
     Supports multiple providers:
-    - qwen (local Ollama) - Development/Testing
-    - claude (Anthropic) - Production (future)
+    - gemini (Google) - Production (Gemini 2.5 Flash)
+    - claude (Anthropic) - Production alternative
     - openai (OpenAI) - Production alternative (future)
     """
 
@@ -29,7 +28,7 @@ class AIFactory:
         Create AI client based on provider.
 
         Args:
-            provider: AI provider name ('qwen', 'claude', 'openai')
+            provider: AI provider name ('gemini', 'claude', 'openai')
                      If None, reads from AI_PROVIDER env variable
 
         Returns:
@@ -40,12 +39,12 @@ class AIFactory:
         """
         # Get provider from env if not specified
         if provider is None:
-            provider = os.getenv('AI_PROVIDER', 'qwen').lower()
+            provider = os.getenv('AI_PROVIDER', 'gemini').lower()
 
         logger.info(f"Creating AI client: provider={provider}")
 
-        if provider == 'qwen':
-            return AIFactory._create_qwen_client()
+        if provider == 'gemini':
+            return AIFactory._create_gemini_client()
         elif provider == 'claude':
             return AIFactory._create_claude_client()
         elif provider == 'openai':
@@ -53,26 +52,34 @@ class AIFactory:
         else:
             raise ValueError(
                 f"Unknown AI provider: {provider}. "
-                f"Supported: qwen, claude, openai"
+                f"Supported: gemini, claude, openai"
             )
 
     @staticmethod
-    def _create_qwen_client() -> BaseAIClient:
-        """Create Qwen client (local Ollama)."""
-        model = os.getenv('QWEN_MODEL', 'qwen2.5:32b')
-        ollama_url = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+    def _create_gemini_client() -> BaseAIClient:
+        """Create Gemini client (Google API)."""
+        try:
+            from ai.gemini_client import get_gemini_client
 
-        logger.info(f"Initializing Qwen client: model={model}, url={ollama_url}")
-        client = get_qwen_client(model=model)
+            model = os.getenv('GEMINI_MODEL', 'gemini-2.5-flash')
+            thinking_budget = int(os.getenv('GEMINI_THINKING_BUDGET', '8000'))
 
-        # Health check
-        is_healthy, error = client.health_check()
-        if not is_healthy:
-            logger.error(f"Qwen client health check failed: {error}")
-            raise ConnectionError(f"Qwen/Ollama not available: {error}")
+            logger.info(f"Initializing Gemini client: model={model}, thinking_budget={thinking_budget}")
+            client = get_gemini_client(model=model, thinking_budget=thinking_budget)
 
-        logger.info("Qwen client initialized successfully")
-        return client
+            # Health check
+            is_healthy, error = client.health_check()
+            if not is_healthy:
+                logger.error(f"Gemini client health check failed: {error}")
+                raise ConnectionError(f"Gemini API not available: {error}")
+
+            logger.info("Gemini client initialized successfully")
+            return client
+
+        except ImportError as e:
+            raise ImportError("Gemini client not available. Install: pip install google-generativeai")
+        except Exception as e:
+            raise ConnectionError(f"Gemini client initialization failed: {e}")
 
     @staticmethod
     def _create_claude_client() -> BaseAIClient:
@@ -92,7 +99,7 @@ class AIFactory:
         """Create OpenAI client (future implementation)."""
         raise NotImplementedError(
             "OpenAI client not yet implemented. "
-            "Use 'qwen' for development or 'claude' for production."
+            "Use 'gemini' or 'claude' for production."
         )
 
     @staticmethod
@@ -100,13 +107,11 @@ class AIFactory:
         """Get list of available AI providers."""
         providers = []
 
-        # Check Qwen/Ollama
+        # Check Gemini
         try:
-            from ai.qwen_client import QwenClient
-            import requests
-            response = requests.get("http://localhost:11434/api/tags", timeout=2)
-            if response.status_code == 200:
-                providers.append('qwen')
+            gemini_key = os.getenv('GEMINI_API_KEY')
+            if gemini_key:
+                providers.append('gemini')
         except:
             pass
 
@@ -146,7 +151,7 @@ def get_ai_client(provider: Optional[str] = None) -> BaseAIClient:
     global _ai_client
 
     # If provider is specified and different from current, recreate
-    current_provider = os.getenv('AI_PROVIDER', 'qwen')
+    current_provider = os.getenv('AI_PROVIDER', 'gemini')
     if provider and provider != current_provider:
         logger.info(f"Switching AI provider: {current_provider} -> {provider}")
         _ai_client = None

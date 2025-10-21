@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, Trophy, Loader, Swords, Sparkles } from 'lucide-react';
@@ -10,16 +10,43 @@ import { getTeamLogo } from '../utils/teamLogos';
 /**
  * Fixtures Component - Clean & Minimal Design
  * EPL 경기 일정 및 결과
+ * 🔧 preloadedData 지원 (깜빡임 방지)
+ * 🎬 탭 전환 시마다 애니메이션 실행
  */
-const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatchPredictionClick }) => {
-  const [fixtures, setFixtures] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatchPredictionClick, preloadedData = null }) => {
+  const [fixtures, setFixtures] = useState(preloadedData || []);
+  const [loading, setLoading] = useState(!preloadedData);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('upcoming'); // 'upcoming' | 'results'
 
+  // 🎬 애니메이션 설정 (항상 실행)
+  const shouldAnimate = true;
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.08
+      }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.3, ease: 'easeOut' }
+    }
+  };
+
   useEffect(() => {
-    fetchFixtures();
-  }, []);
+    // preloadedData가 있으면 fetch 스킵
+    if (!preloadedData) {
+      fetchFixtures();
+    }
+  }, [preloadedData]);
 
   const fetchFixtures = async () => {
     try {
@@ -35,8 +62,16 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
     }
   };
 
-  const recentFixtures = fixtures.filter(f => f.finished).slice(-limit);
-  const upcomingFixtures = fixtures.filter(f => !f.finished).slice(0, limit);
+  // 🚀 useMemo로 계산 최적화 (깜빡임 방지)
+  const recentFixtures = useMemo(() =>
+    fixtures.filter(f => f.finished).slice(-limit),
+    [fixtures, limit]
+  );
+
+  const upcomingFixtures = useMemo(() =>
+    fixtures.filter(f => !f.finished).slice(0, limit),
+    [fixtures, limit]
+  );
 
   // 경기 결과 색상
   const getResultColor = (homeScore, awayScore) => {
@@ -104,18 +139,6 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
     );
   }
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.05 }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
-  };
 
   return (
     <div className="relative bg-gradient-to-br from-slate-900/80 via-blue-950/60 to-slate-900/80 backdrop-blur-sm border border-cyan-500/20 rounded-sm shadow-lg p-6">
@@ -163,16 +186,14 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
         })}
       </div>
 
-      {/* Content */}
-      <AnimatePresence mode="wait">
+      {/* Content - 🎬 조건부 애니메이션 적용 */}
+      <div>
         {activeTab === 'upcoming' ? (
           <motion.div
-            key="upcoming"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            exit={{ opacity: 0 }}
             className="relative space-y-3"
+            variants={shouldAnimate ? containerVariants : {}}
+            initial={shouldAnimate ? "hidden" : false}
+            animate={shouldAnimate ? "visible" : false}
           >
             {upcomingFixtures.length === 0 ? (
               <div className="text-center py-12">
@@ -180,10 +201,10 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
                 <p className="text-white/60 font-medium">예정된 경기가 없습니다</p>
               </div>
             ) : (
-              upcomingFixtures.map((fixture) => (
+              upcomingFixtures.map((fixture, idx) => (
                 <motion.div
                   key={fixture.id}
-                  variants={itemVariants}
+                  variants={shouldAnimate ? cardVariants : {}}
                 >
                   {/* Card */}
                   <div className="bg-white/5 hover:bg-white/10 rounded-sm p-4 border border-white/10 transition-all">
@@ -261,12 +282,12 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
                     {/* Action Buttons */}
                     <div className="mt-3 pt-3 border-t border-white/10">
                       <div className="grid grid-cols-2 gap-2">
-                        <motion.button
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onMatchSimulatorClick && onMatchSimulatorClick(fixture);
                           }}
-                          className="px-3 py-2.5 rounded-sm bg-gradient-to-br from-orange-700 via-orange-800 to-red-900 text-white text-sm font-semibold border-2 border-amber-500/60 hover:border-amber-400 transition-all flex items-center justify-center gap-1.5"
+                          className="px-3 py-2.5 rounded-sm bg-gradient-to-br from-orange-700 via-orange-800 to-red-900 text-white text-sm font-semibold border-2 border-amber-500/60 hover:border-amber-400 transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] hover:-translate-y-px active:scale-[0.98]"
                           style={{
                             boxShadow: 'none',
                             transition: 'all 0.3s ease'
@@ -277,18 +298,16 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
                           onMouseLeave={(e) => {
                             e.currentTarget.style.boxShadow = 'none';
                           }}
-                          whileHover={{ scale: 1.02, y: -1 }}
-                          whileTap={{ scale: 0.98, y: 0 }}
                         >
                           <Swords className="w-4 h-4" />
                           가상대결
-                        </motion.button>
-                        <motion.button
+                        </button>
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             onMatchPredictionClick && onMatchPredictionClick(fixture);
                           }}
-                          className="px-3 py-2.5 rounded-sm bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 text-white text-sm font-semibold border-2 border-cyan-500/60 hover:border-cyan-400 transition-all flex items-center justify-center gap-1.5"
+                          className="px-3 py-2.5 rounded-sm bg-gradient-to-br from-emerald-700 via-emerald-800 to-teal-900 text-white text-sm font-semibold border-2 border-cyan-500/60 hover:border-cyan-400 transition-all flex items-center justify-center gap-1.5 hover:scale-[1.02] hover:-translate-y-px active:scale-[0.98]"
                           style={{
                             boxShadow: 'none',
                             transition: 'all 0.3s ease'
@@ -299,12 +318,10 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
                           onMouseLeave={(e) => {
                             e.currentTarget.style.boxShadow = 'none';
                           }}
-                          whileHover={{ scale: 1.02, y: -1 }}
-                          whileTap={{ scale: 0.98, y: 0 }}
                         >
                           <Sparkles className="w-4 h-4" />
                           경기예측
-                        </motion.button>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -314,12 +331,10 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
           </motion.div>
         ) : (
           <motion.div
-            key="results"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            exit={{ opacity: 0 }}
             className="relative space-y-3"
+            variants={shouldAnimate ? containerVariants : {}}
+            initial={shouldAnimate ? "hidden" : false}
+            animate={shouldAnimate ? "visible" : false}
           >
             {recentFixtures.length === 0 ? (
               <div className="text-center py-12">
@@ -327,10 +342,10 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
                 <p className="text-white/60 font-medium">최근 경기 결과가 없습니다</p>
               </div>
             ) : (
-              recentFixtures.reverse().map((fixture) => (
+              recentFixtures.reverse().map((fixture, idx) => (
                 <motion.div
                   key={fixture.id}
-                  variants={itemVariants}
+                  variants={shouldAnimate ? cardVariants : {}}
                 >
                   {/* Card */}
                   <div className="bg-white/5 hover:bg-white/10 rounded-sm p-4 border border-white/10 transition-all">
@@ -426,7 +441,7 @@ const Fixtures = ({ darkMode = false, limit = 10, onMatchSimulatorClick, onMatch
             )}
           </motion.div>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 };
@@ -445,4 +460,5 @@ Fixtures.defaultProps = {
   onMatchPredictionClick: null
 };
 
-export default Fixtures;
+// 🚀 React.memo로 불필요한 리렌더링 방지
+export default React.memo(Fixtures);

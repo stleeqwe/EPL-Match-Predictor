@@ -47,9 +47,6 @@ const PlayerCardCompact = ({
       }`}
       whileHover={!injury ? { scale: 1.02, y: -2 } : {}}
       whileTap={!injury ? { scale: 0.98 } : {}}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
     >
       <div className="flex items-center gap-2 p-2">
         {/* 프로필 사진 */}
@@ -146,61 +143,36 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
   const formationDropdownRef = useRef(null);
   const selectedFormationRef = useRef(null);
 
-  // Calculate player rating from playerRatings (using weighted average)
-  const calculatePlayerRating = useCallback((player) => {
-    const savedRatings = playerRatings[player.id];
-
-    if (savedRatings && typeof savedRatings === 'object' && Object.keys(savedRatings).length > 0) {
-      // 서브 포지션 가져오기
-      const subPosition = savedRatings._subPosition || DEFAULT_SUB_POSITION[player.position];
-
-      // 가중 평균 계산 (포지션별 중요 속성에 가중치 적용)
-      const weightedAverage = calculateWeightedAverage(savedRatings, subPosition);
-
-      if (weightedAverage !== null) {
-        return weightedAverage;
-      }
-    }
-
-    // 측정값이 없으면 기본값 2.5 반환
-    return 2.5;
-  }, [playerRatings]);
-
-  const calculatePlayerForm = useCallback((player) => {
-    const baseForm = 3.5;
-    const minutesBonus = (player.minutes || 0) > 500 ? 0.5 : 0;
-    const statsBonus = ((player.goals || 0) + (player.assists || 0)) * 0.15;
-    return Math.min(5.0, baseForm + minutesBonus + statsBonus);
-  }, []);
-
-  // Fetch players from API
+  // ✅ PART 1: 순수 데이터 페칭 (team만 의존, 평점 계산 안 함)
   const fetchPlayers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`http://localhost:5001/api/squad/${encodeURIComponent(team)}`);
       const data = await response.json();
 
+      // ✅ 순수 API 데이터만 저장 (평점/폼 계산 없음)
       setRawPlayers(data.squad || []);
     } catch (error) {
       console.error('Error fetching players:', error);
       // Fallback to mock data
-      setRawPlayers([
-        { id: 1, name: 'Erling Haaland', position: 'ST', number: 9, nationality: '🇳🇴', goals: 27, assists: 5 },
-        { id: 2, name: 'Kevin De Bruyne', position: 'CAM', number: 17, nationality: '🇧🇪', goals: 4, assists: 18 },
-        { id: 3, name: 'Phil Foden', position: 'WG', number: 47, nationality: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals: 11, assists: 8 },
-        { id: 4, name: 'Rodri', position: 'DM', number: 16, nationality: '🇪🇸', goals: 5, assists: 4 },
-        { id: 5, name: 'Ruben Dias', position: 'CB', number: 3, nationality: '🇵🇹', goals: 1, assists: 0 },
-        { id: 6, name: 'John Stones', position: 'CB', number: 5, nationality: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals: 2, assists: 1 },
-        { id: 7, name: 'Kyle Walker', position: 'FB', number: 2, nationality: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals: 0, assists: 3 },
-        { id: 8, name: 'Ederson', position: 'GK', number: 31, nationality: '🇧🇷', goals: 0, assists: 0 },
-        { id: 9, name: 'Jack Grealish', position: 'WG', number: 10, nationality: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals: 3, assists: 7 },
-        { id: 10, name: 'Bernardo Silva', position: 'CM', number: 20, nationality: '🇵🇹', goals: 6, assists: 9 },
-        { id: 11, name: 'Nathan Aké', position: 'FB', number: 6, nationality: '🇳🇱', goals: 0, assists: 1 },
-      ]);
+      const mockData = [
+        { id: 1, name: 'Erling Haaland', position: 'ST', number: 9, nationality: '🇳🇴', goals: 27, assists: 5, minutes: 2430 },
+        { id: 2, name: 'Kevin De Bruyne', position: 'CAM', number: 17, nationality: '🇧🇪', goals: 4, assists: 18, minutes: 2160 },
+        { id: 3, name: 'Phil Foden', position: 'WG', number: 47, nationality: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals: 11, assists: 8, minutes: 1980 },
+        { id: 4, name: 'Rodri', position: 'DM', number: 16, nationality: '🇪🇸', goals: 5, assists: 4, minutes: 2700 },
+        { id: 5, name: 'Ruben Dias', position: 'CB', number: 3, nationality: '🇵🇹', goals: 1, assists: 0, minutes: 2520 },
+        { id: 6, name: 'John Stones', position: 'CB', number: 5, nationality: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals: 2, assists: 1, minutes: 1800 },
+        { id: 7, name: 'Kyle Walker', position: 'FB', number: 2, nationality: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals: 0, assists: 3, minutes: 2340 },
+        { id: 8, name: 'Ederson', position: 'GK', number: 31, nationality: '🇧🇷', goals: 0, assists: 0, minutes: 2700 },
+        { id: 9, name: 'Jack Grealish', position: 'WG', number: 10, nationality: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', goals: 3, assists: 7, minutes: 1620 },
+        { id: 10, name: 'Bernardo Silva', position: 'CM', number: 20, nationality: '🇵🇹', goals: 6, assists: 9, minutes: 2430 },
+        { id: 11, name: 'Nathan Aké', position: 'FB', number: 6, nationality: '🇳🇱', goals: 0, assists: 1, minutes: 1440 },
+      ];
+      setRawPlayers(mockData);
     } finally {
       setLoading(false);
     }
-  }, [team]);
+  }, [team]); // ✅ team만 의존
 
   // 부상자 데이터 페칭
   const fetchInjuries = useCallback(async () => {
@@ -348,14 +320,63 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
     }
   }, [injuries, rawPlayers]);
 
-  // rawPlayers와 playerRatings를 조합하여 최종 players 계산
+  // ✅ Backend에서 이미 rating, form이 계산되고 정렬된 데이터 사용
+  // 더 이상 프론트엔드에서 계산하거나 정렬할 필요 없음
+  // ✅ PART 1: rawPlayers + playerRatings 조합 (useMemo로 최적화)
   const players = useMemo(() => {
-    return rawPlayers.map(player => ({
+    console.log('🔄 Recalculating players with ratings...', {
+      rawPlayersCount: rawPlayers.length,
+      hasPlayerRatings: Object.keys(playerRatings).length > 0
+    });
+
+    // 평점 계산 헬퍼 함수 (useMemo 내부에서만 사용)
+    const calculateRating = (player) => {
+      const savedRatings = playerRatings[player.id];
+
+      if (savedRatings && typeof savedRatings === 'object' && Object.keys(savedRatings).length > 0) {
+        // 서브 포지션 가져오기
+        let subPosition = savedRatings._subPosition || DEFAULT_SUB_POSITION[player.position];
+
+        // Remove numeric suffixes (CB1 → CB)
+        if (subPosition && typeof subPosition === 'string') {
+          subPosition = subPosition.replace(/\d+$/, '');
+        }
+
+        // 가중 평균 계산
+        const weightedAverage = calculateWeightedAverage(savedRatings, subPosition);
+        if (weightedAverage !== null) {
+          return weightedAverage;
+        }
+      }
+
+      return 2.5; // 기본값
+    };
+
+    // 폼 계산 헬퍼 함수
+    const calculateForm = (player) => {
+      const baseForm = 3.5;
+      const minutesBonus = (player.minutes || 0) > 500 ? 0.5 : 0;
+      const statsBonus = ((player.goals || 0) + (player.assists || 0)) * 0.15;
+      return Math.min(5.0, baseForm + minutesBonus + statsBonus);
+    };
+
+    // 평점과 폼 계산 후 정렬
+    const playersWithRatings = rawPlayers.map(player => ({
       ...player,
-      rating: calculatePlayerRating(player),
-      form: calculatePlayerForm(player)
+      rating: calculateRating(player),
+      form: calculateForm(player)
     }));
-  }, [rawPlayers, calculatePlayerRating, calculatePlayerForm]);
+
+    // ✅ 평점순으로 정렬 (한 번만)
+    playersWithRatings.sort((a, b) => {
+      if (a.rating === null && b.rating !== null) return 1;
+      if (a.rating !== null && b.rating === null) return -1;
+      if (a.rating === null && b.rating === null) return 0;
+      return b.rating - a.rating;
+    });
+
+    return playersWithRatings;
+  }, [rawPlayers, playerRatings]); // ✅ rawPlayers와 playerRatings만 의존
 
   // Close formation menu on outside click
   useEffect(() => {
@@ -401,12 +422,19 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
       if (pitchRef.current) {
         const rect = pitchRef.current.getBoundingClientRect();
         const { width, height } = rect;
-        setPitchDimensions({ width, height });
+        if (width > 0 && height > 0) {
+          setPitchDimensions({ width, height });
+          console.log('✅ Pitch dimensions updated:', { width, height });
+        }
       }
     };
 
-    // 초기 로드 시 약간의 지연을 둠 (DOM 완전히 렌더링 대기)
-    setTimeout(updatePitchDimensions, 100);
+    // 초기 로드 시 여러 번 시도 (DOM 완전히 렌더링 대기)
+    const timeouts = [
+      setTimeout(updatePitchDimensions, 100),
+      setTimeout(updatePitchDimensions, 300),
+      setTimeout(updatePitchDimensions, 500)
+    ];
 
     const resizeObserver = new ResizeObserver(updatePitchDimensions);
 
@@ -417,6 +445,7 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
     window.addEventListener('resize', updatePitchDimensions);
 
     return () => {
+      timeouts.forEach(clearTimeout);
       resizeObserver.disconnect();
       window.removeEventListener('resize', updatePitchDimensions);
     };
@@ -1147,23 +1176,22 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
 
   const stats = calcStats();
 
-  const filteredPlayers = players
-    .filter(p => positionFilter === 'ALL' || getPlayerRole(p.position) === positionFilter)
-    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => {
-      const aIsStarter = Object.values(squad.starters).includes(a.id);
-      const bIsStarter = Object.values(squad.starters).includes(b.id);
+  const filteredPlayers = useMemo(() => {
+    return players
+      .filter(p => positionFilter === 'ALL' || getPlayerRole(p.position) === positionFilter)
+      .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      .sort((a, b) => {
+        const aIsStarter = Object.values(squad.starters).includes(a.id);
+        const bIsStarter = Object.values(squad.starters).includes(b.id);
 
-      // 주전 선수가 먼저
-      if (aIsStarter && !bIsStarter) return -1;
-      if (!aIsStarter && bIsStarter) return 1;
+        // 주전 선수가 먼저
+        if (aIsStarter && !bIsStarter) return -1;
+        if (!aIsStarter && bIsStarter) return 1;
 
-      // 같은 그룹 내에서는 rating으로 정렬
-      if (a.rating === null && b.rating !== null) return 1;
-      if (a.rating !== null && b.rating === null) return -1;
-      if (a.rating === null && b.rating === null) return 0;
-      return b.rating - a.rating;
-    });
+        // 같은 그룹 내에서는 이미 정렬된 순서 유지 (players에서 rating순으로 정렬됨)
+        return 0;
+      });
+  }, [players, positionFilter, searchTerm, squad.starters]);
 
   // 대조적인 색상 시스템 (평균 기준 양방향)
   const getRatingColor = (rating) => {
@@ -1455,20 +1483,17 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
 
                     // Empty position
                     return (
-                      <motion.div
+                      <div
                         key={posKey}
                         onDragOver={(e) => { e.preventDefault(); setHoveredPos(posKey); }}
                         onDragLeave={() => setHoveredPos(null)}
                         onDrop={(e) => handleDrop(e, posKey)}
                         onClick={() => handlePositionClick(posKey)}
-                        className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
+                        className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group transition-transform hover:scale-105"
                         style={{
                           left: `${pixelPos.x}px`,
                           top: `${pixelPos.y}px`
                         }}
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        whileHover={{ scale: 1.05 }}
                       >
                       <div
                         className={`w-20 h-20 rounded-sm flex flex-col items-center justify-center backdrop-blur-sm transition-all duration-200 relative border-2 border-dashed group-hover:border-cyan-400 ${
@@ -1497,7 +1522,7 @@ const PremiumSquadBuilder = ({ team = "Manchester City", playerRatings = {}, onP
                           hoveredPos === posKey ? 'text-cyan-300' : 'text-white/50'
                         }`}>{getRole(posKey)}</span>
                       </div>
-                      </motion.div>
+                      </div>
                     );
                   });
                 })()}

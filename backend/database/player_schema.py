@@ -124,15 +124,24 @@ def init_player_db(db_path='player_analysis.db'):
 
 
 def get_player_session(db_path='player_analysis.db'):
-    """세션 생성 (SQLite 또는 PostgreSQL)"""
-    # 환경 변수에서 DATABASE_URL 확인
-    database_url = os.getenv('DATABASE_URL')
-    if database_url:
+    """
+    세션 생성 (SQLite 또는 PostgreSQL)
+
+    IMPORTANT: db_path 파라미터가 제공되면 DATABASE_URL 환경변수보다 우선순위가 높음
+    """
+    # db_path가 기본값이 아니면 명시적으로 지정된 것이므로 환경변수 무시
+    is_explicit_path = (db_path != 'player_analysis.db')
+
+    # 환경 변수에서 DATABASE_URL 확인 (명시적 경로가 없을 때만)
+    database_url = os.getenv('DATABASE_URL') if not is_explicit_path else None
+
+    if database_url and not is_explicit_path:
         # PostgreSQL 연결
         engine = create_engine(database_url, echo=False)
     else:
         # SQLite 연결 (로컬 개발)
-        engine = create_engine(f'sqlite:///{db_path}', echo=False)
+        connection_string = f'sqlite:///{db_path}'
+        engine = create_engine(connection_string, echo=False)
 
     Session = sessionmaker(bind=engine)
     return Session()

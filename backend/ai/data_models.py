@@ -29,7 +29,7 @@ class AnalysisStatus(Enum):
 class AIProvider(Enum):
     """AI 제공자"""
     CLAUDE = "claude"
-    QWEN = "qwen"
+    GEMINI = "gemini"
     GPT4 = "gpt4"  # 향후 확장
 
 
@@ -232,8 +232,8 @@ class AIConfig:
         if self.model is None:
             if self.provider == AIProvider.CLAUDE:
                 self.model = "claude-3-5-sonnet-20241022"
-            elif self.provider == AIProvider.QWEN:
-                self.model = "qwen2.5:72b"
+            elif self.provider == AIProvider.GEMINI:
+                self.model = "gemini-2.5-flash"
             elif self.provider == AIProvider.GPT4:
                 self.model = "gpt-4-turbo-preview"
 

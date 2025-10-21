@@ -1,20 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { RefreshCw } from 'lucide-react';
 import { eplAPI } from '../services/api';
 
 /**
  * Standings Component
  * EPL 리그 순위표
+ * 🔧 preloadedData 지원 (깜빡임 방지)
+ * 🎬 탭 전환 시마다 애니메이션 실행
  */
-const Standings = ({ darkMode = false, onTeamClick }) => {
-  const [standings, setStandings] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Standings = ({ darkMode = false, onTeamClick, preloadedData = null }) => {
+  const [standings, setStandings] = useState(preloadedData || []);
+  const [loading, setLoading] = useState(!preloadedData);
   const [error, setError] = useState(null);
 
+  // 🎬 애니메이션 설정 (항상 실행)
+  const shouldAnimate = true;
+
+  const rowVariants = {
+    hidden: { opacity: 0, x: -10 },
+    visible: (i) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.03,
+        duration: 0.3,
+        ease: 'easeOut'
+      }
+    })
+  };
+
   useEffect(() => {
-    fetchStandings();
-  }, []);
+    // preloadedData가 있으면 fetch 스킵
+    if (!preloadedData) {
+      fetchStandings();
+    }
+  }, [preloadedData]);
 
   const fetchStandings = async () => {
     try {
@@ -123,17 +145,25 @@ const Standings = ({ darkMode = false, onTeamClick }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
-            {standings.map((team) => (
-              <tr
-                key={team.id}
-                className={`
-                  group cursor-pointer transition-all duration-200
-                  hover:bg-white/5
-                  ${getPositionStyle(team.position)}
-                `}
-                onClick={() => onTeamClick && onTeamClick(team.name)}
-                title={`${team.name} 선수 분석 보기`}
-              >
+            {standings.map((team, idx) => {
+              const Component = shouldAnimate ? motion.tr : 'tr';
+              return (
+                <Component
+                  key={team.id}
+                  className={`
+                    group cursor-pointer transition-all duration-200
+                    hover:bg-white/5
+                    ${getPositionStyle(team.position)}
+                  `}
+                  onClick={() => onTeamClick && onTeamClick(team.name)}
+                  title={`${team.name} 선수 분석 보기`}
+                  {...(shouldAnimate ? {
+                    custom: idx,
+                    variants: rowVariants,
+                    initial: "hidden",
+                    animate: "visible"
+                  } : {})}
+                >
                 {/* 순위 */}
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
@@ -177,8 +207,9 @@ const Standings = ({ darkMode = false, onTeamClick }) => {
                     {team.points}
                   </span>
                 </td>
-              </tr>
-            ))}
+              </Component>
+            );
+            })}
           </tbody>
         </table>
       </div>
@@ -214,4 +245,5 @@ Standings.defaultProps = {
   onTeamClick: null
 };
 
-export default Standings;
+// 🚀 React.memo로 불필요한 리렌더링 방지
+export default React.memo(Standings);

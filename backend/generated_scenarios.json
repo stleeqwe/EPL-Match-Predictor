@@ -1,0 +1,544 @@
+{
+  "match": "Arsenal vs Liverpool",
+  "scenarios": [
+    {
+      "id": "SYNTH_001",
+      "name": "홈팀 압도적인 승리: 이른 득점과 경기 지배",
+      "reasoning": "아스날의 강한 수비진(가브리엘, 벤 화이트)과 주비멘디의 중원 장악력, 그리고 트로사르의 측면 공격이 초반부터 리버풀을 압도하며 리드를 잡고 경기를 안정적으로 운영하는 시나리오입니다. 홈 이점과 아스날의 강한 피지컬이 시너지를 냅니다.",
+      "events": [
+        {
+          "minute_range": [
+            12,
+            20
+          ],
+          "type": "wing_breakthrough",
+          "team": "home",
+          "actor": "Leandro Trossard",
+          "method": "dribble_and_cross",
+          "probability_boost": 2.2,
+          "reason": "트로사르의 뛰어난 창의성과 스피드를 활용한 측면 돌파로 리버풀의 측면 약점을 공략합니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            18,
+            25
+          ],
+          "type": "goal",
+          "team": "home",
+          "actor": "Home Striker",
+          "method": "tap_in",
+          "probability_boost": 2.5,
+          "reason": "트로사르의 측면 돌파에 이은 크로스를 통해 이른 시간 선제골을 득점하여 경기를 유리하게 만듭니다.",
+          "trigger": "wing_breakthrough",
+          "to": null
+        },
+        {
+          "minute_range": [
+            35,
+            45
+          ],
+          "type": "central_penetration",
+          "team": "home",
+          "actor": "Martín Zubimendi",
+          "method": "through_ball",
+          "probability_boost": 1.8,
+          "reason": "주비멘디의 뛰어난 볼 간수 능력과 포지셔닝으로 중원에서 안정적인 빌드업을 통해 공격 기회를 창출합니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            60,
+            70
+          ],
+          "type": "shot_on_target",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "long_range_shot",
+          "probability_boost": 1.5,
+          "reason": "리버풀의 이삭이 만회골을 노리지만 아스날의 수비 리더 가브리엘이 단단히 막아내며 위기를 넘깁니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            80,
+            88
+          ],
+          "type": "goal",
+          "team": "home",
+          "actor": "Home Midfielder",
+          "method": "counter_attack",
+          "probability_boost": 2.0,
+          "reason": "리버풀의 공격적인 전술에 맞서 아스날이 역습으로 쐐기골을 기록하며 승리에 쐐기를 박습니다.",
+          "trigger": null,
+          "to": null
+        }
+      ],
+      "parameter_adjustments": {
+        "home_attack_modifier": 1.15,
+        "away_midfield_control_modifier": 0.85,
+        "away_defense_modifier": 0.9
+      },
+      "expected_probability": 0.15,
+      "base_narrative": null
+    },
+    {
+      "id": "SYNTH_002",
+      "name": "홈팀의 극적인 승리: 치열한 접전 후 막판 결승골",
+      "reasoning": "두 팀 모두 공격적인 4-3-3 전술을 구사하며 치열한 중원 싸움과 전방 압박이 전개됩니다. 아스날의 홈 이점과 강한 수비진이 리버풀의 공격을 막아내고, 막판 집중력을 발휘하여 결승골을 터뜨리는 시나리오입니다.",
+      "events": [
+        {
+          "minute_range": [
+            15,
+            30
+          ],
+          "type": "foul",
+          "team": "away",
+          "actor": "Away Midfielder",
+          "method": "tackle",
+          "probability_boost": 1.8,
+          "reason": "양 팀의 강한 전방 압박과 중원 싸움으로 인해 초반부터 거친 파울이 발생합니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            35,
+            45
+          ],
+          "type": "shot_on_target",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "header",
+          "probability_boost": 2.0,
+          "reason": "이삭의 좋은 연계 플레이와 위치 선정을 바탕으로 위협적인 헤더 슈팅을 기록하지만, 다비드 라야의 선방에 막힙니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            50,
+            60
+          ],
+          "type": "shot_on_target",
+          "team": "home",
+          "actor": "Leandro Trossard",
+          "method": "curled_shot",
+          "probability_boost": 1.8,
+          "reason": "트로사르의 창의적인 플레이로 슈팅 찬스를 만들지만, 알리송의 뛰어난 반사 신경으로 막힙니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            70,
+            78
+          ],
+          "type": "substitution",
+          "team": "home",
+          "actor": "Home Attacker",
+          "method": "fresh_legs",
+          "probability_boost": 1.0,
+          "reason": "경기가 팽팽하게 흘러가자 아스날 감독이 공격에 변화를 주기 위해 교체 카드를 사용합니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            85,
+            90
+          ],
+          "type": "goal",
+          "team": "home",
+          "actor": "Home Substitute",
+          "method": "poachers_finish",
+          "probability_boost": 2.7,
+          "reason": "교체 투입된 선수가 혼전 상황에서 집중력을 발휘하여 극적인 결승골을 성공시킵니다.",
+          "trigger": "central_penetration",
+          "to": null
+        }
+      ],
+      "parameter_adjustments": {
+        "home_physical_modifier": 1.1,
+        "away_physical_modifier": 0.95,
+        "home_attack_modifier": 1.1
+      },
+      "expected_probability": 0.25,
+      "base_narrative": null
+    },
+    {
+      "id": "SYNTH_003",
+      "name": "균형 잡힌 무승부: 양 팀의 전술적 상쇄",
+      "reasoning": "두 팀 모두 유사한 공격적인 4-3-3 전술과 높은 수준의 전방 압박을 구사하여, 서로의 강점이 상쇄되는 시나리오입니다. 중원에서 치열한 싸움이 펼쳐지고, 양 팀 모두 득점 기회를 만들지만 결정력 부족이나 골키퍼 선방으로 승부를 가리지 못합니다.",
+      "events": [
+        {
+          "minute_range": [
+            20,
+            30
+          ],
+          "type": "central_penetration",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "dribble_and_shot",
+          "probability_boost": 2.0,
+          "reason": "이삭의 뛰어난 개인 능력과 침투로 아스날 수비진을 위협하며 선제골을 기록합니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            35,
+            42
+          ],
+          "type": "goal",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "finesse_shot",
+          "probability_boost": 2.2,
+          "reason": "아스날의 전방 압박을 뚫어낸 리버풀이 이삭의 침투를 활용하여 선제골을 기록합니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            50,
+            60
+          ],
+          "type": "corner",
+          "team": "home",
+          "actor": "Gabriel Magalhães",
+          "method": "header",
+          "probability_boost": 1.9,
+          "reason": "가브리엘의 압도적인 공중 장악력을 활용하여 코너킥 상황에서 동점골을 만들어냅니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            65,
+            75
+          ],
+          "type": "goal",
+          "team": "home",
+          "actor": "Gabriel Magalhães",
+          "method": "header",
+          "probability_boost": 2.3,
+          "reason": "코너킥 상황에서 가브리엘의 제공권 우위를 통해 아스날이 동점골을 만들어냅니다.",
+          "trigger": "corner",
+          "to": null
+        },
+        {
+          "minute_range": [
+            80,
+            88
+          ],
+          "type": "shot_off_target",
+          "team": "away",
+          "actor": "Away Winger",
+          "method": "volley",
+          "probability_boost": 1.5,
+          "reason": "양 팀 모두 승리를 위해 총력전을 펼치지만, 골 결정력 부족으로 득점에 실패하며 경기는 무승부로 끝납니다.",
+          "trigger": null,
+          "to": null
+        }
+      ],
+      "parameter_adjustments": {
+        "home_midfield_control_modifier": 1.05,
+        "away_midfield_control_modifier": 1.05,
+        "home_attack_modifier": 1.0,
+        "away_attack_modifier": 1.0
+      },
+      "expected_probability": 0.25,
+      "base_narrative": null
+    },
+    {
+      "id": "SYNTH_004",
+      "name": "원정팀의 근소한 승리: 견고한 수비 후 역습",
+      "reasoning": "리버풀의 견고하고 일관성 있는 수비진(코나테, 윌리엄스, 반 다이크)이 아스날의 공격을 효과적으로 막아내고, 알렉산더 이삭의 결정적인 역습 득점으로 승리하는 시나리오입니다. 리버풀의 더 강력한 공격력과 아스날의 측면 뒷공간 노출 약점을 공략합니다.",
+      "events": [
+        {
+          "minute_range": [
+            20,
+            35
+          ],
+          "type": "shot_on_target",
+          "team": "home",
+          "actor": "Leandro Trossard",
+          "method": "long_range_shot",
+          "probability_boost": 1.5,
+          "reason": "트로사르가 리버풀 수비진을 상대로 중거리 슛을 시도하지만 알리송의 선방에 막힙니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            40,
+            45
+          ],
+          "type": "foul",
+          "team": "home",
+          "actor": "Home Midfielder",
+          "method": "tackle",
+          "probability_boost": 1.7,
+          "reason": "리버풀의 빠른 역습을 저지하려다 아스날 미드필더가 파울을 범합니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            55,
+            65
+          ],
+          "type": "central_penetration",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "through_ball_finish",
+          "probability_boost": 2.5,
+          "reason": "리버풀 수비진의 견고함과 이삭의 뛰어난 침투 능력, 침착한 마무리가 결합되어 역습 득점을 성공시킵니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            60,
+            70
+          ],
+          "type": "goal",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "tap_in",
+          "probability_boost": 2.8,
+          "reason": "리버풀의 견고한 수비 후 빠른 역습 상황에서 이삭이 깔끔하게 마무리하며 선제골을 기록합니다.",
+          "trigger": "central_penetration",
+          "to": null
+        },
+        {
+          "minute_range": [
+            80,
+            88
+          ],
+          "type": "yellow_card",
+          "team": "away",
+          "actor": "Ibrahima Konaté",
+          "method": "delay_of_game",
+          "probability_boost": 1.5,
+          "reason": "리버풀이 리드를 지키기 위해 시간을 지연하거나 거친 태클을 시도하여 경고를 받습니다.",
+          "trigger": null,
+          "to": null
+        }
+      ],
+      "parameter_adjustments": {
+        "away_defense_modifier": 1.15,
+        "home_attack_modifier": 0.9,
+        "away_physical_modifier": 1.05
+      },
+      "expected_probability": 0.2,
+      "base_narrative": null
+    },
+    {
+      "id": "SYNTH_005",
+      "name": "원정팀의 압도적인 승리: 완벽한 전술과 실행",
+      "reasoning": "리버풀의 공격력(80.5)과 일관된 수비진이 아스날의 강한 홈 경기력을 압도하는 시나리오입니다. 리버풀의 전방 압박이 아스날의 빌드업을 완전히 봉쇄하고, 알렉산더 이삭을 필두로 한 공격진이 효율적으로 득점을 만들어냅니다.",
+      "events": [
+        {
+          "minute_range": [
+            8,
+            15
+          ],
+          "type": "central_penetration",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "through_ball_finish",
+          "probability_boost": 2.5,
+          "reason": "이삭의 뛰어난 위치 선정과 침투를 활용하여 이른 시간 선제골을 득점하며 경기를 유리하게 이끌어갑니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            10,
+            20
+          ],
+          "type": "goal",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "finesse_shot",
+          "probability_boost": 2.8,
+          "reason": "리버풀의 강한 압박으로 아스날의 빌드업 미스를 유발하고, 이삭이 이를 놓치지 않고 선제골을 기록합니다.",
+          "trigger": "central_penetration",
+          "to": null
+        },
+        {
+          "minute_range": [
+            30,
+            40
+          ],
+          "type": "shot_on_target",
+          "team": "home",
+          "actor": "Home Attacker",
+          "method": "header",
+          "probability_boost": 1.2,
+          "reason": "아스날이 만회골을 위해 공격을 시도하지만, 알리송의 선방에 막힙니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            55,
+            65
+          ],
+          "type": "wing_breakthrough",
+          "team": "away",
+          "actor": "Away Winger",
+          "method": "cut_inside_shot",
+          "probability_boost": 2.0,
+          "reason": "리버풀의 측면 공격수가 아스날의 측면 뒷공간 노출 약점을 파고들어 추가골을 기록합니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            60,
+            70
+          ],
+          "type": "goal",
+          "team": "away",
+          "actor": "Away Winger",
+          "method": "powerful_shot",
+          "probability_boost": 2.2,
+          "reason": "아스날의 측면 수비가 무너지며 리버풀 윙어가 추가골을 기록, 승기를 굳힙니다.",
+          "trigger": "wing_breakthrough",
+          "to": null
+        },
+        {
+          "minute_range": [
+            75,
+            85
+          ],
+          "type": "formation_change",
+          "team": "home",
+          "actor": "Home Manager",
+          "method": "attacking_sub",
+          "probability_boost": 1.0,
+          "reason": "아스날이 경기를 뒤집기 위해 공격적인 포메이션으로 전환하며 총공세를 펼칩니다.",
+          "trigger": null,
+          "to": "4-2-4"
+        }
+      ],
+      "parameter_adjustments": {
+        "away_attack_modifier": 1.2,
+        "home_midfield_control_modifier": 0.8,
+        "home_defense_modifier": 0.85
+      },
+      "expected_probability": 0.1,
+      "base_narrative": null
+    },
+    {
+      "id": "SYNTH_006",
+      "name": "난타전 무승부: 공격 지향적인 양 팀의 화력 대결",
+      "reasoning": "두 팀 모두 공격형 4-3-3 전술과 공격적인 성향을 가진 팀으로, 서로의 전방 압박을 뚫어내고 공격 기회를 계속해서 만들어내는 시나리오입니다. 수비적인 안정성보다는 공격적인 재능이 빛을 발하며 많은 골이 터져 나옵니다.",
+      "events": [
+        {
+          "minute_range": [
+            10,
+            20
+          ],
+          "type": "wing_breakthrough",
+          "team": "home",
+          "actor": "Leandro Trossard",
+          "method": "cross_and_goal",
+          "probability_boost": 2.0,
+          "reason": "트로사르의 날카로운 돌파와 크로스로 아스날이 선제골을 기록하며 경기가 뜨겁게 달아오릅니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            15,
+            25
+          ],
+          "type": "goal",
+          "team": "home",
+          "actor": "Home Striker",
+          "method": "header",
+          "probability_boost": 2.2,
+          "reason": "트로사르의 크로스를 아스날 스트라이커가 헤딩으로 연결하며 선제골을 기록합니다.",
+          "trigger": "wing_breakthrough",
+          "to": null
+        },
+        {
+          "minute_range": [
+            30,
+            40
+          ],
+          "type": "central_penetration",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "dribble_and_goal",
+          "probability_boost": 2.3,
+          "reason": "이삭의 뛰어난 개인 능력으로 수비를 뚫어내고 리버풀이 동점골을 성공시킵니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            35,
+            45
+          ],
+          "type": "goal",
+          "team": "away",
+          "actor": "Alexander Isak",
+          "method": "finesse_shot",
+          "probability_boost": 2.5,
+          "reason": "리버풀의 공격 전개 후 이삭이 침착하게 마무리하며 동점골을 기록합니다.",
+          "trigger": "central_penetration",
+          "to": null
+        },
+        {
+          "minute_range": [
+            50,
+            60
+          ],
+          "type": "goal",
+          "team": "home",
+          "actor": "Home Midfielder",
+          "method": "long_range_shot",
+          "probability_boost": 2.0,
+          "reason": "아스날 미드필더의 중거리 슛이 골망을 흔들며 다시 리드를 잡습니다.",
+          "trigger": null,
+          "to": null
+        },
+        {
+          "minute_range": [
+            70,
+            80
+          ],
+          "type": "goal",
+          "team": "away",
+          "actor": "Away Winger",
+          "method": "poachers_finish",
+          "probability_boost": 2.1,
+          "reason": "아스날 수비의 순간적인 집중력 저하를 리버풀 윙어가 놓치지 않고 다시 동점골을 기록합니다.",
+          "trigger": null,
+          "to": null
+        }
+      ],
+      "parameter_adjustments": {
+        "home_attack_modifier": 1.15,
+        "away_attack_modifier": 1.15,
+        "home_defense_modifier": 0.95,
+        "away_defense_modifier": 0.95
+      },
+      "expected_probability": 0.05,
+      "base_narrative": null
+    }
+  ],
+  "metadata": {
+    "total_scenarios": 6,
+    "total_probability": 1.0,
+    "total_events": 32
+  }
+}

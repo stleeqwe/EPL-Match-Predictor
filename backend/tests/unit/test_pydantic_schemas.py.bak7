@@ -1,0 +1,566 @@
+"""
+Unit Tests for Pydantic Schemas (Structured Output)
+EPL Match Predictor v3.0
+
+Tests Cover:
+1. ScenarioEvent field validation
+2. MatchScenario constraints (3-10 events)
+3. AnalysisResult state-dependent validation
+4. JSON serialization roundtrip
+"""
+
+import pytest
+import sys
+import os
+import json
+
+# Add project root to path
+backend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+if backend_path not in sys.path:
+    sys.path.insert(0, backend_path)
+
+try:
+    from pydantic import ValidationError
+    from ai.schemas import (
+        ScenarioEvent, MatchScenario, AnalysisResult, DiscrepancyIssue,
+        EventType, Team, ConvergenceState
+    )
+    SCHEMAS_AVAILABLE = True
+except ImportError as e:
+    SCHEMAS_AVAILABLE = False
+    pytest.skip(f"Pydantic schemas not available: {e}", allow_module_level=True)
+
+
+class TestScenarioEventValidation:
+    """Test ScenarioEvent field validation"""
+
+    def test_valid_scenario_event(self):
+        """Test creating a valid ScenarioEvent"""
+        # Given & When
+        event = ScenarioEvent(
+            minute_range=[10, 25],
+            event_type=EventType.WING_BREAKTHROUGH,
+            team=Team.HOME,
+            description="Arsenal attacks down right wing with overlapping fullback",
+            probability_boost=0.15
+        )
+
+        # Then
+        assert event.minute_range == [10, 25]
+        assert event.event_type == EventType.WING_BREAKTHROUGH
+        assert event.team == Team.HOME
+        assert event.probability_boost == 0.15
+
+    def test_minute_range_validation_exceeds_90(self):
+        """Test minute range validation: cannot exceed 90"""
+        # Given invalid minute range (>90)
+        with pytest.raises(ValidationError, match="Minutes must be between 0-90"):
+            ScenarioEvent(
+                minute_range=[85, 95],  # 95 > 90!
+                event_type=EventType.GOAL_OPPORTUNITY,
+                team=Team.HOME,
+                description="Late goal attempt",
+                probability_boost=0.1
+            )
+
+    def test_minute_range_validation_negative(self):
+        """Test minute range validation: cannot be negative"""
+        with pytest.raises(ValidationError, match="Minutes must be between 0-90"):
+            ScenarioEvent(
+                minute_range=[-5, 10],  # Negative!
+                event_type=EventType.TRANSITION,
+                team=Team.AWAY,
+                description="Invalid time range",
+                probability_boost=0.05
+            )
+
+    def test_probability_boost_too_high(self):
+        """Test probability_boost validation: max 2.0"""
+        with pytest.raises(ValidationError):
+            ScenarioEvent(
+                minute_range=[10, 20],
+                event_type=EventType.GOAL_OPPORTUNITY,
+                team=Team.HOME,
+                description="Overpowered boost",
+                probability_boost=5.0  # Too high!
+            )
+
+    def test_probability_boost_too_low(self):
+        """Test probability_boost validation: min -1.0"""
+        with pytest.raises(ValidationError):
+            ScenarioEvent(
+                minute_range=[10, 20],
+                event_type=EventType.DEFENSIVE_COLLAPSE,
+                team=Team.AWAY,
+                description="Excessive penalty",
+                probability_boost=-2.0  # Too low!
+            )
+
+    def test_description_too_short(self):
+        """Test description validation: min 10 characters"""
+        with pytest.raises(ValidationError):
+            ScenarioEvent(
+                minute_range=[10, 20],
+                event_type=EventType.COUNTER_ATTACK,
+                team=Team.HOME,
+                description="Too short",  # Only 9 chars
+                probability_boost=0.1
+            )
+
+    def test_description_too_long(self):
+        """Test description validation: max 200 characters"""
+        with pytest.raises(ValidationError):
+            ScenarioEvent(
+                minute_range=[10, 20],
+                event_type=EventType.POSSESSION_DOMINANCE,
+                team=Team.HOME,
+                description="A" * 201,  # 201 chars!
+                probability_boost=0.1
+            )
+
+    def test_minute_range_exact_length(self):
+        """Test minute_range must be exactly 2 elements"""
+        # Too few
+        with pytest.raises(ValidationError):
+            ScenarioEvent(
+                minute_range=[10],  # Only 1 element!
+                event_type=EventType.PRESSURE,
+                team=Team.HOME,
+                description="Invalid range",
+                probability_boost=0.1
+            )
+
+        # Too many
+        with pytest.raises(ValidationError):
+            ScenarioEvent(
+                minute_range=[10, 20, 30],  # 3 elements!
+                event_type=EventType.PRESSURE,
+                team=Team.HOME,
+                description="Invalid range",
+                probability_boost=0.1
+            )
+
+
+class TestMatchScenarioConstraints:
+    """Test MatchScenario constraints"""
+
+    def test_valid_match_scenario(self):
+        """Test creating a valid MatchScenario"""
+        # Given
+        events = [
+            ScenarioEvent(
+                minute_range=[1, 15],
+                event_type=EventType.PRESSURE,
+                team=Team.HOME,
+                description="Arsenal applies high press from kickoff",
+                probability_boost=0.1
+            ),
+            ScenarioEvent(
+                minute_range=[15, 30],
+                event_type=EventType.WING_BREAKTHROUGH,
+                team=Team.HOME,
+                description="Saka exploits space on right wing",
+                probability_boost=0.15
+            ),
+            ScenarioEvent(
+                minute_range=[30, 45],
+                event_type=EventType.GOAL_OPPORTUNITY,
+                team=Team.HOME,
+                description="Arsenal creates clear chances before halftime",
+                probability_boost=0.2
+            )
+        ]
+
+        # When
+        scenario = MatchScenario(
+            events=events,
+            description="Arsenal dominates with high press and wing play in first half",
+            predicted_score={'home': 2, 'away': 1},
+            confidence=0.75
+        )
+
+        # Then
+        assert len(scenario.events) == 3
+        assert scenario.confidence == 0.75
+        assert scenario.predicted_score['home'] == 2
+
+    def test_too_few_events(self):
+        """Test MatchScenario requires at least 3 events"""
+        # Given (only 2 events)
+        events = [
+            ScenarioEvent(
+                minute_range=[1, 45],
+                event_type=EventType.POSSESSION_DOMINANCE,
+                team=Team.HOME,
+                description="Home team controls possession throughout",
+                probability_boost=0.1
+            ),
+            ScenarioEvent(
+                minute_range=[45, 90],
+                event_type=EventType.GOAL_OPPORTUNITY,
+                team=Team.HOME,
+                description="Home team creates chances in second half",
+                probability_boost=0.15
+            )
+        ]
+
+        # When & Then
+        with pytest.raises(ValidationError):
+            MatchScenario(
+                events=events,  # Only 2!
+                description="Incomplete scenario",
+                predicted_score={'home': 1, 'away': 0},
+                confidence=0.6
+            )
+
+    def test_too_many_events(self):
+        """Test MatchScenario max 10 events"""
+        # Given (15 events)
+        event_template = ScenarioEvent(
+            minute_range=[1, 10],
+            event_type=EventType.PRESSURE,
+            team=Team.HOME,
+            description="Generic event description here",
+            probability_boost=0.1
+        )
+        events = [event_template.model_copy() for _ in range(15)]
+
+        # When & Then
+        with pytest.raises(ValidationError):
+            MatchScenario(
+                events=events,  # 15 events!
+                description="Too detailed scenario",
+                predicted_score={'home': 3, 'away': 2},
+                confidence=0.8
+            )
+
+    def test_confidence_out_of_range(self):
+        """Test confidence must be 0.0-1.0"""
+        events = [
+            ScenarioEvent(
+                minute_range=[i, i+10],
+                event_type=EventType.PRESSURE,
+                team=Team.HOME,
+                description=f"Event {i} description text",
+                probability_boost=0.1
+            )
+            for i in range(0, 30, 10)
+        ]
+
+        # Confidence too high
+        with pytest.raises(ValidationError):
+            MatchScenario(
+                events=events,
+                description="Valid scenario",
+                predicted_score={'home': 2, 'away': 1},
+                confidence=1.5  # >1.0!
+            )
+
+        # Confidence too low
+        with pytest.raises(ValidationError):
+            MatchScenario(
+                events=events,
+                description="Valid scenario",
+                predicted_score={'home': 2, 'away': 1},
+                confidence=-0.1  # <0.0!
+            )
+
+    def test_description_too_short(self):
+        """Test scenario description min 50 chars"""
+        events = [
+            ScenarioEvent(
+                minute_range=[i, i+10],
+                event_type=EventType.PRESSURE,
+                team=Team.HOME,
+                description=f"Event {i} description text",
+                probability_boost=0.1
+            )
+            for i in range(0, 30, 10)
+        ]
+
+        with pytest.raises(ValidationError):
+            MatchScenario(
+                events=events,
+                description="Too short",  # < 50 chars
+                predicted_score={'home': 2, 'away': 1},
+                confidence=0.7
+            )
+
+    def test_description_too_long(self):
+        """Test scenario description max 500 chars"""
+        events = [
+            ScenarioEvent(
+                minute_range=[i, i+10],
+                event_type=EventType.PRESSURE,
+                team=Team.HOME,
+                description=f"Event {i} description text",
+                probability_boost=0.1
+            )
+            for i in range(0, 30, 10)
+        ]
+
+        with pytest.raises(ValidationError):
+            MatchScenario(
+                events=events,
+                description="A" * 501,  # > 500 chars!
+                predicted_score={'home': 2, 'away': 1},
+                confidence=0.7
+            )
+
+
+class TestAnalysisResultValidation:
+    """Test AnalysisResult state-dependent validation"""
+
+    def test_converged_state_valid(self):
+        """Test CONVERGED state is valid without adjusted_scenario"""
+        # Given & When
+        analysis = AnalysisResult(
+            state=ConvergenceState.CONVERGED,
+            issues=[],
+            adjusted_scenario=None,  # Not required for CONVERGED
+            confidence=0.85,
+            reasoning="Simulation matches scenario expectations. Adherence: 0.75",
+            statistics={'adherence': 0.75, 'iterations': 2}
+        )
+
+        # Then
+        assert analysis.state == ConvergenceState.CONVERGED
+        assert analysis.adjusted_scenario is None
+
+    def test_needs_adjustment_requires_scenario(self):
+        """Test NEEDS_ADJUSTMENT requires adjusted_scenario"""
+        # Given & When & Then
+        with pytest.raises(ValidationError, match="adjusted_scenario.*required"):
+            AnalysisResult(
+                state=ConvergenceState.NEEDS_ADJUSTMENT,
+                issues=[],
+                adjusted_scenario=None,  # Missing!
+                confidence=0.6,
+                reasoning="Needs adjustment but no scenario provided"
+            )
+
+    def test_needs_adjustment_with_scenario_valid(self):
+        """Test NEEDS_ADJUSTMENT with adjusted_scenario is valid"""
+        # Given
+        adjusted_scenario = MatchScenario(
+            events=[
+                ScenarioEvent(
+                    minute_range=[i, i+10],
+                    event_type=EventType.PRESSURE,
+                    team=Team.HOME,
+                    description=f"Adjusted event {i} with more realistic expectations",
+                    probability_boost=0.08
+                )
+                for i in range(0, 30, 10)
+            ],
+            description="Adjusted scenario with reduced probability boosts for better convergence",
+            predicted_score={'home': 1, 'away': 1},
+            confidence=0.65
+        )
+
+        # When
+        analysis = AnalysisResult(
+            state=ConvergenceState.NEEDS_ADJUSTMENT,
+            issues=[],
+            adjusted_scenario=adjusted_scenario,  # Provided!
+            confidence=0.6,
+            reasoning="Original scenario too optimistic. Reduced boosts.",
+            statistics={'adherence': 0.45, 'iterations': 3}
+        )
+
+        # Then
+        assert analysis.state == ConvergenceState.NEEDS_ADJUSTMENT
+        assert analysis.adjusted_scenario is not None
+
+    def test_diverged_state_valid(self):
+        """Test DIVERGED state is valid"""
+        # Given & When
+        analysis = AnalysisResult(
+            state=ConvergenceState.DIVERGED,
+            issues=[],
+            adjusted_scenario=None,
+            confidence=0.3,
+            reasoning="Unable to converge after 5 iterations. Large discrepancy.",
+            statistics={'adherence': 0.25, 'iterations': 5}
+        )
+
+        # Then
+        assert analysis.state == ConvergenceState.DIVERGED
+        assert analysis.confidence == 0.3
+
+
+class TestJSONSerialization:
+    """Test JSON serialization/deserialization"""
+
+    def test_scenario_event_roundtrip(self):
+        """Test ScenarioEvent JSON roundtrip"""
+        # Given
+        original = ScenarioEvent(
+            minute_range=[10, 25],
+            event_type=EventType.WING_BREAKTHROUGH,
+            team=Team.HOME,
+            description="Arsenal exploits right flank with overlapping runs",
+            probability_boost=0.15,
+            actor="Bukayo Saka",
+            reason="Exploiting defensive width"
+        )
+
+        # When - Serialize
+        json_str = original.model_dump_json()
+
+        # Then - Deserialize
+        restored = ScenarioEvent.model_validate_json(json_str)
+
+        assert restored.minute_range == original.minute_range
+        assert restored.event_type == original.event_type
+        assert restored.team == original.team
+        assert restored.description == original.description
+        assert restored.probability_boost == original.probability_boost
+        assert restored.actor == original.actor
+
+    def test_match_scenario_roundtrip(self):
+        """Test MatchScenario JSON roundtrip"""
+        # Given
+        events = [
+            ScenarioEvent(
+                minute_range=[1, 15],
+                event_type=EventType.PRESSURE,
+                team=Team.HOME,
+                description="High press from kickoff",
+                probability_boost=0.1
+            ),
+            ScenarioEvent(
+                minute_range=[15, 30],
+                event_type=EventType.WING_BREAKTHROUGH,
+                team=Team.HOME,
+                description="Wing attacks down right",
+                probability_boost=0.15
+            ),
+            ScenarioEvent(
+                minute_range=[30, 45],
+                event_type=EventType.GOAL_OPPORTUNITY,
+                team=Team.HOME,
+                description="Clear chances created",
+                probability_boost=0.2
+            )
+        ]
+
+        original = MatchScenario(
+            events=events,
+            description="Arsenal dominates first half with press and wing play tactics",
+            predicted_score={'home': 2, 'away': 1},
+            confidence=0.75
+        )
+
+        # When
+        json_str = original.model_dump_json()
+        restored = MatchScenario.model_validate_json(json_str)
+
+        # Then
+        assert len(restored.events) == len(original.events)
+        assert restored.description == original.description
+        assert restored.predicted_score == original.predicted_score
+        assert restored.confidence == original.confidence
+
+        # Verify events
+        for orig_event, rest_event in zip(original.events, restored.events):
+            assert rest_event.event_type == orig_event.event_type
+            assert rest_event.minute_range == orig_event.minute_range
+
+    def test_analysis_result_roundtrip(self):
+        """Test AnalysisResult JSON roundtrip"""
+        # Given
+        original = AnalysisResult(
+            state=ConvergenceState.CONVERGED,
+            issues=[],
+            adjusted_scenario=None,
+            confidence=0.85,
+            reasoning="Simulation converged successfully with good adherence",
+            statistics={'adherence': 0.76, 'iterations': 2, 'final_score': '2-1'}
+        )
+
+        # When
+        json_str = original.model_dump_json()
+        restored = AnalysisResult.model_validate_json(json_str)
+
+        # Then
+        assert restored.state == original.state
+        assert restored.confidence == original.confidence
+        assert restored.reasoning == original.reasoning
+        assert restored.statistics == original.statistics
+
+    def test_dict_serialization(self):
+        """Test model_dump() to dict"""
+        # Given
+        event = ScenarioEvent(
+            minute_range=[10, 25],
+            event_type=EventType.PRESSURE,
+            team=Team.AWAY,
+            description="Tottenham applies midfield press",
+            probability_boost=0.12
+        )
+
+        # When
+        event_dict = event.model_dump()
+
+        # Then
+        assert isinstance(event_dict, dict)
+        assert event_dict['minute_range'] == [10, 25]
+        assert event_dict['event_type'] == 'PRESSING'  # Enum → string
+        assert event_dict['team'] == 'AWAY'
+        assert event_dict['probability_boost'] == 0.12
+
+
+class TestEnumValidation:
+    """Test Enum validation"""
+
+    def test_valid_event_types(self):
+        """Test all valid EventType enums"""
+        valid_types = [
+            EventType.PRESSURE,
+            EventType.COUNTER_ATTACK,
+            EventType.WING_BREAKTHROUGH,
+            EventType.GOAL_OPPORTUNITY,
+            EventType.DEFENSIVE_COLLAPSE,
+            EventType.POSSESSION_DOMINANCE,
+            EventType.TRANSITION,
+            EventType.SET_PIECE_THREAT
+        ]
+
+        for event_type in valid_types:
+            event = ScenarioEvent(
+                minute_range=[10, 20],
+                event_type=event_type,
+                team=Team.HOME,
+                description="Testing valid event type enumeration",
+                probability_boost=0.1
+            )
+            assert event.event_type == event_type
+
+    def test_invalid_event_type(self):
+        """Test invalid EventType raises ValidationError"""
+        with pytest.raises(ValidationError):
+            ScenarioEvent(
+                minute_range=[10, 20],
+                event_type="INVALID_TYPE",  # Not a valid enum!
+                team=Team.HOME,
+                description="Testing invalid event type",
+                probability_boost=0.1
+            )
+
+    def test_valid_teams(self):
+        """Test both team values"""
+        for team in [Team.HOME, Team.AWAY]:
+            event = ScenarioEvent(
+                minute_range=[10, 20],
+                event_type=EventType.PRESSURE,
+                team=team,
+                description="Testing valid team enumeration",
+                probability_boost=0.1
+            )
+            assert event.team == team
+
+
+if __name__ == '__main__':
+    # Run tests with pytest
+    pytest.main([__file__, '-v', '-s'])

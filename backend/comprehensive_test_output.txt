@@ -1,0 +1,2484 @@
+/Users/stlee/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+
+================================================================================
+🚀 Enriched Simulation Integration Test Suite
+================================================================================
+
+
+================================================================================
+Test 1: Data Quality Verification
+================================================================================
+
+================================================================================
+🔍 Test: Data Quality Verification (20 Teams)
+================================================================================
+
+
+======================================================================
+📂 Loading team data: Arsenal
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] David Raya                (Rating: 4.09) | Commentary: Technically gifted goalkeeper ...
+    [LB    ] Kepa Arrizabalaga         (Rating: 3.93) | Commentary: Technically gifted goalkeeper ...
+    [CB1   ] Martin Ødegaard           (Rating: 3.83) | Commentary: Technically gifted left/centre...
+    [CB2   ] Ben White                 (Rating: 4.10) | Commentary: Technically gifted centre/righ...
+    [RB    ] Declan Rice               (Rating: 3.91) | Commentary: High-quality centre central mi...
+    [DM    ] Gabriel Jesus             (Rating: 4.02) | Commentary: Technically gifted second stri...
+    [CM1   ] Mikel Merino              (Rating: 3.86) | Commentary: Technically gifted centre cent...
+    [CM2   ] Leandro Trossard          (Rating: 4.09) | Commentary: Technically gifted left winger...
+    [LW    ] Kai Havertz               (Rating: 3.93) | Commentary: High-quality left/centre/right...
+    [ST    ] Eberechi Eze              (Rating: 3.92) | Commentary: Reliable and consistent perfor...
+    [RW    ] Viktor Gyökeres           (Rating: 3.76) | Commentary: Reliable and consistent perfor...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.50
+      Positioning Balance: 4.25
+      Buildup Quality: 4.50
+      Team Commentary: Arsenal play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 78.1/100
+      Defense Strength: 79.1/100
+      Midfield Control: 79.8/100
+      Physical Intensity: 81.6/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Arsenal data!
+======================================================================
+
+✅ Arsenal: All checks passed
+
+======================================================================
+📂 Loading team data: Liverpool
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Virgil van Dijk           (Rating: 4.03) | Commentary: Reliable and consistent perfor...
+    [LB    ] Mohamed Salah             (Rating: 3.94) | Commentary: High-quality left/centre/right...
+    [CB1   ] Andy Robertson            (Rating: 3.90) | Commentary: Reliable and consistent perfor...
+    [CB2   ] Freddie Woodman           (Rating: 3.97) | Commentary: Technically gifted goalkeeper ...
+    [RB    ] Joe Gomez                 (Rating: 3.91) | Commentary: High-quality left/centre/right...
+    [DM    ] Federico Chiesa           (Rating: 3.98) | Commentary: Reliable and consistent perfor...
+    [CM1   ] Jeremie Frimpong          (Rating: 3.89) | Commentary: High-quality right full back w...
+    [CM2   ] Alisson Becker            (Rating: 4.08) | Commentary: Technically gifted goalkeeper ...
+    [LW    ] Alexander Isak            (Rating: 4.02) | Commentary: High-quality centre striker wi...
+    [ST    ] Ibrahima Konaté           (Rating: 4.06) | Commentary: Reliable and consistent perfor...
+    [RW    ] Rhys Williams             (Rating: 4.05) | Commentary: Reliable and consistent perfor...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.50
+      Positioning Balance: 4.25
+      Buildup Quality: 4.50
+      Team Commentary: Liverpool play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 80.5/100
+      Defense Strength: 78.8/100
+      Midfield Control: 79.6/100
+      Physical Intensity: 78.7/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Liverpool data!
+======================================================================
+
+✅ Liverpool: All checks passed
+
+======================================================================
+📂 Loading team data: Man City
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Nathan Aké                (Rating: 4.60) | Commentary: Elite left/centre central defe...
+    [LB    ] John Stones               (Rating: 4.50) | Commentary: World-class player who dominat...
+    [CB1   ] Marcus Bettinelli         (Rating: 4.50) | Commentary: Elite goalkeeper with exceptio...
+    [CB2   ] Bernardo Silva            (Rating: 4.58) | Commentary: World-class player who dominat...
+    [RB    ] Kalvin Phillips           (Rating: 4.37) | Commentary: World-class player who dominat...
+    [DM    ] Mateo Kovacic             (Rating: 4.50) | Commentary: Elite centre central midfielde...
+    [CM1   ] Phil Foden                (Rating: 4.46) | Commentary: Outstanding centre/right attac...
+    [CM2   ] Rodri                     (Rating: 4.49) | Commentary: Outstanding centre central mid...
+    [LW    ] Rúben Dias                (Rating: 4.38) | Commentary: Elite centre central defender ...
+    [ST    ] Gianluigi Donnarumma      (Rating: 4.60) | Commentary: Elite goalkeeper with exceptio...
+    [RW    ] Tijjani Reijnders         (Rating: 4.39) | Commentary: World-class player who dominat...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.50
+      Positioning Balance: 4.25
+      Buildup Quality: 4.50
+      Team Commentary: Man City play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 89.3/100
+      Defense Strength: 89.7/100
+      Midfield Control: 89.6/100
+      Physical Intensity: 88.6/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Man City data!
+======================================================================
+
+✅ Man City: All checks passed
+
+======================================================================
+📂 Loading team data: Chelsea
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Tosin Adarabioyo          (Rating: 4.11) | Commentary: Technically gifted centre cent...
+    [LB    ] Robert Sánchez            (Rating: 3.99) | Commentary: Technically gifted goalkeeper ...
+    [CB1   ] Reece James               (Rating: 3.96) | Commentary: Technically gifted right full ...
+    [CB2   ] Trevoh Chalobah           (Rating: 4.02) | Commentary: Reliable and consistent perfor...
+    [RB    ] Pedro Neto                (Rating: 4.04) | Commentary: Reliable and consistent perfor...
+    [DM1   ] Marc Cucurella            (Rating: 4.08) | Commentary: Technically gifted left wing b...
+    [DM2   ] Cole Palmer               (Rating: 4.07) | Commentary: Reliable and consistent perfor...
+    [CAM   ] Levi Colwill              (Rating: 4.05) | Commentary: Technically gifted centre cent...
+    [LW    ] Liam Delap                (Rating: 4.07) | Commentary: Reliable and consistent perfor...
+    [ST    ] Benoît Badiashile         (Rating: 3.92) | Commentary: High-quality centre central de...
+    [RW    ] Mykhailo Mudryk           (Rating: 3.95) | Commentary: Technically gifted left winger...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.50
+      Positioning Balance: 4.25
+      Buildup Quality: 4.50
+      Team Commentary: Chelsea deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 80.1/100
+      Defense Strength: 80.4/100
+      Midfield Control: 81.3/100
+      Physical Intensity: 80.7/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Chelsea data!
+======================================================================
+
+✅ Chelsea: All checks passed
+
+======================================================================
+📂 Loading team data: Man Utd
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Tom Heaton                (Rating: 3.43) | Commentary: Solid goalkeeper who performs ...
+    [LB    ] Luke Shaw                 (Rating: 3.56) | Commentary: Dependable player with good te...
+    [CB1   ] Casemiro                  (Rating: 3.54) | Commentary: Solid centre central midfielde...
+    [CB2   ] Harry Maguire             (Rating: 3.51) | Commentary: Solid centre central defender ...
+    [RB    ] Mason Mount               (Rating: 3.59) | Commentary: Dependable player with good te...
+    [DM1   ] Matthijs de Ligt          (Rating: 3.53) | Commentary: Consistent performer who contr...
+    [DM2   ] Bruno Fernandes           (Rating: 3.39) | Commentary: Dependable player with good te...
+    [CAM   ] Tyrell Malacia            (Rating: 3.34) | Commentary: Solid left full back who perfo...
+    [LW    ] Diogo Dalot               (Rating: 3.58) | Commentary: Dependable player with good te...
+    [ST    ] Noussair Mazraoui         (Rating: 3.67) | Commentary: Solid right full back who perf...
+    [RW    ] Joshua Zirkzee            (Rating: 3.50) | Commentary: Consistent performer who contr...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.00
+      Positioning Balance: 4.00
+      Buildup Quality: 4.00
+      Team Commentary: Man Utd deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 70.7/100
+      Defense Strength: 70.4/100
+      Midfield Control: 68.4/100
+      Physical Intensity: 70.4/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Man Utd data!
+======================================================================
+
+✅ Man Utd: All checks passed
+
+======================================================================
+📂 Loading team data: Spurs
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Ben Davies                (Rating: 3.66) | Commentary: Consistent performer who contr...
+    [LB    ] James Maddison            (Rating: 3.62) | Commentary: Dependable player with good te...
+    [CB1   ] Dominic Solanke           (Rating: 3.46) | Commentary: Consistent performer who contr...
+    [CB2   ] Brandon Austin            (Rating: 3.47) | Commentary: Dependable player with good te...
+    [RB    ] Rodrigo Bentancur         (Rating: 3.65) | Commentary: Consistent performer who contr...
+    [DM    ] Djed Spence               (Rating: 3.42) | Commentary: Consistent performer who contr...
+    [CM1   ] Richarlison               (Rating: 3.49) | Commentary: Dependable player with good te...
+    [CM2   ] Kevin Danso               (Rating: 3.38) | Commentary: Dependable player with good te...
+    [LW    ] Pedro Porro               (Rating: 3.44) | Commentary: Dependable player with good te...
+    [ST    ] Dejan Kulusevski          (Rating: 3.43) | Commentary: Dependable player with good te...
+    [RW    ] Brennan Johnson           (Rating: 3.46) | Commentary: Consistent performer who contr...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.00
+      Positioning Balance: 4.00
+      Buildup Quality: 4.00
+      Team Commentary: Spurs play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 68.8/100
+      Defense Strength: 70.4/100
+      Midfield Control: 68.6/100
+      Physical Intensity: 67.8/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Spurs data!
+======================================================================
+
+✅ Spurs: All checks passed
+
+======================================================================
+📂 Loading team data: Newcastle
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] John Ruddy                (Rating: 3.44) | Commentary: Dependable player with good te...
+    [LB    ] Kieran Trippier           (Rating: 3.43) | Commentary: Dependable player with good te...
+    [CB1   ] Fabian Schär              (Rating: 3.58) | Commentary: Dependable player with good te...
+    [CB2   ] Mark Gillespie            (Rating: 3.45) | Commentary: Dependable player with good te...
+    [RB    ] Dan Burn                  (Rating: 3.58) | Commentary: Dependable player with good te...
+    [DM    ] Jamaal Lascelles          (Rating: 3.48) | Commentary: Dependable player with good te...
+    [CM1   ] Jacob Murphy              (Rating: 3.53) | Commentary: Dependable player with good te...
+    [CM2   ] Nick Pope                 (Rating: 3.44) | Commentary: Consistent performer who contr...
+    [LW    ] Joe Willock               (Rating: 3.38) | Commentary: Consistent performer who contr...
+    [ST    ] Harvey Barnes             (Rating: 3.45) | Commentary: Solid left/right winger who pe...
+    [RW    ] Jacob Ramsey              (Rating: 3.35) | Commentary: Solid left/centre winger who p...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.00
+      Positioning Balance: 4.00
+      Buildup Quality: 4.00
+      Team Commentary: Newcastle deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 68.4/100
+      Defense Strength: 70.1/100
+      Midfield Control: 69.7/100
+      Physical Intensity: 70.4/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Newcastle data!
+======================================================================
+
+✅ Newcastle: All checks passed
+
+======================================================================
+📂 Loading team data: Aston Villa
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Ross Barkley              (Rating: 3.48) | Commentary: Consistent performer who contr...
+    [LB    ] Emiliano Martínez         (Rating: 3.44) | Commentary: Dependable player with good te...
+    [CB1   ] Victor Lindelöf           (Rating: 3.64) | Commentary: Consistent performer who contr...
+    [CB2   ] Lucas Digne               (Rating: 3.56) | Commentary: Consistent performer who contr...
+    [RB    ] Youri Tielemans           (Rating: 3.47) | Commentary: Solid centre central midfielde...
+    [LM    ] Ollie Watkins             (Rating: 3.46) | Commentary: Solid left/centre/right second...
+    [CM1   ] Tyrone Mings              (Rating: 3.41) | Commentary: Dependable player with good te...
+    [CM2   ] Ezri Konsa                (Rating: 3.59) | Commentary: Consistent performer who contr...
+    [RM    ] Matty Cash                (Rating: 3.48) | Commentary: Consistent performer who contr...
+    [ST1   ] Donyell Malen             (Rating: 3.52) | Commentary: Solid left/centre striker who ...
+    [ST2   ] Marco Bizot               (Rating: 3.55) | Commentary: Consistent performer who contr...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.00
+      Positioning Balance: 4.00
+      Buildup Quality: 4.00
+      Team Commentary: Aston Villa deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 70.0/100
+      Defense Strength: 70.4/100
+      Midfield Control: 70.0/100
+      Physical Intensity: 70.2/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Aston Villa data!
+======================================================================
+
+✅ Aston Villa: All checks passed
+
+======================================================================
+📂 Loading team data: Brighton
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] James Milner              (Rating: 3.44) | Commentary: Solid left/centre/right centra...
+    [LB    ] Danny Welbeck             (Rating: 3.46) | Commentary: Solid centre striker who perfo...
+    [CB1   ] Jason Steele              (Rating: 3.47) | Commentary: Dependable player with good te...
+    [CB2   ] Joël Veltman              (Rating: 3.62) | Commentary: Solid centre/right full back w...
+    [RB    ] Lewis Dunk                (Rating: 3.52) | Commentary: Consistent performer who contr...
+    [DM1   ] Solly March               (Rating: 3.48) | Commentary: Dependable player with good te...
+    [DM2   ] Adam Webster              (Rating: 3.58) | Commentary: Solid centre central defender ...
+    [CAM   ] Olivier Boscagli          (Rating: 3.41) | Commentary: Dependable player with good te...
+    [LW    ] Tom McGill                (Rating: 3.53) | Commentary: Solid goalkeeper who performs ...
+    [ST    ] Ferdi Kadioglu            (Rating: 3.63) | Commentary: Dependable player with good te...
+    [RW    ] Georginio Rutter          (Rating: 3.38) | Commentary: Solid centre striker who perfo...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Brighton play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 70.1/100
+      Defense Strength: 70.2/100
+      Midfield Control: 69.8/100
+      Physical Intensity: 69.1/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Brighton data!
+======================================================================
+
+✅ Brighton: All checks passed
+
+======================================================================
+📂 Loading team data: West Ham
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Lukasz Fabianski          (Rating: 3.13) | Commentary: Decent player who fills their ...
+    [LB    ] James Ward-Prowse         (Rating: 2.88) | Commentary: Decent player who fills their ...
+    [CB1   ] Alphonse Areola           (Rating: 2.93) | Commentary: Functional goalkeeper with bas...
+    [CB2   ] Callum Wilson             (Rating: 2.90) | Commentary: Capable striker with room for ...
+    [RB    ] Jarrod Bowen              (Rating: 3.05) | Commentary: Capable centre striker with ro...
+    [DM1   ] Maximilian Kilman         (Rating: 2.89) | Commentary: Decent player who fills their ...
+    [DM2   ] Kyle Walker-Peters        (Rating: 2.88) | Commentary: Capable left/right full back w...
+    [CAM   ] Aaron Wan-Bissaka         (Rating: 2.97) | Commentary: Decent player who fills their ...
+    [LW    ] Tomás Soucek              (Rating: 3.08) | Commentary: Capable centre defensive midfi...
+    [ST    ] Konstantinos Mavropanos   (Rating: 2.91) | Commentary: Decent player who fills their ...
+    [RW    ] Guido Rodríguez           (Rating: 3.12) | Commentary: Capable centre defensive midfi...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: West Ham deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.0/100
+      Defense Strength: 58.7/100
+      Midfield Control: 58.3/100
+      Physical Intensity: 58.5/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded West Ham data!
+======================================================================
+
+✅ West Ham: All checks passed
+
+======================================================================
+📂 Loading team data: Fulham
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Tom Cairney               (Rating: 2.84) | Commentary: Decent player who fills their ...
+    [LB    ] Alex Iwobi                (Rating: 3.04) | Commentary: Decent player who fills their ...
+    [CB1   ] Harrison Reed             (Rating: 3.02) | Commentary: Decent player who fills their ...
+    [CB2   ] Kenny Tete                (Rating: 3.10) | Commentary: Capable right full back with r...
+    [RB    ] Adama Traoré              (Rating: 3.04) | Commentary: Capable right winger with room...
+    [DM    ] Bernd Leno                (Rating: 3.04) | Commentary: Functional goalkeeper with bas...
+    [CM1   ] Timothy Castagne          (Rating: 2.95) | Commentary: Functional right full back wit...
+    [CM2   ] Raúl Jiménez              (Rating: 2.82) | Commentary: Capable striker with room for ...
+    [LW    ] Harry Wilson              (Rating: 3.01) | Commentary: Functional left/right winger w...
+    [ST    ] Emile Smith Rowe          (Rating: 3.00) | Commentary: Decent player who fills their ...
+    [RW    ] Antonee Robinson          (Rating: 2.99) | Commentary: Functional left full back with...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Fulham deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 59.6/100
+      Defense Strength: 60.5/100
+      Midfield Control: 58.7/100
+      Physical Intensity: 60.9/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Fulham data!
+======================================================================
+
+✅ Fulham: All checks passed
+
+======================================================================
+📂 Loading team data: Brentford
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 3-5-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Jordan Henderson          (Rating: 3.10) | Commentary: Decent player who fills their ...
+    [CB1   ] Rico Henry                (Rating: 2.96) | Commentary: Functional left full back with...
+    [CB2   ] Caoimhín Kelleher         (Rating: 2.99) | Commentary: Decent player who fills their ...
+    [CB3   ] Kristoffer Ajer           (Rating: 3.00) | Commentary: Capable centre central defende...
+    [LWB   ] Ellery Balcombe           (Rating: 2.91) | Commentary: Functional goalkeeper with bas...
+    [RWB   ] Ethan Pinnock             (Rating: 2.98) | Commentary: Capable left/centre central de...
+    [DM    ] Vitaly Janelt             (Rating: 3.08) | Commentary: Decent player who fills their ...
+    [CM1   ] Paris Maghoma             (Rating: 3.03) | Commentary: Functional centre central midf...
+    [CM2   ] Keane Lewis-Potter        (Rating: 3.08) | Commentary: Functional striker with basic ...
+    [ST1   ] Nathan Collins            (Rating: 2.92) | Commentary: Capable centre central defende...
+    [ST2   ] Fábio Carvalho            (Rating: 3.06) | Commentary: Decent player who fills their ...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Brentford deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.2/100
+      Defense Strength: 59.9/100
+      Midfield Control: 60.2/100
+      Physical Intensity: 59.6/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Brentford data!
+======================================================================
+
+✅ Brentford: All checks passed
+
+======================================================================
+📂 Loading team data: Crystal Palace
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Nathaniel Clyne           (Rating: 2.86) | Commentary: Decent player who fills their ...
+    [LB    ] Will Hughes               (Rating: 2.90) | Commentary: Functional centre central midf...
+    [CB1   ] Remi Matthews             (Rating: 3.14) | Commentary: Decent player who fills their ...
+    [CB2   ] Dean Henderson            (Rating: 3.00) | Commentary: Capable goalkeeper with room f...
+    [RB    ] Eddie Nketiah             (Rating: 2.91) | Commentary: Capable centre striker with ro...
+    [DM    ] Marc Guéhi                (Rating: 3.03) | Commentary: Decent player who fills their ...
+    [CM1   ] Borna Sosa                (Rating: 2.87) | Commentary: Functional left full back with...
+    [CM2   ] Walter Benítez            (Rating: 2.90) | Commentary: Decent player who fills their ...
+    [LW    ] Jean-Philippe Mateta      (Rating: 3.05) | Commentary: Capable centre striker with ro...
+    [ST    ] Tyrick Mitchell           (Rating: 2.92) | Commentary: Capable left full back with ro...
+    [RW    ] Jefferson Lerma           (Rating: 2.94) | Commentary: Decent player who fills their ...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Crystal Palace deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 59.2/100
+      Defense Strength: 59.5/100
+      Midfield Control: 58.7/100
+      Physical Intensity: 58.1/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Crystal Palace data!
+======================================================================
+
+✅ Crystal Palace: All checks passed
+
+======================================================================
+📂 Loading team data: Wolves
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 3-4-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Matt Doherty              (Rating: 3.04) | Commentary: Functional right full back wit...
+    [CB1   ] Sam Johnstone             (Rating: 2.95) | Commentary: Functional goalkeeper with bas...
+    [CB2   ] Dan Bentley               (Rating: 2.92) | Commentary: Decent player who fills their ...
+    [CB3   ] José Sá                   (Rating: 3.06) | Commentary: Capable goalkeeper with room f...
+    [LWB   ] Hwang Hee-Chan            (Rating: 2.95) | Commentary: Decent player who fills their ...
+    [RWB   ] Jørgen Strand Larsen      (Rating: 3.06) | Commentary: Decent player who fills their ...
+    [CM1   ] Santiago Bueno            (Rating: 3.05) | Commentary: Functional centre central defe...
+    [CM2   ] Ki-Jana Hoever            (Rating: 3.01) | Commentary: Capable right full back with r...
+    [LW    ] Hugo Bueno                (Rating: 2.99) | Commentary: Capable left full back with ro...
+    [ST    ] Tawanda Chirewa           (Rating: 2.90) | Commentary: Decent player who fills their ...
+    [RW    ] Marshall Munetsi          (Rating: 2.91) | Commentary: Capable central midfielder wit...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Wolves prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 59.4/100
+      Defense Strength: 59.7/100
+      Midfield Control: 60.5/100
+      Physical Intensity: 60.1/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Wolves data!
+======================================================================
+
+✅ Wolves: All checks passed
+
+======================================================================
+📂 Loading team data: Bournemouth
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Adam Smith                (Rating: 3.10) | Commentary: Functional right full back wit...
+    [LB    ] Lewis Cook                (Rating: 2.90) | Commentary: Functional centre central midf...
+    [CB1   ] David Brooks              (Rating: 2.92) | Commentary: Capable left/centre/right atta...
+    [CB2   ] Marcus Tavernier          (Rating: 2.97) | Commentary: Decent player who fills their ...
+    [RB    ] Ryan Christie             (Rating: 2.79) | Commentary: Decent player who fills their ...
+    [LM    ] Enes Ünal                 (Rating: 2.95) | Commentary: Capable centre striker with ro...
+    [CM1   ] Justin Kluivert           (Rating: 2.88) | Commentary: Decent player who fills their ...
+    [CM2   ] Antoine Semenyo           (Rating: 2.89) | Commentary: Capable centre striker with ro...
+    [RM    ] Evanilson                 (Rating: 3.12) | Commentary: Functional centre striker with...
+    [ST1   ] Tyler Adams               (Rating: 2.78) | Commentary: Functional midfielder with bas...
+    [ST2   ] James Hill                (Rating: 2.94) | Commentary: Functional centre central defe...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Bournemouth deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 58.5/100
+      Defense Strength: 58.2/100
+      Midfield Control: 58.5/100
+      Physical Intensity: 56.9/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Bournemouth data!
+======================================================================
+
+✅ Bournemouth: All checks passed
+
+======================================================================
+📂 Loading team data: Everton
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Séamus Coleman            (Rating: 2.92) | Commentary: Decent player who fills their ...
+    [LB    ] Michael Keane             (Rating: 2.91) | Commentary: Decent player who fills their ...
+    [CB1   ] Jordan Pickford           (Rating: 3.07) | Commentary: Capable goalkeeper with room f...
+    [CB2   ] James Tarkowski           (Rating: 2.84) | Commentary: Capable centre central defende...
+    [RB    ] Tom King                  (Rating: 2.80) | Commentary: Functional goalkeeper with bas...
+    [LM    ] Idrissa Gueye             (Rating: 2.93) | Commentary: Decent player who fills their ...
+    [CM1   ] Kiernan Dewsbury-Hall     (Rating: 3.06) | Commentary: Functional central midfielder ...
+    [CM2   ] James Garner              (Rating: 2.96) | Commentary: Decent player who fills their ...
+    [RM    ] Dwight McNeil             (Rating: 3.02) | Commentary: Functional left winger with ba...
+    [ST1   ] Vitalii Mykolenko         (Rating: 3.10) | Commentary: Functional left full back with...
+    [ST2   ] Iliman Ndiaye             (Rating: 2.99) | Commentary: Capable left winger with room ...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Everton prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.2/100
+      Defense Strength: 58.9/100
+      Midfield Control: 60.2/100
+      Physical Intensity: 59.0/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Everton data!
+======================================================================
+
+✅ Everton: All checks passed
+
+======================================================================
+📂 Loading team data: Nott'm Forest
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Chris Wood                (Rating: 2.85) | Commentary: Functional centre striker with...
+    [LB    ] Ola Aina                  (Rating: 2.95) | Commentary: Capable right full back with r...
+    [CB1   ] Ryan Yates                (Rating: 2.99) | Commentary: Capable left/centre/right atta...
+    [CB2   ] Morgan Gibbs-White        (Rating: 2.94) | Commentary: Decent player who fills their ...
+    [RB    ] Angus Gunn                (Rating: 3.09) | Commentary: Functional goalkeeper with bas...
+    [DM1   ] Taiwo Awoniyi             (Rating: 3.08) | Commentary: Capable centre striker with ro...
+    [DM2   ] Nikola Milenkovic         (Rating: 2.98) | Commentary: Capable centre central defende...
+    [CAM   ] Willy Boly                (Rating: 2.99) | Commentary: Functional centre central defe...
+    [LW    ] Matz Sels                 (Rating: 3.01) | Commentary: Capable goalkeeper with room f...
+    [ST    ] Callum Hudson-Odoi        (Rating: 3.01) | Commentary: Functional left winger with ba...
+    [RW    ] Neco Williams             (Rating: 3.16) | Commentary: Capable right full back with r...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Nott'm Forest prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.9/100
+      Defense Strength: 60.0/100
+      Midfield Control: 60.4/100
+      Physical Intensity: 59.5/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Nott'm Forest data!
+======================================================================
+
+✅ Nott'm Forest: All checks passed
+
+======================================================================
+📂 Loading team data: Burnley
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Kyle Walker               (Rating: 2.52) | Commentary: Squad player who provides dept...
+    [LB    ] Martin Dúbravka           (Rating: 2.51) | Commentary: Squad player who provides dept...
+    [CB1   ] Josh Laurent              (Rating: 2.46) | Commentary: Young central midfielder with ...
+    [CB2   ] Ashley Barnes             (Rating: 2.48) | Commentary: Squad player who provides dept...
+    [RB    ] Josh Cullen               (Rating: 2.50) | Commentary: Squad player who provides dept...
+    [LM    ] Axel Tuanzebe             (Rating: 2.45) | Commentary: Squad player who provides dept...
+    [CM1   ] Joe Worrall               (Rating: 2.51) | Commentary: Squad player who provides dept...
+    [CM2   ] Connor Roberts            (Rating: 2.51) | Commentary: Squad player who provides dept...
+    [RM    ] Marcus Edwards            (Rating: 2.63) | Commentary: Squad player who provides dept...
+    [ST1   ] Václav Hladky             (Rating: 2.63) | Commentary: Young goalkeeper with potentia...
+    [ST2   ] Jacob Bruun Larsen        (Rating: 2.51) | Commentary: Young left winger with potenti...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Burnley prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 50.8/100
+      Defense Strength: 50.2/100
+      Midfield Control: 50.8/100
+      Physical Intensity: 49.0/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Burnley data!
+======================================================================
+
+✅ Burnley: All checks passed
+
+======================================================================
+📂 Loading team data: Leeds
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-1-4-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Alex Cairns               (Rating: 2.93) | Commentary: Functional goalkeeper with bas...
+    [LB    ] Sam Byram                 (Rating: 2.99) | Commentary: Decent player who fills their ...
+    [CB1   ] Karl Darlow               (Rating: 3.01) | Commentary: Capable goalkeeper with room f...
+    [CB2   ] Dominic Calvert-Lewin     (Rating: 3.15) | Commentary: Decent player who fills their ...
+    [RB    ] James Justin              (Rating: 3.07) | Commentary: Capable defender with room for...
+    [DM    ] Joe Rodon                 (Rating: 2.98) | Commentary: Capable central defender with ...
+    [LM    ] Daniel James              (Rating: 3.05) | Commentary: Capable left/right winger with...
+    [CM1   ] Jayden Bogle              (Rating: 3.18) | Commentary: Functional right full back wit...
+    [CM2   ] Lukas Nmecha              (Rating: 3.02) | Commentary: Capable striker with room for ...
+    [RM    ] Sean Longstaff            (Rating: 2.93) | Commentary: Decent player who fills their ...
+    [ST    ] Ethan Ampadu              (Rating: 2.93) | Commentary: Functional central defender wi...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Leeds play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.0/100
+      Defense Strength: 60.9/100
+      Midfield Control: 60.6/100
+      Physical Intensity: 59.7/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Leeds data!
+======================================================================
+
+✅ Leeds: All checks passed
+
+======================================================================
+📂 Loading team data: Sunderland
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Simon Moore               (Rating: 2.57) | Commentary: Young goalkeeper with potentia...
+    [LB    ] Luke O'Nien               (Rating: 2.39) | Commentary: Squad player who provides dept...
+    [CB1   ] Bertrand Traoré           (Rating: 2.53) | Commentary: Young left/right winger with p...
+    [CB2   ] Arthur Masuaku            (Rating: 2.61) | Commentary: Developing left full back stil...
+    [RB    ] Granit Xhaka              (Rating: 2.48) | Commentary: Developing central defender st...
+    [LM    ] Dan Ballard               (Rating: 2.58) | Commentary: Developing centre central defe...
+    [CM1   ] Ian Poveda                (Rating: 2.53) | Commentary: Young right winger with potent...
+    [CM2   ] Aji Alese                 (Rating: 2.53) | Commentary: Squad player who provides dept...
+    [RM    ] Jenson Jones              (Rating: 2.67) | Commentary: Developing defender still find...
+    [ST1   ] Joe Anderson              (Rating: 2.41) | Commentary: Young centre central defender ...
+    [ST2   ] Anthony Patterson         (Rating: 2.49) | Commentary: Young goalkeeper with potentia...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Sunderland prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 50.7/100
+      Defense Strength: 50.3/100
+      Midfield Control: 50.7/100
+      Physical Intensity: 49.4/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Sunderland data!
+======================================================================
+
+✅ Sunderland: All checks passed
+
+================================================================================
+Data Quality Summary
+================================================================================
+
+Total Teams: 20
+Passed: 20
+Issues: 0
+
+
+🎉 All 20 teams have valid data!
+
+
+================================================================================
+Test 2: Multiple Match Simulations
+================================================================================
+
+================================================================================
+🏆 Test: Multiple Match Simulations with Enriched Data
+================================================================================
+
+✅ Qwen client ready
+
+
+================================================================================
+Match 1/10: Arsenal vs Liverpool
+================================================================================
+
+Loading Arsenal...
+
+======================================================================
+📂 Loading team data: Arsenal
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] David Raya                (Rating: 4.09) | Commentary: Technically gifted goalkeeper ...
+    [LB    ] Kepa Arrizabalaga         (Rating: 3.93) | Commentary: Technically gifted goalkeeper ...
+    [CB1   ] Martin Ødegaard           (Rating: 3.83) | Commentary: Technically gifted left/centre...
+    [CB2   ] Ben White                 (Rating: 4.10) | Commentary: Technically gifted centre/righ...
+    [RB    ] Declan Rice               (Rating: 3.91) | Commentary: High-quality centre central mi...
+    [DM    ] Gabriel Jesus             (Rating: 4.02) | Commentary: Technically gifted second stri...
+    [CM1   ] Mikel Merino              (Rating: 3.86) | Commentary: Technically gifted centre cent...
+    [CM2   ] Leandro Trossard          (Rating: 4.09) | Commentary: Technically gifted left winger...
+    [LW    ] Kai Havertz               (Rating: 3.93) | Commentary: High-quality left/centre/right...
+    [ST    ] Eberechi Eze              (Rating: 3.92) | Commentary: Reliable and consistent perfor...
+    [RW    ] Viktor Gyökeres           (Rating: 3.76) | Commentary: Reliable and consistent perfor...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.50
+      Positioning Balance: 4.25
+      Buildup Quality: 4.50
+      Team Commentary: Arsenal play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 78.1/100
+      Defense Strength: 79.1/100
+      Midfield Control: 79.8/100
+      Physical Intensity: 81.6/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Arsenal data!
+======================================================================
+
+✅ Arsenal: 11 players
+
+Loading Liverpool...
+
+======================================================================
+📂 Loading team data: Liverpool
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Virgil van Dijk           (Rating: 4.03) | Commentary: Reliable and consistent perfor...
+    [LB    ] Mohamed Salah             (Rating: 3.94) | Commentary: High-quality left/centre/right...
+    [CB1   ] Andy Robertson            (Rating: 3.90) | Commentary: Reliable and consistent perfor...
+    [CB2   ] Freddie Woodman           (Rating: 3.97) | Commentary: Technically gifted goalkeeper ...
+    [RB    ] Joe Gomez                 (Rating: 3.91) | Commentary: High-quality left/centre/right...
+    [DM    ] Federico Chiesa           (Rating: 3.98) | Commentary: Reliable and consistent perfor...
+    [CM1   ] Jeremie Frimpong          (Rating: 3.89) | Commentary: High-quality right full back w...
+    [CM2   ] Alisson Becker            (Rating: 4.08) | Commentary: Technically gifted goalkeeper ...
+    [LW    ] Alexander Isak            (Rating: 4.02) | Commentary: High-quality centre striker wi...
+    [ST    ] Ibrahima Konaté           (Rating: 4.06) | Commentary: Reliable and consistent perfor...
+    [RW    ] Rhys Williams             (Rating: 4.05) | Commentary: Reliable and consistent perfor...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.50
+      Positioning Balance: 4.25
+      Buildup Quality: 4.50
+      Team Commentary: Liverpool play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 80.5/100
+      Defense Strength: 78.8/100
+      Midfield Control: 79.6/100
+      Physical Intensity: 78.7/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Liverpool data!
+======================================================================
+
+✅ Liverpool: 11 players
+
+Simulating Arsenal vs Liverpool...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 1-2
+   Home Win: 40.0%
+   Draw: 30.0%
+   Away Win: 30.0%
+   Confidence: medium
+
+📈 Analysis:
+   Key Factors:
+     • high-pressing style
+     • creative play
+     • attacking width
+
+   Tactical Insight:
+     Both teams employ a 4-3-3 formation with an emphasis on high pressing and creative play. Arsenal's attacking width and quick transitions could create ...
+
+💰 Tokens: ~1499
+
+================================================================================
+Match 2/10: Man City vs Chelsea
+================================================================================
+
+Loading Man City...
+
+======================================================================
+📂 Loading team data: Man City
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Nathan Aké                (Rating: 4.60) | Commentary: Elite left/centre central defe...
+    [LB    ] John Stones               (Rating: 4.50) | Commentary: World-class player who dominat...
+    [CB1   ] Marcus Bettinelli         (Rating: 4.50) | Commentary: Elite goalkeeper with exceptio...
+    [CB2   ] Bernardo Silva            (Rating: 4.58) | Commentary: World-class player who dominat...
+    [RB    ] Kalvin Phillips           (Rating: 4.37) | Commentary: World-class player who dominat...
+    [DM    ] Mateo Kovacic             (Rating: 4.50) | Commentary: Elite centre central midfielde...
+    [CM1   ] Phil Foden                (Rating: 4.46) | Commentary: Outstanding centre/right attac...
+    [CM2   ] Rodri                     (Rating: 4.49) | Commentary: Outstanding centre central mid...
+    [LW    ] Rúben Dias                (Rating: 4.38) | Commentary: Elite centre central defender ...
+    [ST    ] Gianluigi Donnarumma      (Rating: 4.60) | Commentary: Elite goalkeeper with exceptio...
+    [RW    ] Tijjani Reijnders         (Rating: 4.39) | Commentary: World-class player who dominat...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.50
+      Positioning Balance: 4.25
+      Buildup Quality: 4.50
+      Team Commentary: Man City play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 89.3/100
+      Defense Strength: 89.7/100
+      Midfield Control: 89.6/100
+      Physical Intensity: 88.6/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Man City data!
+======================================================================
+
+✅ Man City: 11 players
+
+Loading Chelsea...
+
+======================================================================
+📂 Loading team data: Chelsea
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Tosin Adarabioyo          (Rating: 4.11) | Commentary: Technically gifted centre cent...
+    [LB    ] Robert Sánchez            (Rating: 3.99) | Commentary: Technically gifted goalkeeper ...
+    [CB1   ] Reece James               (Rating: 3.96) | Commentary: Technically gifted right full ...
+    [CB2   ] Trevoh Chalobah           (Rating: 4.02) | Commentary: Reliable and consistent perfor...
+    [RB    ] Pedro Neto                (Rating: 4.04) | Commentary: Reliable and consistent perfor...
+    [DM1   ] Marc Cucurella            (Rating: 4.08) | Commentary: Technically gifted left wing b...
+    [DM2   ] Cole Palmer               (Rating: 4.07) | Commentary: Reliable and consistent perfor...
+    [CAM   ] Levi Colwill              (Rating: 4.05) | Commentary: Technically gifted centre cent...
+    [LW    ] Liam Delap                (Rating: 4.07) | Commentary: Reliable and consistent perfor...
+    [ST    ] Benoît Badiashile         (Rating: 3.92) | Commentary: High-quality centre central de...
+    [RW    ] Mykhailo Mudryk           (Rating: 3.95) | Commentary: Technically gifted left winger...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.50
+      Positioning Balance: 4.25
+      Buildup Quality: 4.50
+      Team Commentary: Chelsea deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 80.1/100
+      Defense Strength: 80.4/100
+      Midfield Control: 81.3/100
+      Physical Intensity: 80.7/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Chelsea data!
+======================================================================
+
+✅ Chelsea: 11 players
+
+Simulating Man City vs Chelsea...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 3-1
+   Home Win: 60.0%
+   Draw: 25.0%
+   Away Win: 15.0%
+   Confidence: high
+
+📈 Analysis:
+   Key Factors:
+     • Man City's high press
+     • Chelsea's defensive solidity
+     • Bernardo Silva's creativity
+
+   Tactical Insight:
+     Man City's high press and aggressive style will test Chelsea's defensive organization, but Chelsea's tactical discipline could limit Man City's scorin...
+
+💰 Tokens: ~1512
+
+================================================================================
+Match 3/10: Spurs vs Newcastle
+================================================================================
+
+Loading Spurs...
+
+======================================================================
+📂 Loading team data: Spurs
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Ben Davies                (Rating: 3.66) | Commentary: Consistent performer who contr...
+    [LB    ] James Maddison            (Rating: 3.62) | Commentary: Dependable player with good te...
+    [CB1   ] Dominic Solanke           (Rating: 3.46) | Commentary: Consistent performer who contr...
+    [CB2   ] Brandon Austin            (Rating: 3.47) | Commentary: Dependable player with good te...
+    [RB    ] Rodrigo Bentancur         (Rating: 3.65) | Commentary: Consistent performer who contr...
+    [DM    ] Djed Spence               (Rating: 3.42) | Commentary: Consistent performer who contr...
+    [CM1   ] Richarlison               (Rating: 3.49) | Commentary: Dependable player with good te...
+    [CM2   ] Kevin Danso               (Rating: 3.38) | Commentary: Dependable player with good te...
+    [LW    ] Pedro Porro               (Rating: 3.44) | Commentary: Dependable player with good te...
+    [ST    ] Dejan Kulusevski          (Rating: 3.43) | Commentary: Dependable player with good te...
+    [RW    ] Brennan Johnson           (Rating: 3.46) | Commentary: Consistent performer who contr...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.00
+      Positioning Balance: 4.00
+      Buildup Quality: 4.00
+      Team Commentary: Spurs play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 68.8/100
+      Defense Strength: 70.4/100
+      Midfield Control: 68.6/100
+      Physical Intensity: 67.8/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Spurs data!
+======================================================================
+
+✅ Spurs: 11 players
+
+Loading Newcastle...
+
+======================================================================
+📂 Loading team data: Newcastle
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] John Ruddy                (Rating: 3.44) | Commentary: Dependable player with good te...
+    [LB    ] Kieran Trippier           (Rating: 3.43) | Commentary: Dependable player with good te...
+    [CB1   ] Fabian Schär              (Rating: 3.58) | Commentary: Dependable player with good te...
+    [CB2   ] Mark Gillespie            (Rating: 3.45) | Commentary: Dependable player with good te...
+    [RB    ] Dan Burn                  (Rating: 3.58) | Commentary: Dependable player with good te...
+    [DM    ] Jamaal Lascelles          (Rating: 3.48) | Commentary: Dependable player with good te...
+    [CM1   ] Jacob Murphy              (Rating: 3.53) | Commentary: Dependable player with good te...
+    [CM2   ] Nick Pope                 (Rating: 3.44) | Commentary: Consistent performer who contr...
+    [LW    ] Joe Willock               (Rating: 3.38) | Commentary: Consistent performer who contr...
+    [ST    ] Harvey Barnes             (Rating: 3.45) | Commentary: Solid left/right winger who pe...
+    [RW    ] Jacob Ramsey              (Rating: 3.35) | Commentary: Solid left/centre winger who p...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.00
+      Positioning Balance: 4.00
+      Buildup Quality: 4.00
+      Team Commentary: Newcastle deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 68.4/100
+      Defense Strength: 70.1/100
+      Midfield Control: 69.7/100
+      Physical Intensity: 70.4/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Newcastle data!
+======================================================================
+
+✅ Newcastle: 11 players
+
+Simulating Spurs vs Newcastle...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 2-1
+   Home Win: 45.0%
+   Draw: 30.0%
+   Away Win: 25.0%
+   Confidence: medium
+
+📈 Analysis:
+   Key Factors:
+     • high press intensity
+     • balanced defensive setup
+     • tactical discipline
+
+   Tactical Insight:
+     Spurs' high-pressing and quick transitional play can exploit Newcastle's defensive solidity, but Newcastle's tactical organization balances the threat...
+
+💰 Tokens: ~1472
+
+================================================================================
+Match 4/10: Man Utd vs Aston Villa
+================================================================================
+
+Loading Man Utd...
+
+======================================================================
+📂 Loading team data: Man Utd
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Tom Heaton                (Rating: 3.43) | Commentary: Solid goalkeeper who performs ...
+    [LB    ] Luke Shaw                 (Rating: 3.56) | Commentary: Dependable player with good te...
+    [CB1   ] Casemiro                  (Rating: 3.54) | Commentary: Solid centre central midfielde...
+    [CB2   ] Harry Maguire             (Rating: 3.51) | Commentary: Solid centre central defender ...
+    [RB    ] Mason Mount               (Rating: 3.59) | Commentary: Dependable player with good te...
+    [DM1   ] Matthijs de Ligt          (Rating: 3.53) | Commentary: Consistent performer who contr...
+    [DM2   ] Bruno Fernandes           (Rating: 3.39) | Commentary: Dependable player with good te...
+    [CAM   ] Tyrell Malacia            (Rating: 3.34) | Commentary: Solid left full back who perfo...
+    [LW    ] Diogo Dalot               (Rating: 3.58) | Commentary: Dependable player with good te...
+    [ST    ] Noussair Mazraoui         (Rating: 3.67) | Commentary: Solid right full back who perf...
+    [RW    ] Joshua Zirkzee            (Rating: 3.50) | Commentary: Consistent performer who contr...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.00
+      Positioning Balance: 4.00
+      Buildup Quality: 4.00
+      Team Commentary: Man Utd deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 70.7/100
+      Defense Strength: 70.4/100
+      Midfield Control: 68.4/100
+      Physical Intensity: 70.4/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Man Utd data!
+======================================================================
+
+✅ Man Utd: 11 players
+
+Loading Aston Villa...
+
+======================================================================
+📂 Loading team data: Aston Villa
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Ross Barkley              (Rating: 3.48) | Commentary: Consistent performer who contr...
+    [LB    ] Emiliano Martínez         (Rating: 3.44) | Commentary: Dependable player with good te...
+    [CB1   ] Victor Lindelöf           (Rating: 3.64) | Commentary: Consistent performer who contr...
+    [CB2   ] Lucas Digne               (Rating: 3.56) | Commentary: Consistent performer who contr...
+    [RB    ] Youri Tielemans           (Rating: 3.47) | Commentary: Solid centre central midfielde...
+    [LM    ] Ollie Watkins             (Rating: 3.46) | Commentary: Solid left/centre/right second...
+    [CM1   ] Tyrone Mings              (Rating: 3.41) | Commentary: Dependable player with good te...
+    [CM2   ] Ezri Konsa                (Rating: 3.59) | Commentary: Consistent performer who contr...
+    [RM    ] Matty Cash                (Rating: 3.48) | Commentary: Consistent performer who contr...
+    [ST1   ] Donyell Malen             (Rating: 3.52) | Commentary: Solid left/centre striker who ...
+    [ST2   ] Marco Bizot               (Rating: 3.55) | Commentary: Consistent performer who contr...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 4.00
+      Positioning Balance: 4.00
+      Buildup Quality: 4.00
+      Team Commentary: Aston Villa deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 70.0/100
+      Defense Strength: 70.4/100
+      Midfield Control: 70.0/100
+      Physical Intensity: 70.2/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Aston Villa data!
+======================================================================
+
+✅ Aston Villa: 11 players
+
+Simulating Man Utd vs Aston Villa...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 1-0
+   Home Win: 60.0%
+   Draw: 20.0%
+   Away Win: 20.0%
+   Confidence: high
+
+📈 Analysis:
+   Key Factors:
+     • balanced formations
+     • compact defense
+     • creative midfield
+
+   Tactical Insight:
+     Man Utd's 4-2-3-1 formation provides a balanced attack and defense, with solid full-backs supporting the wing play. Their midfield has dependable play...
+
+💰 Tokens: ~1561
+
+================================================================================
+Match 5/10: Brighton vs West Ham
+================================================================================
+
+Loading Brighton...
+
+======================================================================
+📂 Loading team data: Brighton
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] James Milner              (Rating: 3.44) | Commentary: Solid left/centre/right centra...
+    [LB    ] Danny Welbeck             (Rating: 3.46) | Commentary: Solid centre striker who perfo...
+    [CB1   ] Jason Steele              (Rating: 3.47) | Commentary: Dependable player with good te...
+    [CB2   ] Joël Veltman              (Rating: 3.62) | Commentary: Solid centre/right full back w...
+    [RB    ] Lewis Dunk                (Rating: 3.52) | Commentary: Consistent performer who contr...
+    [DM1   ] Solly March               (Rating: 3.48) | Commentary: Dependable player with good te...
+    [DM2   ] Adam Webster              (Rating: 3.58) | Commentary: Solid centre central defender ...
+    [CAM   ] Olivier Boscagli          (Rating: 3.41) | Commentary: Dependable player with good te...
+    [LW    ] Tom McGill                (Rating: 3.53) | Commentary: Solid goalkeeper who performs ...
+    [ST    ] Ferdi Kadioglu            (Rating: 3.63) | Commentary: Dependable player with good te...
+    [RW    ] Georginio Rutter          (Rating: 3.38) | Commentary: Solid centre striker who perfo...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Brighton play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 70.1/100
+      Defense Strength: 70.2/100
+      Midfield Control: 69.8/100
+      Physical Intensity: 69.1/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Brighton data!
+======================================================================
+
+✅ Brighton: 11 players
+
+Loading West Ham...
+
+======================================================================
+📂 Loading team data: West Ham
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Lukasz Fabianski          (Rating: 3.13) | Commentary: Decent player who fills their ...
+    [LB    ] James Ward-Prowse         (Rating: 2.88) | Commentary: Decent player who fills their ...
+    [CB1   ] Alphonse Areola           (Rating: 2.93) | Commentary: Functional goalkeeper with bas...
+    [CB2   ] Callum Wilson             (Rating: 2.90) | Commentary: Capable striker with room for ...
+    [RB    ] Jarrod Bowen              (Rating: 3.05) | Commentary: Capable centre striker with ro...
+    [DM1   ] Maximilian Kilman         (Rating: 2.89) | Commentary: Decent player who fills their ...
+    [DM2   ] Kyle Walker-Peters        (Rating: 2.88) | Commentary: Capable left/right full back w...
+    [CAM   ] Aaron Wan-Bissaka         (Rating: 2.97) | Commentary: Decent player who fills their ...
+    [LW    ] Tomás Soucek              (Rating: 3.08) | Commentary: Capable centre defensive midfi...
+    [ST    ] Konstantinos Mavropanos   (Rating: 2.91) | Commentary: Decent player who fills their ...
+    [RW    ] Guido Rodríguez           (Rating: 3.12) | Commentary: Capable centre defensive midfi...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: West Ham deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.0/100
+      Defense Strength: 58.7/100
+      Midfield Control: 58.3/100
+      Physical Intensity: 58.5/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded West Ham data!
+======================================================================
+
+✅ West Ham: 11 players
+
+Simulating Brighton vs West Ham...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 2-1
+   Home Win: 60.0%
+   Draw: 25.0%
+   Away Win: 15.0%
+   Confidence: medium
+
+📈 Analysis:
+   Key Factors:
+     • Brighton's aggressive pressing style
+     • West Ham's organized defensive setup
+     • Key player performances
+
+   Tactical Insight:
+     Brighton's high-pressing game plan and aggressive style of play should create numerous opportunities, while West Ham's well-organized defense aims to ...
+
+💰 Tokens: ~1531
+
+================================================================================
+Match 6/10: Fulham vs Brentford
+================================================================================
+
+Loading Fulham...
+
+======================================================================
+📂 Loading team data: Fulham
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Tom Cairney               (Rating: 2.84) | Commentary: Decent player who fills their ...
+    [LB    ] Alex Iwobi                (Rating: 3.04) | Commentary: Decent player who fills their ...
+    [CB1   ] Harrison Reed             (Rating: 3.02) | Commentary: Decent player who fills their ...
+    [CB2   ] Kenny Tete                (Rating: 3.10) | Commentary: Capable right full back with r...
+    [RB    ] Adama Traoré              (Rating: 3.04) | Commentary: Capable right winger with room...
+    [DM    ] Bernd Leno                (Rating: 3.04) | Commentary: Functional goalkeeper with bas...
+    [CM1   ] Timothy Castagne          (Rating: 2.95) | Commentary: Functional right full back wit...
+    [CM2   ] Raúl Jiménez              (Rating: 2.82) | Commentary: Capable striker with room for ...
+    [LW    ] Harry Wilson              (Rating: 3.01) | Commentary: Functional left/right winger w...
+    [ST    ] Emile Smith Rowe          (Rating: 3.00) | Commentary: Decent player who fills their ...
+    [RW    ] Antonee Robinson          (Rating: 2.99) | Commentary: Functional left full back with...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Fulham deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 59.6/100
+      Defense Strength: 60.5/100
+      Midfield Control: 58.7/100
+      Physical Intensity: 60.9/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Fulham data!
+======================================================================
+
+✅ Fulham: 11 players
+
+Loading Brentford...
+
+======================================================================
+📂 Loading team data: Brentford
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 3-5-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Jordan Henderson          (Rating: 3.10) | Commentary: Decent player who fills their ...
+    [CB1   ] Rico Henry                (Rating: 2.96) | Commentary: Functional left full back with...
+    [CB2   ] Caoimhín Kelleher         (Rating: 2.99) | Commentary: Decent player who fills their ...
+    [CB3   ] Kristoffer Ajer           (Rating: 3.00) | Commentary: Capable centre central defende...
+    [LWB   ] Ellery Balcombe           (Rating: 2.91) | Commentary: Functional goalkeeper with bas...
+    [RWB   ] Ethan Pinnock             (Rating: 2.98) | Commentary: Capable left/centre central de...
+    [DM    ] Vitaly Janelt             (Rating: 3.08) | Commentary: Decent player who fills their ...
+    [CM1   ] Paris Maghoma             (Rating: 3.03) | Commentary: Functional centre central midf...
+    [CM2   ] Keane Lewis-Potter        (Rating: 3.08) | Commentary: Functional striker with basic ...
+    [ST1   ] Nathan Collins            (Rating: 2.92) | Commentary: Capable centre central defende...
+    [ST2   ] Fábio Carvalho            (Rating: 3.06) | Commentary: Decent player who fills their ...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Brentford deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.2/100
+      Defense Strength: 59.9/100
+      Midfield Control: 60.2/100
+      Physical Intensity: 59.6/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Brentford data!
+======================================================================
+
+✅ Brentford: 11 players
+
+Simulating Fulham vs Brentford...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 1-1
+   Home Win: 40.0%
+   Draw: 35.0%
+   Away Win: 25.0%
+   Confidence: medium
+
+📈 Analysis:
+   Key Factors:
+     • balanced formations
+     • similar defensive approaches
+     • comparable physical intensity
+
+   Tactical Insight:
+     Both teams adopt a balanced and disciplined approach, with Fulham's 4-3-3 formation providing width and depth in the midfield compared to Brentford's ...
+
+💰 Tokens: ~1511
+
+================================================================================
+Match 7/10: Crystal Palace vs Wolves
+================================================================================
+
+Loading Crystal Palace...
+
+======================================================================
+📂 Loading team data: Crystal Palace
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-3-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Nathaniel Clyne           (Rating: 2.86) | Commentary: Decent player who fills their ...
+    [LB    ] Will Hughes               (Rating: 2.90) | Commentary: Functional centre central midf...
+    [CB1   ] Remi Matthews             (Rating: 3.14) | Commentary: Decent player who fills their ...
+    [CB2   ] Dean Henderson            (Rating: 3.00) | Commentary: Capable goalkeeper with room f...
+    [RB    ] Eddie Nketiah             (Rating: 2.91) | Commentary: Capable centre striker with ro...
+    [DM    ] Marc Guéhi                (Rating: 3.03) | Commentary: Decent player who fills their ...
+    [CM1   ] Borna Sosa                (Rating: 2.87) | Commentary: Functional left full back with...
+    [CM2   ] Walter Benítez            (Rating: 2.90) | Commentary: Decent player who fills their ...
+    [LW    ] Jean-Philippe Mateta      (Rating: 3.05) | Commentary: Capable centre striker with ro...
+    [ST    ] Tyrick Mitchell           (Rating: 2.92) | Commentary: Capable left full back with ro...
+    [RW    ] Jefferson Lerma           (Rating: 2.94) | Commentary: Decent player who fills their ...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Crystal Palace deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 59.2/100
+      Defense Strength: 59.5/100
+      Midfield Control: 58.7/100
+      Physical Intensity: 58.1/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Crystal Palace data!
+======================================================================
+
+✅ Crystal Palace: 11 players
+
+Loading Wolves...
+
+======================================================================
+📂 Loading team data: Wolves
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 3-4-3
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Matt Doherty              (Rating: 3.04) | Commentary: Functional right full back wit...
+    [CB1   ] Sam Johnstone             (Rating: 2.95) | Commentary: Functional goalkeeper with bas...
+    [CB2   ] Dan Bentley               (Rating: 2.92) | Commentary: Decent player who fills their ...
+    [CB3   ] José Sá                   (Rating: 3.06) | Commentary: Capable goalkeeper with room f...
+    [LWB   ] Hwang Hee-Chan            (Rating: 2.95) | Commentary: Decent player who fills their ...
+    [RWB   ] Jørgen Strand Larsen      (Rating: 3.06) | Commentary: Decent player who fills their ...
+    [CM1   ] Santiago Bueno            (Rating: 3.05) | Commentary: Functional centre central defe...
+    [CM2   ] Ki-Jana Hoever            (Rating: 3.01) | Commentary: Capable right full back with r...
+    [LW    ] Hugo Bueno                (Rating: 2.99) | Commentary: Capable left full back with ro...
+    [ST    ] Tawanda Chirewa           (Rating: 2.90) | Commentary: Decent player who fills their ...
+    [RW    ] Marshall Munetsi          (Rating: 2.91) | Commentary: Capable central midfielder wit...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.50
+      Positioning Balance: 3.50
+      Buildup Quality: 3.50
+      Team Commentary: Wolves prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 59.4/100
+      Defense Strength: 59.7/100
+      Midfield Control: 60.5/100
+      Physical Intensity: 60.1/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Wolves data!
+======================================================================
+
+✅ Wolves: 11 players
+
+Simulating Crystal Palace vs Wolves...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 1-1
+   Home Win: 40.0%
+   Draw: 35.0%
+   Away Win: 25.0%
+   Confidence: medium
+
+📈 Analysis:
+   Key Factors:
+     • defensive solidity
+     • counter-attacking opportunities
+     • compact formations
+
+   Tactical Insight:
+     Crystal Palace's 4-3-3 formation offers a balanced approach with high pressing, which could disrupt Wolves' possession. However, Wolves' compact 3-4-3...
+
+💰 Tokens: ~1496
+
+================================================================================
+Match 8/10: Bournemouth vs Everton
+================================================================================
+
+Loading Bournemouth...
+
+======================================================================
+📂 Loading team data: Bournemouth
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Adam Smith                (Rating: 3.10) | Commentary: Functional right full back wit...
+    [LB    ] Lewis Cook                (Rating: 2.90) | Commentary: Functional centre central midf...
+    [CB1   ] David Brooks              (Rating: 2.92) | Commentary: Capable left/centre/right atta...
+    [CB2   ] Marcus Tavernier          (Rating: 2.97) | Commentary: Decent player who fills their ...
+    [RB    ] Ryan Christie             (Rating: 2.79) | Commentary: Decent player who fills their ...
+    [LM    ] Enes Ünal                 (Rating: 2.95) | Commentary: Capable centre striker with ro...
+    [CM1   ] Justin Kluivert           (Rating: 2.88) | Commentary: Decent player who fills their ...
+    [CM2   ] Antoine Semenyo           (Rating: 2.89) | Commentary: Capable centre striker with ro...
+    [RM    ] Evanilson                 (Rating: 3.12) | Commentary: Functional centre striker with...
+    [ST1   ] Tyler Adams               (Rating: 2.78) | Commentary: Functional midfielder with bas...
+    [ST2   ] James Hill                (Rating: 2.94) | Commentary: Functional centre central defe...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 7/10
+      Buildup: mixed
+      Counter Speed: 7/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Bournemouth deploy a well-organized system balancing defensive solidity with attacking threat. Focus on tactical discipline.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 58.5/100
+      Defense Strength: 58.2/100
+      Midfield Control: 58.5/100
+      Physical Intensity: 56.9/100
+      Press Intensity: 70.0/100
+      Buildup Style: mixed
+
+======================================================================
+✅ Successfully loaded Bournemouth data!
+======================================================================
+
+✅ Bournemouth: 11 players
+
+Loading Everton...
+
+======================================================================
+📂 Loading team data: Everton
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Séamus Coleman            (Rating: 2.92) | Commentary: Decent player who fills their ...
+    [LB    ] Michael Keane             (Rating: 2.91) | Commentary: Decent player who fills their ...
+    [CB1   ] Jordan Pickford           (Rating: 3.07) | Commentary: Capable goalkeeper with room f...
+    [CB2   ] James Tarkowski           (Rating: 2.84) | Commentary: Capable centre central defende...
+    [RB    ] Tom King                  (Rating: 2.80) | Commentary: Functional goalkeeper with bas...
+    [LM    ] Idrissa Gueye             (Rating: 2.93) | Commentary: Decent player who fills their ...
+    [CM1   ] Kiernan Dewsbury-Hall     (Rating: 3.06) | Commentary: Functional central midfielder ...
+    [CM2   ] James Garner              (Rating: 2.96) | Commentary: Decent player who fills their ...
+    [RM    ] Dwight McNeil             (Rating: 3.02) | Commentary: Functional left winger with ba...
+    [ST1   ] Vitalii Mykolenko         (Rating: 3.10) | Commentary: Functional left full back with...
+    [ST2   ] Iliman Ndiaye             (Rating: 2.99) | Commentary: Capable left winger with room ...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Everton prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.2/100
+      Defense Strength: 58.9/100
+      Midfield Control: 60.2/100
+      Physical Intensity: 59.0/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Everton data!
+======================================================================
+
+✅ Everton: 11 players
+
+Simulating Bournemouth vs Everton...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 1-1
+   Home Win: 45.0%
+   Draw: 30.0%
+   Away Win: 25.0%
+   Confidence: medium
+
+📈 Analysis:
+   Key Factors:
+     • defensive solidity
+     • compactness
+     • counter-attacking opportunities
+
+   Tactical Insight:
+     Bournemouth's high pressing and mixed buildup style create opportunities to break down Everton's defense, while Everton's compactness and direct attac...
+
+💰 Tokens: ~1478
+
+================================================================================
+Match 9/10: Nott'm Forest vs Burnley
+================================================================================
+
+Loading Nott'm Forest...
+
+======================================================================
+📂 Loading team data: Nott'm Forest
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-2-3-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Chris Wood                (Rating: 2.85) | Commentary: Functional centre striker with...
+    [LB    ] Ola Aina                  (Rating: 2.95) | Commentary: Capable right full back with r...
+    [CB1   ] Ryan Yates                (Rating: 2.99) | Commentary: Capable left/centre/right atta...
+    [CB2   ] Morgan Gibbs-White        (Rating: 2.94) | Commentary: Decent player who fills their ...
+    [RB    ] Angus Gunn                (Rating: 3.09) | Commentary: Functional goalkeeper with bas...
+    [DM1   ] Taiwo Awoniyi             (Rating: 3.08) | Commentary: Capable centre striker with ro...
+    [DM2   ] Nikola Milenkovic         (Rating: 2.98) | Commentary: Capable centre central defende...
+    [CAM   ] Willy Boly                (Rating: 2.99) | Commentary: Functional centre central defe...
+    [LW    ] Matz Sels                 (Rating: 3.01) | Commentary: Capable goalkeeper with room f...
+    [ST    ] Callum Hudson-Odoi        (Rating: 3.01) | Commentary: Functional left winger with ba...
+    [RW    ] Neco Williams             (Rating: 3.16) | Commentary: Capable right full back with r...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Nott'm Forest prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.9/100
+      Defense Strength: 60.0/100
+      Midfield Control: 60.4/100
+      Physical Intensity: 59.5/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Nott'm Forest data!
+======================================================================
+
+✅ Nott'm Forest: 11 players
+
+Loading Burnley...
+
+======================================================================
+📂 Loading team data: Burnley
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Kyle Walker               (Rating: 2.52) | Commentary: Squad player who provides dept...
+    [LB    ] Martin Dúbravka           (Rating: 2.51) | Commentary: Squad player who provides dept...
+    [CB1   ] Josh Laurent              (Rating: 2.46) | Commentary: Young central midfielder with ...
+    [CB2   ] Ashley Barnes             (Rating: 2.48) | Commentary: Squad player who provides dept...
+    [RB    ] Josh Cullen               (Rating: 2.50) | Commentary: Squad player who provides dept...
+    [LM    ] Axel Tuanzebe             (Rating: 2.45) | Commentary: Squad player who provides dept...
+    [CM1   ] Joe Worrall               (Rating: 2.51) | Commentary: Squad player who provides dept...
+    [CM2   ] Connor Roberts            (Rating: 2.51) | Commentary: Squad player who provides dept...
+    [RM    ] Marcus Edwards            (Rating: 2.63) | Commentary: Squad player who provides dept...
+    [ST1   ] Václav Hladky             (Rating: 2.63) | Commentary: Young goalkeeper with potentia...
+    [ST2   ] Jacob Bruun Larsen        (Rating: 2.51) | Commentary: Young left winger with potenti...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Burnley prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 50.8/100
+      Defense Strength: 50.2/100
+      Midfield Control: 50.8/100
+      Physical Intensity: 49.0/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Burnley data!
+======================================================================
+
+✅ Burnley: 11 players
+
+Simulating Nott'm Forest vs Burnley...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 2-0
+   Home Win: 50.0%
+   Draw: 35.0%
+   Away Win: 15.0%
+   Confidence: medium
+
+📈 Analysis:
+   Key Factors:
+     • Home Team's Defensive Stability
+     • Away Team's Limited Offensive Threat
+     • Home Team's Counter-Attacking Opportunities
+
+   Tactical Insight:
+     Both teams prefer a compact defensive shape and direct style, giving Nott'm Forest an advantage due to their higher attack and midfield control rating...
+
+💰 Tokens: ~1498
+
+================================================================================
+Match 10/10: Leeds vs Sunderland
+================================================================================
+
+Loading Leeds...
+
+======================================================================
+📂 Loading team data: Leeds
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-1-4-1
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Alex Cairns               (Rating: 2.93) | Commentary: Functional goalkeeper with bas...
+    [LB    ] Sam Byram                 (Rating: 2.99) | Commentary: Decent player who fills their ...
+    [CB1   ] Karl Darlow               (Rating: 3.01) | Commentary: Capable goalkeeper with room f...
+    [CB2   ] Dominic Calvert-Lewin     (Rating: 3.15) | Commentary: Decent player who fills their ...
+    [RB    ] James Justin              (Rating: 3.07) | Commentary: Capable defender with room for...
+    [DM    ] Joe Rodon                 (Rating: 2.98) | Commentary: Capable central defender with ...
+    [LM    ] Daniel James              (Rating: 3.05) | Commentary: Capable left/right winger with...
+    [CM1   ] Jayden Bogle              (Rating: 3.18) | Commentary: Functional right full back wit...
+    [CM2   ] Lukas Nmecha              (Rating: 3.02) | Commentary: Capable striker with room for ...
+    [RM    ] Sean Longstaff            (Rating: 2.93) | Commentary: Decent player who fills their ...
+    [ST    ] Ethan Ampadu              (Rating: 2.93) | Commentary: Functional central defender wi...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 8/10
+      Buildup: short_passing
+      Counter Speed: 9/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Leeds play an aggressive, high-pressing style with quick transitions. Emphasis on creative play and attacking width.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 60.0/100
+      Defense Strength: 60.9/100
+      Midfield Control: 60.6/100
+      Physical Intensity: 59.7/100
+      Press Intensity: 80.0/100
+      Buildup Style: possession
+
+======================================================================
+✅ Successfully loaded Leeds data!
+======================================================================
+
+✅ Leeds: 11 players
+
+Loading Sunderland...
+
+======================================================================
+📂 Loading team data: Sunderland
+======================================================================
+
+Step 1/5: Loading formation...
+  ✅ Formation: 4-4-2
+
+Step 2/5: Loading lineup...
+  ✅ Lineup: 11 players
+
+Step 3/5: Loading player ratings from database...
+    [GK    ] Simon Moore               (Rating: 2.57) | Commentary: Young goalkeeper with potentia...
+    [LB    ] Luke O'Nien               (Rating: 2.39) | Commentary: Squad player who provides dept...
+    [CB1   ] Bertrand Traoré           (Rating: 2.53) | Commentary: Young left/right winger with p...
+    [CB2   ] Arthur Masuaku            (Rating: 2.61) | Commentary: Developing left full back stil...
+    [RB    ] Granit Xhaka              (Rating: 2.48) | Commentary: Developing central defender st...
+    [LM    ] Dan Ballard               (Rating: 2.58) | Commentary: Developing centre central defe...
+    [CM1   ] Ian Poveda                (Rating: 2.53) | Commentary: Young right winger with potent...
+    [CM2   ] Aji Alese                 (Rating: 2.53) | Commentary: Squad player who provides dept...
+    [RM    ] Jenson Jones              (Rating: 2.67) | Commentary: Developing defender still find...
+    [ST1   ] Joe Anderson              (Rating: 2.41) | Commentary: Young centre central defender ...
+    [ST2   ] Anthony Patterson         (Rating: 2.49) | Commentary: Young goalkeeper with potentia...
+  ✅ Loaded 11 player ratings
+
+Step 4/5: Loading tactics...
+  ✅ Tactics loaded:
+      Pressing: 6/10
+      Buildup: long_ball
+      Counter Speed: 8/10
+
+Step 5/5: Loading team strength...
+  ✅ Team strength loaded:
+      Tactical Understanding: 3.00
+      Positioning Balance: 3.00
+      Buildup Quality: 3.00
+      Team Commentary: Sunderland prioritize defensive stability with compact shape. Counter-attacking opportunities when possession is won.
+
+Step 6/6: Creating EnrichedTeamInput...
+  ✅ Derived team strengths (auto-calculated):
+      Attack Strength: 50.7/100
+      Defense Strength: 50.3/100
+      Midfield Control: 50.7/100
+      Physical Intensity: 49.4/100
+      Press Intensity: 60.0/100
+      Buildup Style: direct
+
+======================================================================
+✅ Successfully loaded Sunderland data!
+======================================================================
+
+✅ Sunderland: 11 players
+
+Simulating Leeds vs Sunderland...
+⏳ Please wait (60-90 seconds)...
+
+✅ Simulation successful!
+
+📊 Results:
+   Predicted Score: 2-1
+   Home Win: 60.0%
+   Draw: 25.0%
+   Away Win: 15.0%
+   Confidence: medium
+
+📈 Analysis:
+   Key Factors:
+     • high press
+     • compact defense
+     • direct counter
+
+   Tactical Insight:
+     Leeds' high pressing and quick transition tactics will put pressure on Sunderland's defensive solidity. Sunderland's counter-attacks could catch Leeds...
+
+💰 Tokens: ~1472
+
+
+================================================================================
+📊 Test Summary
+================================================================================
+
+Total Matches: 10
+Successful: 10
+Failed: 0
+
+Results:
+  1. ✅ Arsenal vs Liverpool
+     Score: 1-2, Confidence: medium, Tokens: ~1499
+  2. ✅ Man City vs Chelsea
+     Score: 3-1, Confidence: high, Tokens: ~1512
+  3. ✅ Spurs vs Newcastle
+     Score: 2-1, Confidence: medium, Tokens: ~1472
+  4. ✅ Man Utd vs Aston Villa
+     Score: 1-0, Confidence: high, Tokens: ~1561
+  5. ✅ Brighton vs West Ham
+     Score: 2-1, Confidence: medium, Tokens: ~1531
+  6. ✅ Fulham vs Brentford
+     Score: 1-1, Confidence: medium, Tokens: ~1511
+  7. ✅ Crystal Palace vs Wolves
+     Score: 1-1, Confidence: medium, Tokens: ~1496
+  8. ✅ Bournemouth vs Everton
+     Score: 1-1, Confidence: medium, Tokens: ~1478
+  9. ✅ Nott'm Forest vs Burnley
+     Score: 2-0, Confidence: medium, Tokens: ~1498
+  10. ✅ Leeds vs Sunderland
+     Score: 2-1, Confidence: medium, Tokens: ~1472
+
+================================================================================
+🎉 All 10 matches simulated successfully!
+✅ Enriched Data Integration: PASSED
+
+
+================================================================================
+🏁 Final Test Result
+================================================================================
+
+✅ All Tests PASSED!
+
+📊 Summary:
+   ✓ Data Quality: 20/20 teams valid
+   ✓ Simulations: 10/10 matches successful
+   ✓ Team Coverage: 20/20 teams tested
+   ✓ Enriched Data: Fully integrated
+
+🎉 Phase 3 실제 시뮬레이션 검증 완료!
+
+================================================================================
+✅ Integration Test PASSED
+================================================================================
+

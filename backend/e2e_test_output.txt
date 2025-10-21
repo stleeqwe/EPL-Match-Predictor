@@ -1,0 +1,123 @@
+/Users/stlee/Library/Python/3.9/lib/python/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+
+============================================================
+🚀 End-to-End Test: Domain Data + Qwen AI
+============================================================
+
+Step 1: Loading Domain Data from Backend...
+  ✅ Arsenal: Formation=4-3-3, Team Strength=✅
+  ✅ Liverpool: Formation=None, Team Strength=❌
+
+Step 2: Converting Domain Data to TeamInput...
+  ✅ Arsenal:
+     Attack: 80.0, Defense: 80.0
+     Press: 80.0, Style: possession
+  ✅ Liverpool:
+     Attack: 80.0, Defense: 80.0
+     Press: 70.0, Style: mixed
+
+Step 3: Creating MatchInput...
+  ✅ Match: Arsenal vs Liverpool
+
+Step 4: Checking Qwen AI...
+  ✅ Qwen is ready!
+
+Step 5: Creating simulation components...
+  ✅ All components created
+
+Step 6: Running simulation with Domain Data + Qwen AI...
+  (This may take 30-60 seconds...)
+
+============================================================
+
+============================================================
+Match Simulator V3: Arsenal vs Liverpool
+============================================================
+
+Phase 1: AI 시나리오 생성...
+  ✅ 시나리오 생성 완료: 7개 이벤트
+
+--- Iteration 1/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 6-0
+  서사 일치율: 14%
+Phase 3: AI 분석/조정...
+  AI 상태: needs_adjustment
+Phase 4: 수렴 판단...
+  수렴 점수: 0.20
+  수렴 여부: ❌ No
+Phase 5: 시나리오 조정...
+  ✅ 시나리오 조정 완료
+
+--- Iteration 2/2 ---
+Phase 2: Statistical Engine 시뮬레이션...
+  최종 스코어: 2-3
+  서사 일치율: 14%
+Phase 3: AI 분석/조정...
+  AI 상태: converged
+Phase 4: 수렴 판단...
+  수렴 점수: 0.61
+  수렴 여부: ❌ No
+  ℹ️  조정된 시나리오 없음, 현재 시나리오 유지
+
+⚠️  최대 반복 2회 도달
+
+Phase 7: 최종 리포트 생성...
+  ✅ 리포트 생성 완료 (1691 문자)
+
+============================================================
+✅ 시뮬레이션 완료!
+============================================================
+
+
+============================================================
+📊 Simulation Results
+============================================================
+
+✅ Final Score: 2-3
+✅ Iterations: 2
+✅ Convergence Score: 0.61
+✅ Converged: False
+✅ Narrative Adherence: 14%
+
+📈 Statistics:
+  Home Shots: 18
+  Away Shots: 15
+  Home Possession: 58.0
+  Away Possession: 32.0
+
+📝 Final Report (first 300 chars):
+------------------------------------------------------------
+```markdown
+# 경기 리포트: Arsenal 2-3 Liverpool
+
+**일시**: - | **경기장**: Emirates Stadium | **대회**: Premier League
+
+---
+
+## 📊 경기 요약
+
+Emirates Stadium에서 열린 Arsenal과 Liverpool의 경기는 원정팀이 후반전에 활짝
+раскрылись и одержали важную победу со счетом 3-2. 홈팀은 전반 초반 골로 선제 득점에 성공했지만, 중후반에 걸친 원정팀의 강한 압박과 역습에 휘둘려 막판 역전을 허용
+...
+------------------------------------------------------------
+
+============================================================
+🎉 End-to-End Test PASSED!
+============================================================
+
+✨ Domain 데이터가 Qwen AI 시뮬레이션에 성공적으로 통합되었습니다!
+
+주요 성과:
+  ✅ Step 1: Backend Domain 데이터 로드
+  ✅ Step 2: 18개 Team Strength → 4개 기본 속성 변환
+  ✅ Step 3: MatchInput에 Domain 데이터 포함
+  ✅ Step 4: AI Prompt에 팀 전력 전달
+  ✅ Step 5: Qwen AI로 시나리오 생성
+  ✅ Step 6: 전체 시뮬레이션 완료
+
+🔥 사용자가 MyVision 탭에 입력한 Domain 지식이
+   AI 시뮬레이션에 성공적으로 반영되었습니다!
+
+✅ Test completed successfully!

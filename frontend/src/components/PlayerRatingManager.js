@@ -11,6 +11,30 @@ import SquadBuilder from './SquadBuilder';
 import api from '../services/api';
 
 /**
+ * Deep equality check for objects
+ * Prevents unnecessary state updates when data hasn't actually changed
+ */
+const deepEqual = (obj1, obj2) => {
+  if (obj1 === obj2) return true;
+
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+    return false;
+  }
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false;
+
+  for (const key of keys1) {
+    if (!keys2.includes(key)) return false;
+    if (!deepEqual(obj1[key], obj2[key])) return false;
+  }
+
+  return true;
+};
+
+/**
  * PlayerRatingManager Component
  * EPL 선수 능력치 관리 메인 컴포넌트
  */
@@ -20,8 +44,6 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
   const [players, setPlayers] = useState([]); // 선수 목록
   const [playerRatings, setPlayerRatings] = useState({}); // { playerId: { attr: rating, ... }, ... }
   const [loading, setLoading] = useState(false); // 팀 데이터 로딩
-  // 🔧 isSaving 제거 (더 이상 사용하지 않음)
-  const [initialLoading, setInitialLoading] = useState(true); // 첫 로딩 여부
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('squad'); // 'squad', 'players', 'strength', 'analytics'
   const hasSelectedInitialPlayer = useRef(false); // initialPlayer 처리 여부 추적
@@ -35,83 +57,103 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
 
       // 1. 선수 목록 가져오기
       const squadResponse = await api.teams.getSquad(selectedTeam);
+      const squad = squadResponse.squad || [];
+      setPlayers(squad);
 
-      setPlayers(squadResponse.squad || []);
+      // 2. Backend API에서 모든 선수의 능력치 로드
+      console.log('📥 Loading ratings from backend for', selectedTeam);
+      const ratingsPromises = squad.map(async (player) => {
+        try {
+          const response = await api.ratings.get(player.id);
+          const backendRatings = response.ratings || {};
 
-      // 2. localStorage에서 능력치 로드 (임시 저장용)
-      const saved = localStorage.getItem(`team_ratings_${selectedTeam}`);
-      if (saved) {
-        const loadedRatings = JSON.parse(saved);
-        setPlayerRatings(loadedRatings);
+          // 백엔드 응답 형식 변환
+          const ratings = {};
+          for (const [key, value] of Object.entries(backendRatings)) {
+            if (key === '_comment' || key === '_subPosition') {
+              ratings[key] = value.notes || (key === '_subPosition' ? 'CM' : '');
+            } else if (typeof value === 'object' && value !== null && 'rating' in value) {
+              ratings[key] = value.rating;
+            } else {
+              ratings[key] = value;
+            }
+          }
+
+          return [player.id, ratings];
+        } catch (err) {
+          console.warn(`⚠️ No ratings found for player ${player.id}`);
+          return [player.id, {}];
+        }
+      });
+
+      const ratingsResults = await Promise.all(ratingsPromises);
+      const loadedRatings = Object.fromEntries(ratingsResults);
+
+      // ✅ PART 2: Deep equality check - only update if data actually changed
+      setPlayerRatings(prev => {
+        if (deepEqual(prev, loadedRatings)) {
+          console.log('⏭️  Skipping update - ratings unchanged');
+          return prev; // Return same reference to prevent re-render
+        }
+        console.log('✅ Loaded ratings for', Object.keys(loadedRatings).length, 'players');
+
+        // localStorage에도 백업 저장
+        localStorage.setItem(`team_ratings_${selectedTeam}`, JSON.stringify(loadedRatings));
 
         // 🔧 App.js의 상태도 업데이트 (팀 로드 시)
         if (onRatingsUpdate) {
           onRatingsUpdate(selectedTeam, loadedRatings);
         }
-      } else {
-        // 평가 데이터가 없으면 빈 객체로 설정
-        setPlayerRatings({});
-        if (onRatingsUpdate) {
-          onRatingsUpdate(selectedTeam, {});
-        }
-      }
+
+        return loadedRatings;
+      });
 
       setError(null);
-      setInitialLoading(false); // 🔧 첫 로딩 완료
     } catch (err) {
       console.error('❌ Failed to load team data:', err);
       setError('팀 데이터를 불러오는데 실패했습니다');
-      setInitialLoading(false); // 🔧 에러 발생 시에도 초기 로딩 종료
     } finally {
       setLoading(false);
     }
-  }, [selectedTeam, onRatingsUpdate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTeam]); // ✅ onRatingsUpdate 제거하여 무한 루프 방지
 
-  // 🔧 초기 진입 시 Arsenal을 기본 팀으로 설정
+  // 🔧 useEffect #1: 초기 팀 설정 및 동기화 (통합)
   useEffect(() => {
-    if (!initialTeam && !selectedTeam) {
-      setSelectedTeam('Arsenal');
+    // initialTeam이 있으면 그걸 사용, 없으면 기본 'Arsenal'
+    const teamToSelect = initialTeam || selectedTeam || 'Arsenal';
+
+    if (teamToSelect !== selectedTeam) {
+      setSelectedTeam(teamToSelect);
       setActiveTab('squad');
-    }
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
-  // initialTeam이 변경되면 selectedTeam도 업데이트하고 상태 초기화
-  useEffect(() => {
-    if (initialTeam) {
-      setSelectedTeam(initialTeam);
       // initialPlayer가 없는 경우에만 선수 선택 초기화
       if (!initialPlayer) {
         setSelectedPlayer(null);
         hasSelectedInitialPlayer.current = false;
       }
-      setActiveTab('squad'); // 🔧 항상 스쿼드 탭으로 시작
 
-      // 페이지 전환 애니메이션 완료 후 스크롤 (300ms transition + 여유)
+      // 페이지 전환 애니메이션 완료 후 스크롤
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'auto' });
       }, 350);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialTeam, initialPlayer]);
 
-  // 팀이 선택되면 해당 팀의 모든 선수 능력치 및 선수 목록 로드
+  // 🔧 useEffect #2: 팀 데이터 로드
   useEffect(() => {
     if (selectedTeam) {
       loadTeamData();
     }
   }, [selectedTeam, loadTeamData]);
 
-  // 🔧 스크롤 자동 이동 기능 제거 (2025-10-08)
-  // 코멘트 작성 후 저장 시 스크롤 위치 유지를 위해 제거됨
-
-  // initialPlayer가 변경될 때 처리 플래그 초기화
+  // 🔧 useEffect #3: initialPlayer 자동 선택 (플래그 초기화 통합)
   useEffect(() => {
+    // initialPlayer 변경 시 플래그 초기화
     if (initialPlayer) {
       hasSelectedInitialPlayer.current = false;
     }
-  }, [initialPlayer]);
-
-  // initialPlayer가 제공되고 팀 데이터가 로드된 후 자동으로 선수 선택
-  useEffect(() => {
     const selectInitialPlayer = async () => {
       if (initialPlayer && players.length > 0 && !loading && !hasSelectedInitialPlayer.current) {
         // players 배열에서 initialPlayer와 일치하는 선수 찾기
@@ -165,6 +207,7 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
 
             setSelectedPlayer({
               ...matchedPlayer,
+              team: selectedTeam || initialTeam, // 팀 정보 명시적 추가
               currentRatings: ratings
             });
 
@@ -176,7 +219,10 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
             });
           } catch (err) {
             console.error('❌ Failed to load player ratings:', err);
-            setSelectedPlayer(matchedPlayer);
+            setSelectedPlayer({
+              ...matchedPlayer,
+              team: selectedTeam || initialTeam // 에러 시에도 팀 정보 추가
+            });
           } finally {
             setLoading(false);
           }
@@ -184,7 +230,9 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
       }
     };
 
+    // initialPlayer 자동 선택 실행
     selectInitialPlayer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPlayer, players, loading, playerRatings]);
 
   /**
@@ -198,23 +246,31 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
       // 백엔드 API로 저장
       await api.ratings.save(playerId, ratings);
 
-      // 로컬 state 업데이트
-      setPlayerRatings(prev => ({
-        ...prev,
-        [playerId]: ratings
-      }));
+      // ✅ PART 2: Deep equality check - only update if ratings actually changed
+      setPlayerRatings(prev => {
+        const updated = {
+          ...prev,
+          [playerId]: ratings
+        };
 
-      // localStorage에도 백업 저장
-      const updated = {
-        ...playerRatings,
-        [playerId]: ratings
-      };
-      localStorage.setItem(`team_ratings_${selectedTeam}`, JSON.stringify(updated));
+        // Check if this player's ratings actually changed
+        if (deepEqual(prev[playerId], ratings)) {
+          console.log('⏭️  Skipping update - player ratings unchanged');
+          return prev; // Return same reference to prevent re-render
+        }
 
-      // 🔧 App.js의 상태도 업데이트 (다른 컴포넌트에서 실시간 반영)
-      if (onRatingsUpdate && selectedTeam) {
-        onRatingsUpdate(selectedTeam, updated);
-      }
+        console.log('✅ Updated ratings for player', playerId);
+
+        // localStorage에도 백업 저장
+        localStorage.setItem(`team_ratings_${selectedTeam}`, JSON.stringify(updated));
+
+        // 🔧 App.js의 상태도 업데이트 (다른 컴포넌트에서 실시간 반영)
+        if (onRatingsUpdate && selectedTeam) {
+          onRatingsUpdate(selectedTeam, updated);
+        }
+
+        return updated;
+      });
 
       // 🔧 selectedPlayer 업데이트 제거 (불필요한 리렌더링 방지)
       // RatingEditor는 이미 저장된 값을 가지고 있으므로 업데이트 불필요
@@ -259,12 +315,16 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
 
       setSelectedPlayer({
         ...player,
+        team: selectedTeam, // 팀 정보 명시적 추가
         currentRatings: ratings
       });
 
     } catch (err) {
       console.error('Failed to load player ratings:', err);
-      setSelectedPlayer(player);
+      setSelectedPlayer({
+        ...player,
+        team: selectedTeam // 에러 시에도 팀 정보 추가
+      });
     } finally {
       setLoading(false);
     }
@@ -313,15 +373,26 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
    * 데이터 가져오기
    */
   const handleImportData = (importedRatings) => {
-    setPlayerRatings(importedRatings);
-    if (selectedTeam) {
-      localStorage.setItem(`team_ratings_${selectedTeam}`, JSON.stringify(importedRatings));
-
-      // 🔧 App.js의 상태도 업데이트
-      if (onRatingsUpdate) {
-        onRatingsUpdate(selectedTeam, importedRatings);
+    // ✅ PART 2: Deep equality check - only update if data actually changed
+    setPlayerRatings(prev => {
+      if (deepEqual(prev, importedRatings)) {
+        console.log('⏭️  Skipping import - data unchanged');
+        return prev; // Return same reference to prevent re-render
       }
-    }
+
+      console.log('✅ Imported ratings for', Object.keys(importedRatings).length, 'players');
+
+      if (selectedTeam) {
+        localStorage.setItem(`team_ratings_${selectedTeam}`, JSON.stringify(importedRatings));
+
+        // 🔧 App.js의 상태도 업데이트
+        if (onRatingsUpdate) {
+          onRatingsUpdate(selectedTeam, importedRatings);
+        }
+      }
+
+      return importedRatings;
+    });
   };
 
   return (
@@ -351,7 +422,7 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
               {/* Left: Unified Sidebar */}
               <div className="lg:col-span-1">
-                <div className="animate-fade-in-up relative" style={{ animationDelay: '0.1s' }}>
+                <div className="relative">
                   {/* Unified Sidebar Container */}
                   <div className="relative rounded bg-gradient-to-br from-slate-900/80 via-blue-950/60 to-slate-900/80 backdrop-blur-sm border border-cyan-500/20 shadow-2xl p-6">
                     {/* Tech Grid Pattern */}
@@ -466,7 +537,7 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
               </div>
 
               {/* Right: Content Area */}
-              <div className="lg:col-span-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+              <div className="lg:col-span-4">
                 {selectedTeam ? (
                   <div>
                     {/* Content */}
@@ -520,7 +591,7 @@ function PlayerRatingManager({ darkMode = false, initialTeam = null, initialPlay
 
         {/* Error Toast */}
         {error && (
-          <div className="fixed bottom-4 right-4 bg-error text-white px-6 py-4 rounded-sm shadow-lg z-50 animate-slide-in-right">
+          <div className="fixed bottom-4 right-4 bg-error text-white px-6 py-4 rounded-sm shadow-lg z-50">
             <p className="font-semibold">{error}</p>
             <button
               onClick={() => setError(null)}

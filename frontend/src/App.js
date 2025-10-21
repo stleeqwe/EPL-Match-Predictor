@@ -595,36 +595,43 @@ function App() {
 
           {/* Main Content */}
           <main className="relative">
-            {/* 조건부 렌더링: 현재 페이지만 마운트하여 성능 최적화 */}
-            {currentPage === 'dashboard' && (
+            {/* 🎬 탭 전환 시 애니메이션: key prop으로 컴포넌트 리마운트 */}
+            <div style={{ display: currentPage === 'dashboard' ? 'block' : 'none' }}>
               <EPLDashboard
+                key={currentPage === 'dashboard' ? 'dashboard-active' : 'dashboard-hidden'}
                 darkMode={darkMode}
                 onTeamClick={handleTeamClick}
                 onMatchSimulatorClick={handleMatchSimulatorClick}
                 onMatchPredictionClick={handleMatchPredictionClick}
                 onPlayerClick={handlePlayerClick}
               />
-            )}
-            {currentPage === 'ratings' && (
+            </div>
+            <div style={{ display: currentPage === 'ratings' ? 'block' : 'none' }}>
               <PlayerRatingManager
+                key={currentPage === 'ratings' ? 'ratings-active' : 'ratings-hidden'}
                 darkMode={darkMode}
                 initialTeam={selectedTeam}
                 initialPlayer={selectedPlayer}
                 onRatingsUpdate={handleRatingsUpdate}
               />
-            )}
-            {currentPage === 'match-simulator' && (
+            </div>
+            <div style={{ display: currentPage === 'match-simulator' ? 'block' : 'none' }}>
               <MatchSimulator
+                key={currentPage === 'match-simulator' ? 'simulator-active' : 'simulator-hidden'}
                 darkMode={darkMode}
                 selectedMatch={selectedMatch}
                 onTeamClick={handleTeamClick}
                 playerRatings={getMergedRatings()}
-                isActive={true}
+                isActive={currentPage === 'match-simulator'}
               />
-            )}
-            {currentPage === 'match-predictions' && (
-              <MatchPredictionsDashboard darkMode={darkMode} selectedMatch={selectedPredictionMatch} />
-            )}
+            </div>
+            <div style={{ display: currentPage === 'match-predictions' ? 'block' : 'none' }}>
+              <MatchPredictionsDashboard
+                key={currentPage === 'match-predictions' ? 'predictions-active' : 'predictions-hidden'}
+                darkMode={darkMode}
+                selectedMatch={selectedPredictionMatch}
+              />
+            </div>
           </main>
 
           {/* Footer */}

@@ -1,6 +1,6 @@
 """
 Base AI Client Interface
-Provides abstract interface for AI providers (Qwen, Claude, OpenAI, etc.)
+Provides abstract interface for AI providers (Gemini, Claude, OpenAI, etc.)
 """
 
 from abc import ABC, abstractmethod

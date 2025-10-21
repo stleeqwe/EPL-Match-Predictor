@@ -1,26 +1,7 @@
 {
   "team_name": "Arsenal",
-  "last_updated": "2025-10-15T14:00:00.000000",
+  "last_updated": "2025-10-19T03:02:12.220083",
   "source": "fbref",
-  "injuries": [
-    {
-      "player_id": null,
-      "player_name": "Bukayo Saka",
-      "player_photo": null,
-      "injury_type": "Hamstring",
-      "days_out": "2-3 weeks",
-      "status": "injured",
-      "source": "fbref"
-    },
-    {
-      "player_id": null,
-      "player_name": "Gabriel Jesus",
-      "player_photo": null,
-      "injury_type": "Knee",
-      "days_out": "1 week",
-      "status": "recovering",
-      "source": "fbref"
-    }
-  ],
-  "total_injured": 2
+  "injuries": [],
+  "total_injured": 0
 }

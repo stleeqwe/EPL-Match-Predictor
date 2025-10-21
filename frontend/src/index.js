@@ -57,11 +57,13 @@ validateEnvironment();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  // React.StrictMode disabled temporarily to prevent duplicate simulation requests
+  // StrictMode intentionally double-invokes components in development
+  // <React.StrictMode>
     <ErrorBoundary>
       <App />
     </ErrorBoundary>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -33,6 +33,7 @@ python-dotenv==1.0.0
 
 # V3 AI Simulation System
 anthropic==0.39.0
+google-generativeai==0.8.3
 stripe==8.2.0
 PyJWT==2.8.0
 bcrypt==4.1.2
