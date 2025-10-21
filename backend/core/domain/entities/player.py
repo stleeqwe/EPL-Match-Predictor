@@ -6,9 +6,9 @@ from dataclasses import dataclass, field
 from typing import Optional, Dict
 from datetime import datetime
 
-from backend.core.domain.value_objects.player_id import PlayerId, TeamId
-from backend.core.domain.value_objects.position import Position
-from backend.core.domain.value_objects.rating_value import RatingValue
+from core.domain.value_objects.player_id import PlayerId, TeamId
+from core.domain.value_objects.position import Position
+from core.domain.value_objects.rating_value import RatingValue
 
 
 @dataclass

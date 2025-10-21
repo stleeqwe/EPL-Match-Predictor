@@ -7,8 +7,8 @@ from typing import Optional, List, Dict
 from datetime import datetime
 from enum import Enum
 
-from backend.core.domain.value_objects.player_id import MatchId, TeamId
-from backend.core.domain.value_objects.formation import Formation
+from core.domain.value_objects.player_id import MatchId, TeamId
+from core.domain.value_objects.formation import Formation
 
 
 class MatchStatus(Enum):

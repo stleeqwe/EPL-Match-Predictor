@@ -2,10 +2,10 @@
 Domain Entities
 Core business entities representing the problem domain
 """
-from backend.core.domain.entities.player import Player, PlayerStats
-from backend.core.domain.entities.team import Team, TeamStats
-from backend.core.domain.entities.rating import PlayerRatings, AttributeRating
-from backend.core.domain.entities.match import Match, MatchScore, MatchEvent, MatchStatus, MatchResult
+from core.domain.entities.player import Player, PlayerStats
+from core.domain.entities.team import Team, TeamStats
+from core.domain.entities.rating import PlayerRatings, AttributeRating
+from core.domain.entities.match import Match, MatchScore, MatchEvent, MatchStatus, MatchResult
 
 __all__ = [
     'Player',

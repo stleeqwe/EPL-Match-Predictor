@@ -6,8 +6,8 @@ from dataclasses import dataclass, field
 from typing import List, Optional, Dict
 from datetime import datetime
 
-from backend.core.domain.value_objects.player_id import TeamId, PlayerId
-from backend.core.domain.value_objects.formation import Formation
+from core.domain.value_objects.player_id import TeamId, PlayerId
+from core.domain.value_objects.formation import Formation
 
 
 @dataclass

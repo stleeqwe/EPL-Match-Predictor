@@ -3,9 +3,9 @@ Rating Calculator Domain Service
 Calculates weighted ratings based on position
 """
 from typing import Dict, List, Tuple
-from backend.core.domain.value_objects.position import Position, DetailedPosition
-from backend.core.domain.value_objects.rating_value import RatingValue
-from backend.config.constants import POSITION_ATTRIBUTES
+from core.domain.value_objects.position import Position, DetailedPosition
+from core.domain.value_objects.rating_value import RatingValue
+from config.constants import POSITION_ATTRIBUTES
 
 
 class RatingCalculator:

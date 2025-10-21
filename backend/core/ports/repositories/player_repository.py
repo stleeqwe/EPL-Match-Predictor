@@ -4,8 +4,8 @@ Player Repository Interface (Port)
 from abc import ABC, abstractmethod
 from typing import Optional, List
 
-from backend.core.domain.entities.player import Player
-from backend.core.domain.value_objects.player_id import PlayerId, TeamId
+from core.domain.entities.player import Player
+from core.domain.value_objects.player_id import PlayerId, TeamId
 
 
 class PlayerRepository(ABC):

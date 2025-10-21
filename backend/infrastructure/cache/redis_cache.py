@@ -10,7 +10,7 @@ from functools import wraps
 import redis
 from redis import Redis
 
-from backend.config.settings import get_settings
+from config.settings import get_settings
 
 
 class CacheKeyStrategy:

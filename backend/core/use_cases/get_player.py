@@ -3,9 +3,9 @@ Get Player Use Case
 """
 from dataclasses import dataclass
 
-from backend.core.ports.repositories.player_repository import PlayerRepository
-from backend.core.domain.entities.player import Player
-from backend.core.domain.value_objects.player_id import PlayerId
+from core.ports.repositories.player_repository import PlayerRepository
+from core.domain.entities.player import Player
+from core.domain.value_objects.player_id import PlayerId
 
 
 @dataclass
